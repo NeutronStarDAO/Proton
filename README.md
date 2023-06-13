@@ -1,3 +1,3 @@
 # code
 
-Here is the code for the ICCookbook "development dapp".
+Here is the code for the Constellation Book "development dapp".
