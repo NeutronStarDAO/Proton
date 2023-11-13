@@ -1,6 +1,6 @@
 # A SocialFi Demo
 
-Howdy Y'all - Here is the code for the Constellation Book "development dapp".
+Howdy Y'all - Here is the code for the Constellation Book "[development dapp](https://neutronstardao.github.io/constellation.github.io)".
 We gone and built a socialfi demo, a social dapp like Twitter but with modular data sovereignty based on the Actor model. She's got tutorials and everything to help get ya up to speed.
 
 ## What We Got Here
