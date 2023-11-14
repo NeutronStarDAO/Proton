@@ -1,22 +1,22 @@
 {
     "canisters": {
-      "user": {
-        "type": "motoko",
-        "main": "src/user/main.mo"
-      },
-      "post": {
-        "type": "motoko",
-        "main": "src/post/main.mo"
-      },
-      "feed": {
-        "type": "motoko",
-        "main": "src/feed/main.mo"
-      }
+        "user": {
+            "type": "motoko",
+            "main": "src/user/main.mo"
+        },
+        "post": {
+            "type": "motoko",
+            "main": "src/post/main.mo"
+        },
+        "feed": {
+            "type": "motoko",
+            "main": "src/feed/main.mo"
+        }
     },
     "defaults": {
-      "build": {
-        "packtool": "",
-        "args": ""
-      }
+        "build": {
+            "packtool": "mops sources",
+            "args": ""
+        }
     }
-  }
+}

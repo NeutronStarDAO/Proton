@@ -21,6 +21,8 @@ actor class Feed(
         owner := newOwner;
     };
 
+    public query({caller}) func whoami(): async Principal { caller };
+
 // Post
 
     type Time = Types.Time;
@@ -31,11 +33,13 @@ actor class Feed(
     public shared({caller}) func createPost(title: Text, content: Text): async () {
         assert(caller == owner);
         postDirectory.createPost(caller, title, content, Time.now());
+        await sendFeed();
     };
 
     public shared({caller}) func deletePost(postIndex: Nat): async () {
         assert(caller == owner);
         postDirectory.deletePost(postIndex);
+        await sendFeed();
     };
 
     public query func getPosts(): async [PostImmutable] {
@@ -45,29 +49,35 @@ actor class Feed(
     public shared({caller}) func createComment(commentUser: UserId, postIndex: Nat, content: Text): async () {
         assert(caller == postCanister);
         postDirectory.createComment(commentUser, postIndex, content, Time.now());
+        await sendFeed();
     };
 
     public shared({caller}) func deleteComment(commentUser: UserId, postIndex: Nat, commentIndex: Nat): async () {
         assert(caller == postCanister);
         postDirectory.deleteComment(commentUser, postIndex, commentIndex);
+        await sendFeed();
     };
 
     public shared({caller}) func createLike(likeUser: UserId, postIndex: Nat): async () {
         assert(caller == postCanister);
         postDirectory.createLike(likeUser, postIndex, Time.now());
+        await sendFeed();
     };
 
     public shared({caller}) func deleteLike(likeUser: UserId, postIndex: Nat) {
         assert(caller == postCanister);
         postDirectory.deleteLike(likeUser, postIndex);
+        await sendFeed();
     };    
 
 // Feed
     
     type PostImmutable = Types.PostImmutable;
+    type PostActor = Types.PostActor;
     type FeedActor = Types.FeedActor;
     type UserActor = Types.UserActor;
 
+    let postActor: PostActor = actor(Principal.toText(postCanister));
     let feedMap = TrieMap.TrieMap<Principal, [PostImmutable]>(Principal.equal, Principal.hash);
 
     public shared({caller}) func sendFeed(): async () {
@@ -75,8 +85,9 @@ actor class Feed(
         let followersList = await userActor.getFollowersList(owner);
         for(user in followersList.vals()) {
             let feedActor: FeedActor = actor(Principal.toText(user));
-            ignore feedActor.receiveFeed();
+            await feedActor.receiveFeed();
         };
+        await postActor.receiveFeed();
     };
 
     public shared({caller}) func receiveFeed(): async () {
@@ -100,5 +111,4 @@ actor class Feed(
         )
     };
 
-    public query({caller}) func whoami(): async Principal { caller };
 }

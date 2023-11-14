@@ -3,8 +3,49 @@ import TrieMap "mo:base/TrieMap";
 import Principal "mo:base/Principal";
 import Array "mo:base/Array";
 import Order "mo:base/Order";
+import Option "mo:base/Option";
+import Feed "../feed/main";
+import IC "mo:ic";
+import Prelude "mo:base/Prelude";
 
-actor Post {
+actor class Post(
+    userCanister: Principal
+) = this {
+
+// Canister 
+
+    let userFeedCanisterMap = TrieMap.TrieMap<Principal, Principal>(Principal.equal, Principal.hash);
+    let ic: IC.Service = actor("aaaaa-aa");
+
+    public query func getUserFeedCanister(user: Principal): async ?Principal {
+        _getUserFeedCanister(user)
+    };
+
+    public shared({caller}) func createFeedCanister(): async ?Principal {
+        assert(_getUserFeedCanister(caller) == null);
+        let feedCanister = await Feed.Feed(caller, Principal.fromActor(this), userCanister);
+        let feedCanisterId = Principal.fromActor(feedCanister);
+        userFeedCanisterMap.put(caller, feedCanisterId);
+        await ic.update_settings({
+            canister_id = feedCanisterId;
+            settings = {
+                freezing_threshold = null;
+                controllers = ?[Principal.fromActor(this), caller, feedCanisterId];
+                memory_allocation = null;
+                compute_allocation = null;
+            }
+        });
+        ?feedCanisterId
+    };
+
+    private func _getUserFeedCanister(user: Principal): ?Principal {
+        switch(userFeedCanisterMap.get(user)) {
+            case(null) { return null;};
+            case(?canister) { return ?canister;};
+        };
+    };
+
+// Feed
 
     type FeedActor = Types.FeedActor;
     type PostImmutable = Types.PostImmutable;
@@ -32,8 +73,50 @@ actor Post {
         )
     };
 
-    // public shared({caller}) func createFeedCanister(): async Principal {
+// Comment
 
-    // };
+    type UserId = Types.UserId;
+
+    public shared({caller}) func createComment(postUser: UserId, postIndex: Nat, content: Text): async () {
+        switch(_getUserFeedCanister(postUser)) {
+            case(null) {};
+            case(?canisterId) {
+                let feedActor: FeedActor = actor(Principal.toText(canisterId));
+                await feedActor.createComment(caller, postIndex, content);
+            };
+        };
+    };
+
+    public shared({caller}) func deleteComment(postUser: UserId, postIndex: Nat, commentIndex: Nat): async () {
+        switch(_getUserFeedCanister(postUser)) {
+            case(null) {};
+            case(?canisterId) {
+                let feedActor: FeedActor = actor(Principal.toText(canisterId));
+                await feedActor.deleteComment(caller, postIndex, commentIndex);
+            };
+        };
+    };
+
+// Like 
+
+    public shared({caller}) func createLike(postUser: Principal, postIndex: Nat): async () {
+        switch(_getUserFeedCanister(postUser)) {
+            case(null) {};
+            case(?canisterId) {
+                let feedActor: FeedActor = actor(Principal.toText(canisterId));
+                await feedActor.createLike(caller, postIndex);
+            };
+        };
+    };
+
+    public shared({caller}) func deleteLike(postUser: Principal, postIndex: Nat): async () {
+        switch(_getUserFeedCanister(postUser)) {
+            case(null) {};
+            case(?canisterId) {
+                let feedActor: FeedActor = actor(Principal.toText(canisterId));
+                await feedActor.deleteLike(caller, postIndex);
+            };
+        };
+    };
 
 }

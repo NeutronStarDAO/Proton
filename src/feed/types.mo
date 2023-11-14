@@ -43,7 +43,16 @@ module {
   public type FeedActor = actor {
       getPosts : () -> async [PostImmutable];
       receiveFeed : shared () -> async ();
+      createComment : shared (Principal, Nat, Text) -> async ();
+      deleteComment : shared (Principal, Nat, Nat) -> async ();
+      createLike : shared (Principal, Nat) -> async ();
+      deleteLike : shared (Principal, Nat) -> async ();
   };
 
   public type UserActor = UserTypes.UserActor;
+
+  public type PostActor = actor {
+    receiveFeed : shared () -> async ();
+  };
+
 };

@@ -6,4 +6,10 @@ module {
   
   public type FeedActor = FeedTypes.FeedActor;
   
+  public type UserId = FeedTypes.UserId;
+
+  public type PostActor = actor {
+    receiveFeed : shared () -> async ();
+  };
+  
 };
