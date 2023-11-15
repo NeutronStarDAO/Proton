@@ -1,4 +1,4 @@
-# Nstron - A SocialFi Demo
+# Proton - A SocialFi Demo
 
 Howdy Y'all - Here is the code for the Constellation Book "[development dapp](https://neutronstardao.github.io/constellation.github.io)".
 
