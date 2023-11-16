@@ -1,13 +1,18 @@
-# Proton - A SocialFi Demo
+# Proton - A SocialFi Dapp
 
 Howdy Y'all - Here is the code for the Constellation Book "[development dapp](https://neutronstardao.github.io/constellation.github.io)".
 
-We gone and built a socialfi demo, a social dapp like Twitter but with modular data sovereignty based on the Actor model. She's got tutorials and everything to help get ya up to speed.
+We gone and built a socialfi dapp, a dapp like Twitter but with modular data sovereignty based on the Actor model. She's got tutorials and everything to help get ya up to speed.
 
-## What We Got Here
-This here repo contains the code for our decentralized, community-owned socialfi demo. It's got:
-* Backend built using the Actor model for modular data ownership
-* Tutorials to help ya'll get set up and contribute
+## Design Philosophy
+
+Truly open Web3 dapp, modular data sovereignty based on the Actor model. 
+
+Each user has their own independent space, under their complete control.
+
+Users can even deploy their own independent Feed canister in code to interact with Proton. (This is cumbersome to do, only suitable for programmer users, they can develop advanced custom features for their canister) This allows the community to create custom advanced features.
+
+No matter whose data, as long as it's posted to a Feed, it is under the complete control of the Feed canister's owner.
 
 ## Getting Started
 Run：
