@@ -30,6 +30,6 @@ module {
     
 
     public type UserActor = actor {
-        getFollowersList : (Vertex) -> async [Vertex];
+        getFollowersList : shared query (Vertex) -> async [Vertex];
     };
 };

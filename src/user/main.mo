@@ -3,7 +3,7 @@ import Types "./types";
 import Database "./database";
 import Utils "./utils";
 
-actor User {
+actor class User() = this {
     
 // Follow Info
 

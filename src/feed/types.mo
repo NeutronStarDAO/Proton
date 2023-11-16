@@ -41,7 +41,7 @@ module {
   };
 
   public type FeedActor = actor {
-      getPosts : () -> async [PostImmutable];
+      getPosts : shared query () -> async [PostImmutable];
       receiveFeed : shared () -> async ();
       createComment : shared (Principal, Nat, Text) -> async ();
       deleteComment : shared (Principal, Nat, Nat) -> async ();

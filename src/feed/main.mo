@@ -5,6 +5,7 @@ import TrieMap "mo:base/TrieMap";
 import Array "mo:base/Array";
 import Order "mo:base/Order";
 import Time "mo:base/Time";
+import Debug "mo:base/Debug";
 
 actor class Feed(
     _owner: Principal,
@@ -81,7 +82,9 @@ actor class Feed(
     let feedMap = TrieMap.TrieMap<Principal, [PostImmutable]>(Principal.equal, Principal.hash);
 
     public shared({caller}) func sendFeed(): async () {
+        assert(caller == owner or caller == Principal.fromActor(this));
         let userActor: UserActor = actor(Principal.toText(userCanister));
+        Debug.print("userCanister : " # Principal.toText(userCanister));
         let followersList = await userActor.getFollowersList(owner);
         for(user in followersList.vals()) {
             let feedActor: FeedActor = actor(Principal.toText(user));
