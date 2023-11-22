@@ -18,15 +18,15 @@ module {
   type Time = Time.Time;
 
   public class Directory() {
-    // The "database" is just a local hash map
+
     let hashMap = HashMap.HashMap<UserId, Profile>(1, isEq, Principal.hash);
 
     public func createOne(userId: UserId, profile: NewProfile) {
       hashMap.put(userId, makeProfile(userId, profile));
     };
 
-    public func updateOne(userId: UserId, profile: Profile) {
-      hashMap.put(userId, profile);
+    public func updateOne(userId: UserId, profile: NewProfile) {
+      hashMap.put(userId, makeProfile(userId, profile));
     };
 
     public func findOne(userId: UserId): ?Profile {
@@ -43,8 +43,7 @@ module {
     public func findBy(term: Text): [Profile] {
       var profiles: [Profile] = [];
       for ((id, profile) in hashMap.entries()) {
-        let fullName = profile.firstName # " " # profile.lastName;
-        if (includesText(fullName, term)) {
+        if (includesText(profile.name, term)) {
           profiles := Array.append<Profile>(profiles, [profile]);
         };
       };
@@ -56,13 +55,12 @@ module {
     func makeProfile(userId: UserId, profile: NewProfile): Profile {
       {
         id = userId;
-        firstName = profile.firstName;
-        lastName = profile.lastName;
-        title = profile.title;
+        name = profile.name;
+        biography = profile.biography;
         company = profile.company;
-        experience = profile.experience;
         education = profile.education;
         imgUrl = profile.imgUrl;
+        feedCanister = profile.feedCanister;
       }
     };
 

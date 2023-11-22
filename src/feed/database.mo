@@ -22,62 +22,104 @@ module {
     type Like = Types.Like;
 
     var postIndex: Nat = 0;
-    let postMap = TrieMap.TrieMap<Nat, Post>(Nat.equal, Hash.hash);
+    let postMap = TrieMap.TrieMap<Nat, Post>(Nat.equal, Hash.hash); // postIndex -> Post
+
+    private func _getPostId(bucket: Principal, user: Principal, index: Nat): Text {
+      Principal.toText(bucket) # "#" # Principal.toText(user) # "#" # Nat.toText(index)
+    };
 
     // 发帖
-    public func createPost(user: UserId, title: Text, content: Text, time: Time) {
-      postMap.put(postIndex, {
+    public func createPost(user: UserId, title: Text, content: Text, time: Time, bucket: Principal): PostImmutable {
+      let post: Post = {
+        postId = _getPostId(bucket, user, postIndex);
         index = postIndex;
         user = user;
+        repost = [];
         title = title;
         content = content;
         var like = [];
-        var likeIndex = 0;
         var comment = [];
         var commentIndex = 0;
         createdAt = time;
-      });
-      postIndex += 1;
+      };
+
+      postMap.put(postIndex, post);
+
+      _convertPostToImmutable(post)
     };
 
-    // 删帖
-    public func deletePost(postIndex: Nat) {
-      postMap.delete(postIndex);
+    private func _convertPostToImmutable(post: Post): PostImmutable {
+      {
+        postId = post.postId;
+        index = post.index;
+        user = post.user;
+        repost = post.repost;
+        title = post.title;
+        content = post.content;
+        like = post.like;
+        comment = post.comment;
+        commentIndex = post.commentIndex;
+        createdAt = post.createdAt;
+      }
     };
+
+    // public func getPost(postIndex: Nat): ?PostImmutable {
+    //   switch(postMap.get(postIndex)) {
+    //     case(null) {};
+    //     case(?post) {
+    //       return ?{
+    //         index = post.index;
+    //         user = post.user;
+    //         title = post.title;
+    //         content = post.content;
+    //         like = post.like;
+    //         likeNumber = Array.size(post.like);
+    //         comment = post.comment;
+    //         commentNumber = Array.size(post.comment);
+    //         commentIndex = post.commentIndex;
+    //         createdAt = post.createdAt;
+    //       }
+    //     };
+    //   };
+    //   null
+    // };
 
     // 查询所有帖子
-    public func getPosts(): [PostImmutable] {
-      var ans: [PostImmutable] = [];
-      for(post in postMap.vals()) {
-        ans := Array.append<PostImmutable>(ans, [{
-          index = post.index;
-          user = post.user;
-          title = post.title;
-          content = post.content;
-          like = post.like;
-          comment = post.comment;
-          commentIndex = post.commentIndex;
-          createdAt = post.createdAt;
-        }]);
-      };
-      ans
-    };
+    // public func getPosts(): [PostImmutable] {
+    //   var ans: [PostImmutable] = [];
+    //   for(post in postMap.vals()) {
+    //     ans := Array.append<PostImmutable>(ans, [{
+    //       index = post.index;
+    //       user = post.user;
+    //       title = post.title;
+    //       content = post.content;
+    //       like = post.like;
+    //       likeNumber = Array.size(post.like);
+    //       comment = post.comment;
+    //       commentNumber = Array.size(post.comment);
+    //       commentIndex = post.commentIndex;
+    //       createdAt = post.createdAt;
+    //     }]);
+    //   };
+    //   ans
+    // };
 
     // 评论
-    public func createComment(commentUser: UserId, postIndex: Nat, content: Text, createdAt: Time) {
-      switch(postMap.get(postIndex)) {
-        case(null) {};
-        case(?post) {
-          post.comment := Array.append(post.comment, [{
-            index = post.commentIndex;
-            user = commentUser;
-            content = content;
-            createdAt = createdAt;
-          }]);
-          post.commentIndex += 1;
-        };
-      };
-    };
+    // public func createComment(commentUser: UserId, postIndex: Nat, content: Text, createdAt: Time): ?Nat {
+    //   switch(postMap.get(postIndex)) {
+    //     case(null) { return null;};
+    //     case(?post) {
+    //       post.comment := Array.append(post.comment, [{
+    //         index = post.commentIndex;
+    //         user = commentUser;
+    //         content = content;
+    //         createdAt = createdAt;
+    //       }]);
+    //       post.commentIndex += 1;
+    //       return ?(post.commentIndex - 1);
+    //     };
+    //   };
+    // };
 
     // 删评
     public func deleteComment(commentUser: UserId, postIndex: Nat, commentIndex: Nat) {
@@ -108,21 +150,21 @@ module {
     };
 
     // 点赞
-    public func createLike(likeUser: UserId, postIndex: Nat, createdAt: Time) {
-      switch(postMap.get(postIndex)) {
-        case(null) {};
-        case(?post) {
-          for(like in post.like.vals()) {
-            // 已经点赞过
-            if(like.user == likeUser) { return;};
-          };
-          post.like := Array.append<Like>(post.like, [{
-            user = likeUser;
-            createdAt = createdAt;
-          }]);
-        };
-      }
-    };
+    // public func createLike(likeUser: UserId, postIndex: Nat, createdAt: Time) {
+    //   switch(postMap.get(postIndex)) {
+    //     case(null) {};
+    //     case(?post) {
+    //       for(like in post.like.vals()) {
+    //         // 已经点赞过
+    //         if(like.user == likeUser) { return;};
+    //       };
+    //       post.like := Array.append<Like>(post.like, [{
+    //         user = likeUser;
+    //         createdAt = createdAt;
+    //       }]);
+    //     };
+    //   }
+    // };
 
     // 取点
     public func deleteLike(likeUser: UserId, postIndex: Nat) {

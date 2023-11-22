@@ -1,58 +1,26 @@
 import Principal "mo:base/Principal";
 import Time "mo:base/Time";
-import UserTypes "../user/types";
+import Types "../types";
 
 module {
-  public type UserId = Principal;
-  public type Time = Time.Time;
+
+  public type Post = Types.Post;
+
+  public type Comment = Types.Comment;
   
-  public type Post = {
-    index: Nat; // Post Index
-    user: UserId;
-    title: Text;
-    content: Text;
-    var like: [Like];
-    var comment: [Comment];
-    var commentIndex: Nat;
-    createdAt: Time;
-  };
+  public type Like = Types.Like;
 
-  public type PostImmutable = {
-    index: Nat; // Post Index
-    user: UserId;
-    title: Text;
-    content: Text;
-    like: [Like];
-    comment: [Comment];
-    commentIndex: Nat;
-    createdAt: Time;
-  };
+  public type RootPostActor = Types.RootPostActor;  
 
-  public type Comment = {
-    index: Nat; // Comment Index
-    user: UserId;
-    content: Text;
-    createdAt: Time;
-  };
+  public type Time = Types.Time;
 
-  public type Like = {
-    user: UserId;
-    createdAt: Time;
-  };
+  public type UserId = Types.UserId;
 
-  public type FeedActor = actor {
-      getPosts : shared query () -> async [PostImmutable];
-      receiveFeed : shared () -> async ();
-      createComment : shared (Principal, Nat, Text) -> async ();
-      deleteComment : shared (Principal, Nat, Nat) -> async ();
-      createLike : shared (Principal, Nat) -> async ();
-      deleteLike : shared (Principal, Nat) -> async ();
-  };
+  public type PostImmutable = Types.PostImmutable;
 
-  public type UserActor = UserTypes.UserActor;
+  public type FeedActor = Types.FeedActor;
 
-  public type PostActor = actor {
-    receiveFeed : shared () -> async ();
-  };
+  public type UserActor = Types.UserActor;  
 
-};
+  public type BucketActor = Types.BucketActor;
+}

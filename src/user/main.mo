@@ -1,7 +1,6 @@
 import Digraph "./digraph";
 import Types "./types";
 import Database "./database";
-import Utils "./utils";
 
 actor class User() = this {
     
@@ -32,18 +31,16 @@ actor class User() = this {
 
     var directory: Database.Directory = Database.Directory();
 
-    public shared(msg) func createProfile(profile: NewProfile): async () {
-        directory.createOne(msg.caller, profile);
+    public shared({caller}) func createProfile(profile: NewProfile): async () {
+        directory.createOne(caller, profile);
     };
 
-    public shared(msg) func updateProfile(profile: Profile): async () {
-        if(Utils.hasAccess(msg.caller, profile)) {
-        directory.updateOne(profile.id, profile);
-        };
+    public shared({caller}) func updateProfile(profile: NewProfile): async () {
+        directory.updateOne(caller, profile);
     };
 
-    public query func getProfile(userId: UserId): async Profile {
-        Utils.getProfile(directory, userId)
+    public query func getProfile(userId: UserId): async ?Profile {
+        directory.findOne(userId)
     };
 
     public query func searchProfile(term: Text): async [Profile] {

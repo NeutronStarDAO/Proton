@@ -1,35 +1,31 @@
 import Principal "mo:base/Principal";
 import Time "mo:base/Time";
+import Types "../types";
 
 module {
 
-    public type Vertex = Principal;
+    public type Vertex = Types.Vertex;
     public type UserId = Principal;
     public type Time = Time.Time;
 
     public type NewProfile = {
-        firstName: Text;
-        lastName: Text;
-        title: Text;
+        name: Text;
+        biography: Text;
         company: Text;
-        experience: Text;
         education: Text;
         imgUrl: Text;
+        feedCanister: ?Principal;
     };
 
     public type Profile = {
         id: UserId;
-        firstName: Text;
-        lastName: Text;
-        title: Text;
+        name: Text;
+        biography: Text;
         company: Text;
-        experience: Text;
         education: Text;
         imgUrl: Text;
+        feedCanister: ?Principal;
     };
     
-
-    public type UserActor = actor {
-        getFollowersList : shared query (Vertex) -> async [Vertex];
-    };
+    public type UserActor = Types.UserActor;
 };

@@ -1,0 +1,4 @@
+
+actor class CommentFetch() = this {
+
+};
