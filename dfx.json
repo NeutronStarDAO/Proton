@@ -4,10 +4,6 @@
             "type": "motoko",
             "main": "src/user/main.mo"
         },
-        "post": {
-            "type": "motoko",
-            "main": "src/post/post.mo"
-        },
         "rootPost": {
             "type": "motoko",
             "main": "src/post/rootPost.mo"

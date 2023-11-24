@@ -12,12 +12,11 @@ module {
         postId: PostId; // 帖子 ID 
         index: Nat; // Post Index
         user: UserId; // 发布者
-        repost: [UserId]; //转发者
         title: Text;
         content: Text;
+        var repost: [Repost]; //转发者
         var like: [Like];
         var comment: [Comment];
-        var commentIndex: Nat;
         createdAt: Time; // 发布时间
     };
 
@@ -25,26 +24,35 @@ module {
         postId: PostId; // 帖子 ID 
         index: Nat; // Post Index
         user: UserId; // 发布者
-        repost: [UserId]; //转发者
         title: Text;
         content: Text;
+        repost: [Repost]; //转发者
         like: [Like];
         comment: [Comment];
-        commentIndex: Nat;
         createdAt: Time; // 发布时间
     };
 
     public type Comment = {
-        index: Nat; // Comment Index
         user: UserId;
         content: Text;
         createdAt: Time;
     };
+
+    public type NewComment = [Comment];
 
     public type Like = {
         user: UserId;
         createdAt: Time;
     };
+
+    public type Repost = {
+        user: UserId;
+        createdAt: Time;
+    };
+
+    public type NewRepost = [Repost];
+
+    public type NewLike = [Like];
 
     public type FeedActor = actor {
         getPosts : shared query () -> async [PostImmutable];
@@ -73,6 +81,26 @@ module {
 
     public type BucketActor = actor {
         storeFeed : shared (PostImmutable) -> async Bool;
+        updatePostComment : shared (Text, NewComment) -> async Bool;
+        updatePostLike : shared (Text, NewLike) -> async Bool;
+        updatePostRepost : shared (Text, NewRepost) -> async Bool;
+        getPosts : shared query ([Text]) -> async [PostImmutable];
+        getPost : shared query (Text) -> async ?PostImmutable;
+    };
+
+// Fetch
+    public type PostFetchActor = actor {
+        receiveNotify : shared ([Principal], Text) -> async ();
+    };
+
+    public type CommentFetchActor = actor {
+        receiveNotify : shared (PostImmutable) -> async ();
+        receiveRepostUserNotify : shared ([Principal], Text) -> async ();
+    };
+    
+    public type LikeFetchActor = actor {
+        receiveNotify : shared (PostImmutable) -> async ();
+        receiveRepostUserNotify : shared ([Principal], Text) -> async ();
     };
 
 // User 

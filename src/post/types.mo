@@ -5,7 +5,13 @@ module {
 
   public type PostImmutable = Types.PostImmutable;
   
+  public type NewComment = Types.NewComment;
+  
+  public type NewLike = Types.NewLike;
+
   public type FeedActor = Types.FeedActor;
+  
+  public type NewRepost = Types.NewRepost;
   
   public type UserId = Types.UserId;
 
@@ -17,6 +23,10 @@ module {
 
   public type BucketInfoImmutable = Types.BucketInfoImmutable;
   
-  public type RootPostActor = Types.RootPostActor
+  public type RootPostActor = Types.RootPostActor;
+
+  public type CommentFetchActor = Types.CommentFetchActor;
+
+  public type LikeFetchActor = Types.LikeFetchActor;
 
 };

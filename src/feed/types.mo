@@ -8,7 +8,15 @@ module {
 
   public type Comment = Types.Comment;
   
+  public type NewComment = Types.NewComment;
+  
   public type Like = Types.Like;
+
+  public type Repost = Types.Repost; 
+
+  public type NewRepost = Types.NewRepost;
+
+  public type NewLike = Types.NewLike;
 
   public type RootPostActor = Types.RootPostActor;  
 
@@ -23,4 +31,11 @@ module {
   public type UserActor = Types.UserActor;  
 
   public type BucketActor = Types.BucketActor;
+
+  public type PostFetchActor = Types.PostFetchActor;
+
+  public type CommentFetchActor = Types.CommentFetchActor;
+
+  public type LikeFetchActor = Types.LikeFetchActor;
+  
 }

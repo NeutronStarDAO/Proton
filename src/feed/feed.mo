@@ -7,13 +7,18 @@ import Order "mo:base/Order";
 import Time "mo:base/Time";
 import Debug "mo:base/Debug";
 import Option "mo:base/Option";
-import Bucket "../post/bucket";
+import Utils "../utils";
 
 actor class Feed(
     _owner: Principal,
     rootPostCanister: Principal,
-    userCanister: Principal
+    userCanister: Principal,
+    _postFetchCanister: Principal,
+    _commentFetchCanister: Principal,
+    _likeFetchCanister: Principal
 ) = this {
+
+// owner
 
     stable var owner = _owner;
 
@@ -25,6 +30,51 @@ actor class Feed(
     };
 
     public query({caller}) func whoami(): async Principal { caller };
+
+// PostFetchCanister
+
+    stable var postFetchCanister = _postFetchCanister;
+    
+    public query func getPostFetchCanister(): async Principal { postFetchCanister };
+
+    public shared({caller}) func updatePostFetchCanister(
+        newPostFetchCanister: Principal
+    ): async () {
+        postFetchCanister := newPostFetchCanister;
+    };
+
+// CommentFetchCanister
+
+    stable var commentFetchCanister = _commentFetchCanister;
+    
+    public query func getCommentFetchCanister(): async Principal { commentFetchCanister };
+
+    public shared({caller}) func updateCommentFetchCanister(
+        newCommentFetchCanister: Principal
+    ): async () {
+        commentFetchCanister := commentFetchCanister;
+    };
+
+// LikeFetchCanister
+
+    stable var likeFetchCanister = _likeFetchCanister;
+    
+    public query func getLikeFetchCanister(): async Principal { likeFetchCanister };
+
+    public shared({caller}) func updateLikeFetchCanister(
+        newLikeFetchCanister: Principal
+    ): async () {
+        likeFetchCanister := newLikeFetchCanister;
+    };
+
+// Followers
+    
+    stable var followers: [Principal] = [];
+
+    // 接收 user canister 的更新
+    public shared({caller}) func updateFollowers(newFollowers: [Principal]): async () {
+        followers := newFollowers;
+    };
 
 // Bucket
 
@@ -48,8 +98,23 @@ actor class Feed(
     type Time = Types.Time;
     type UserId = Types.UserId;
     type BucketActor = Types.BucketActor;
+    type PostFetchActor = Types.PostFetchActor;
 
     let postDirectory: Database.PostDirectory = Database.PostDirectory();
+
+    // 查询用户发了多少帖子（统计总数）
+    public query func getPostNumber(): async Nat {
+        postDirectory.getPostNumber()
+    };
+
+    // 根据帖子 ID 查询用户发的某个帖子
+    public query func getPost(postId: Text): async  ?PostImmutable {
+        postDirectory.getPost(postId)
+    };
+
+    public query func getAllPost(): async [PostImmutable] {
+        postDirectory.getAllPost()
+    };
 
     public shared({caller}) func createPost(title: Text, content: Text): async Bool {
         assert(caller == owner and bucket != null);
@@ -58,53 +123,69 @@ actor class Feed(
         
         // 将帖子内容发送给公共区的 Bucket 
         let bucketActor: BucketActor = actor(Principal.toText(_bucket));
-        ignore bucketActor.storeFeed(post); 
+        ignore await bucketActor.storeFeed(post); 
 
-        // 把发帖人、帖子 ID 、用户 C 、D（followers）发送给 Fetch 
+        // 通知 PostFetch 
+        let postFetchActor: PostFetchActor = actor(Principal.toText(postFetchCanister));
+        ignore postFetchActor.receiveNotify(followers, post.postId);
         true
     };
 
-    // public query func getPost(postIndex: Nat): async  ?PostImmutable {
-    //     postDirectory.getPost(postIndex)
-    // };
+    public shared({caller}) func createRepost(postId: Text): async Bool {
+        switch(postDirectory.createRepost(caller, postId, Time.now())) {
+            case(null) { return false; };
+            case(?(_bucket, _newRepost)) {
+                // 通知 bucket 更新转发信息
+                let bucketActor: BucketActor = actor(Principal.toText(_bucket));
+                ignore await bucketActor.updatePostRepost(postId, _newRepost);
 
-    // public query func getPosts(): async [PostImmutable] {
-    //     postDirectory.getPosts()
-    // };
+                // 获取转发者的粉丝
+                let userActor: UserActor = actor(Principal.toText(userCanister));
+                let _repostUserFollowers = await userActor.getFollowersList(caller);
 
-    // public shared({caller}) func createComment(commentUser: UserId, postIndex: Nat, content: Text): async ?Nat {
-    //     assert(caller == postCanister or caller == owner);
-    //     let commentIndex = postDirectory.createComment(commentUser, postIndex, content, Time.now());
-    //     await sendFeed();
-    //     commentIndex
-    // };
+                // 通知 PostFetch
+                let postFetchActor: PostFetchActor = actor(Principal.toText(postFetchCanister));
+                ignore postFetchActor.receiveNotify(_repostUserFollowers, postId);
+                return true;
+            };
+        };
+    };
 
-    // public shared({caller}) func deleteComment(commentUser: UserId, postIndex: Nat, commentIndex: Nat): async () {
-    //     assert(caller == rootPostCanister);
-    //     postDirectory.deleteComment(commentUser, postIndex, commentIndex);
-    //     await sendFeed();
-    // };
+    public shared({caller}) func createComment(postId: Text, content: Text): async Bool {
+        switch(postDirectory.createComment(caller, postId, content, Time.now())) {
+            case(null) { return false; };
+            case(?(_bucket, _newComment)) {
+                // 通知对应的 bucket 更新评论
+                let bucketActor: BucketActor = actor(Principal.toText(_bucket));
+                ignore bucketActor.updatePostComment(postId, _newComment);
+                return true;
+            };
+        };
+    };
 
-    // public shared({caller}) func createLike(likeUser: UserId, postIndex: Nat): async () {
-    //     assert(caller == postCanister);
-    //     postDirectory.createLike(likeUser, postIndex, Time.now());
-    //     await sendFeed();
-    // };
+    public shared({caller}) func createLike(postId: Text): async Bool {
+        switch(postDirectory.createLike(caller, postId, Time.now())) {
+            case(null) { return false; };
+            case(?(_bucket, _newLike)) {
+                // 通知 bucket 更新点赞信息
+                let bucketActor: BucketActor = actor(Principal.toText(_bucket));
+                ignore bucketActor.updatePostLike(postId, _newLike);
+                return true;
+            };
+        };
 
-    // public shared({caller}) func deleteLike(likeUser: UserId, postIndex: Nat) {
-    //     assert(caller == rootPostCanister);
-    //     postDirectory.deleteLike(likeUser, postIndex);
-    //     await sendFeed();
-    // };    
+        // await sendFeed();
+    };
 
 // Feed
     
     type PostImmutable = Types.PostImmutable;
     type FeedActor = Types.FeedActor;
     type UserActor = Types.UserActor;
-
-    // let postActor: PostActor = actor(Principal.toText(rootPostCanister));
-    let feedMap = TrieMap.TrieMap<Principal, [PostImmutable]>(Principal.equal, Principal.hash);
+    type CommentFetchActor = Types.CommentFetchActor;
+    type LikeFetchActor = Types.LikeFetchActor;
+    
+    let feedDirectory = Database.FeedDirectory();
 
     // public shared({caller}) func sendFeed(): async () {
     //     assert(caller == owner or caller == Principal.fromActor(this));
@@ -118,25 +199,89 @@ actor class Feed(
     //     await postActor.receiveFeed();
     // };
 
-    public shared({caller}) func receiveFeed(): async () {
-        let feedActor: FeedActor = actor(Principal.toText(caller));
-        let posts = await feedActor.getPosts();
-        feedMap.put(caller, posts);
+    public shared({caller}) func receiveFeed(postId: Text): async Bool {
+        let (_bucket, _, _) = Utils.checkPostId(postId);
+        let bucketActor: BucketActor = actor(Principal.toText(_bucket));
+        switch((await bucketActor.getPost(postId))) {
+            case(null) { return false; };
+            case(?_post) {
+                feedDirectory.storeFeed(_post);
+                return true;
+            };
+        };
     };
 
-    public query({caller}) func getFeed(): async [PostImmutable] {
-        var ans: [PostImmutable] = [];
-        for(posts in feedMap.vals()) {
-            ans := Array.append<PostImmutable>(ans, posts);
+    public shared({caller}) func batchReceiveFeed(postIdArray: [Text]): async () {
+        for(_postId in postIdArray.vals()) {
+            let (_bucket, _, _) = Utils.checkPostId(_postId);
+            let bucketActor: BucketActor = actor(Principal.toText(_bucket));
+            switch((await bucketActor.getPost(_postId))) {
+                case(null) { };
+                case(?_post) {
+                    feedDirectory.storeFeed(_post);
+                };
+            };
         };
-        Array.sort(
-            ans,
-            func (x: PostImmutable, y: PostImmutable): Order.Order {
-                if(x.createdAt > y.createdAt) return #less
-                else if(x.createdAt < y.createdAt) return #greater
-                else return #equal
-            }
-        )
+    };
+
+    public shared({caller}) func receiveComment(postId: Text): async Bool {
+        let (_bucket, _, _) = Utils.checkPostId(postId);
+        let bucketActor: BucketActor = actor(Principal.toText(_bucket));
+        switch((await bucketActor.getPost(postId))) {
+            case(null) { return false; };
+            case(?_post) {
+
+                feedDirectory.storeFeed(_post);
+
+                if(Utils._isRepostUser(_post, owner)) {
+                    // 如果 follower D 转发过这个帖子，D 的 Feed 在收到新评论通知后，                    
+                    let userActor: UserActor = actor(Principal.toText(userCanister));
+                    let repostUserFollowers = await userActor.getFollowersList(owner);
+
+                    // 会继续向 Comment Fetch 通知：post15_id 、D 的 followers 。
+                    let commentFetchActor: CommentFetchActor = actor(Principal.toText(commentFetchCanister));
+                    ignore commentFetchActor.receiveRepostUserNotify(repostUserFollowers, postId);
+                };
+
+                return true;
+            };
+        };
+    };
+
+    public shared({caller}) func receiveLike(postId: Text): async Bool {
+        let (_bucket, _, _) = Utils.checkPostId(postId);
+        let bucketActor: BucketActor = actor(Principal.toText(_bucket));
+        switch((await bucketActor.getPost(postId))) {
+            case(null) { return false; };
+            case(?_post) {
+
+                feedDirectory.storeFeed(_post);
+
+                if(Utils._isRepostUser(_post, owner)) {
+                    // 如果 follower D 转发过这个帖子，D 的 Feed 在收到新点赞通知后，                    
+                    let userActor: UserActor = actor(Principal.toText(userCanister));
+                    let repostUserFollowers = await userActor.getFollowersList(owner);
+
+                    // 会继续向 Like Fetch 通知：post15_id 、D 的 followers 。
+                    let likeFetchActor: LikeFetchActor = actor(Principal.toText(likeFetchCanister));
+                    ignore likeFetchActor.receiveRepostUserNotify(repostUserFollowers, postId);
+                };
+
+                return true;
+            };
+        };
+    };
+
+    public query func getFeedNumber(): async Nat {
+        feedDirectory.getFeedNumber()
+    };
+
+    public query func getFeed(postId: Text): async ?PostImmutable {
+        feedDirectory.getFeed(postId)
+    };
+
+    public query func getLatestFeed(n: Nat): async [PostImmutable] {
+        feedDirectory.getLatestFeed(n)
     };
 
 }

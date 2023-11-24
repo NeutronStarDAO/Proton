@@ -6,7 +6,10 @@ import Types "./types";
 import Bucket "./bucket";
 import Iter "mo:base/Iter";
 
-actor class RootPost() = this {
+actor class RootPost(
+    _commentFetchCanister: Principal,
+    _likeFetchCanister: Principal
+) = this {
 
     type BucketInfo = Types.BucketInfo;
     type BucketInfoImmutable = Types.BucketInfoImmutable;
@@ -24,7 +27,10 @@ actor class RootPost() = this {
         label l loop {
             if(i >= 5) break l;
 
-            let newBucket = await Bucket.Bucket();
+            let newBucket = await Bucket.Bucket(
+                commentFetchCanister,
+                likeFetchCanister
+            );
             let bucketInfo: BucketInfo = {
                 index = bucketIndex;
                 canisterId = Principal.fromActor(newBucket);
@@ -41,7 +47,10 @@ actor class RootPost() = this {
 
     // 创建Bucket
     public shared({caller}) func createBucket(): async Principal {
-        let newBucket = await Bucket.Bucket();
+        let newBucket = await Bucket.Bucket(
+            commentFetchCanister,
+            likeFetchCanister
+        );
         let bucketInfo: BucketInfo = {
             index = bucketIndex;
             canisterId = Principal.fromActor(newBucket);
@@ -107,6 +116,31 @@ actor class RootPost() = this {
                     postNumber = x.postNumber;
                 }
             }))   
+    };
+
+// CommentFetchCanister
+
+    stable var commentFetchCanister = _commentFetchCanister;
+    
+    public query func getCommentFetchCanister(): async Principal { commentFetchCanister };
+
+    public shared({caller}) func updateCommentFetchCanister(
+        newCommentFetchCanister: Principal
+    ): async () {
+        commentFetchCanister := commentFetchCanister;
+    };
+
+
+// LikeFetchCanister
+
+    stable var likeFetchCanister = _likeFetchCanister;
+    
+    public query func getLikeFetchCanister(): async Principal { likeFetchCanister };
+
+    public shared({caller}) func updateLikeFetchCanister(
+        newLikeFetchCanister: Principal
+    ): async () {
+        likeFetchCanister := newLikeFetchCanister;
     };
 
     system func preupgrade() {
