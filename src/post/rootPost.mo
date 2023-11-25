@@ -28,6 +28,7 @@ actor class RootPost(
             if(i >= 5) break l;
 
             let newBucket = await Bucket.Bucket(
+                Principal.fromActor(this),
                 commentFetchCanister,
                 likeFetchCanister
             );
@@ -47,7 +48,12 @@ actor class RootPost(
 
     // 创建Bucket
     public shared({caller}) func createBucket(): async Principal {
+        await _createBucket()
+    };
+
+    private func _createBucket(): async Principal {
         let newBucket = await Bucket.Bucket(
+            Principal.fromActor(this),
             commentFetchCanister,
             likeFetchCanister
         );
@@ -75,6 +81,20 @@ actor class RootPost(
             };
         };
     };
+
+    public shared({caller}) func reCreateBucket(storedPostNumber: Nat): async () {
+        ignore await _createBucket();
+        for((_key, _bucketInfo) in buckets.entries()) {
+            if(_bucketInfo.canisterId == caller) {
+                availableBuckets.delete(_key);
+                unavailableBuckets.put(_key, {
+                    index = _bucketInfo.index;
+                    canisterId = _bucketInfo.canisterId;
+                    var postNumber = storedPostNumber;
+                });
+            };
+        };
+    };    
 
     // 查询可用的Bucket
     public query func getAvailableBucket(): async ?BucketInfoImmutable {

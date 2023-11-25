@@ -2,6 +2,7 @@ import Principal "mo:base/Principal";
 import TrieMap "mo:base/TrieMap";
 import Types "./types";
 import Array "mo:base/Array";
+import Timer "mo:base/Timer";
 
 actor class CommentFetch(
     userCanister: Principal
@@ -37,5 +38,51 @@ actor class CommentFetch(
             };
         };
     };
-    
+
+// userToFeed
+
+    var userToFeed = TrieMap.TrieMap<Principal, Principal>(Principal.equal, Principal.hash);
+
+    public shared({caller}) func initUserToFeed(_userToFeedArray: [(Principal, Principal)]): async Bool {
+        userToFeed := TrieMap.fromEntries(
+            _userToFeedArray.vals(),
+            Principal.equal,
+            Principal.hash
+        );
+        true
+    };
+
+    public shared({caller}) func addUserToFeedEntry(entry: (Principal, Principal)): async Bool {
+        switch(userToFeed.get(entry.0)) {
+            case(?_feedCanister) { return false; };
+            case(null) {
+                userToFeed.put(entry.0, entry.1);
+                true
+            } 
+        }
+    };
+
+    public query({caller}) func whoami(): async Principal { caller };
+
+// Timer
+
+    type FeedActor = Types.FeedActor;
+
+    func notify(): async () {
+        for((_user, _postIdArray) in notifyMap.entries()) {
+            switch(userToFeed.get(_user)) {
+                case(null) { };
+                case(?_feedId) {
+                    let feedActor: FeedActor = actor(Principal.toText(_feedId));
+                    ignore feedActor.batchReceiveComment(_postIdArray);
+                };
+            };
+        };
+    };
+
+    let cycleTimer = Timer.recurringTimer(
+        #seconds(2),
+        notify
+    );
+
 };

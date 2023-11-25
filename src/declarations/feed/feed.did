@@ -1,0 +1,62 @@
+type UserId = principal;
+type Time = int;
+type Repost = 
+ record {
+   createdAt: Time;
+   user: UserId;
+ };
+type PostImmutable = 
+ record {
+   comment: vec Comment;
+   content: text;
+   createdAt: Time;
+   index: nat;
+   like: vec Like;
+   postId: PostId;
+   repost: vec Repost;
+   title: text;
+   user: UserId;
+ };
+type PostId = text;
+type Like = 
+ record {
+   createdAt: Time;
+   user: UserId;
+ };
+type Feed = 
+ service {
+   batchReceiveComment: (vec text) -> ();
+   batchReceiveFeed: (vec text) -> ();
+   batchReceiveLike: (vec text) -> ();
+   checkAvailableBucket: () -> (bool);
+   createComment: (text, text) -> (bool);
+   createLike: (text) -> (bool);
+   createPost: (text, text) -> (bool);
+   createRepost: (text) -> (bool);
+   getAllPost: () -> (vec PostImmutable) query;
+   getCommentFetchCanister: () -> (principal) query;
+   getFeed: (text) -> (opt PostImmutable) query;
+   getFeedNumber: () -> (nat) query;
+   getLatestFeed: (nat) -> (vec PostImmutable) query;
+   getLikeFetchCanister: () -> (principal) query;
+   getOwner: () -> (principal) query;
+   getPost: (text) -> (opt PostImmutable) query;
+   getPostFetchCanister: () -> (principal) query;
+   getPostNumber: () -> (nat) query;
+   receiveComment: (text) -> (bool);
+   receiveFeed: (text) -> (bool);
+   receiveLike: (text) -> (bool);
+   updateCommentFetchCanister: (principal) -> ();
+   updateFollowers: (vec principal) -> ();
+   updateLikeFetchCanister: (principal) -> ();
+   updateOwner: (principal) -> ();
+   updatePostFetchCanister: (principal) -> ();
+   whoami: () -> (principal) query;
+ };
+type Comment = 
+ record {
+   content: text;
+   createdAt: Time;
+   user: UserId;
+ };
+service : (principal, principal, principal, principal, principal, principal) -> Feed

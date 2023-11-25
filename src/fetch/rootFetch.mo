@@ -5,11 +5,16 @@ import Nat "mo:base/Nat";
 import PostFetch "./postFetch";
 import CommentFetch "./commentFetch";
 import LikeFetch "./likeFetch";
+import Iter "mo:base/Iter";
+import Types "./types";
 
 actor class RootFetch(
     userCanister: Principal
 ) = this {
+    
+    type RootFeedActor = Types.RootFeedActor;
 
+    stable var rootFeedCanister = Principal.fromText("2vxsx-fae");
     stable var postFetchCanisterIndex: Nat = 0;
     stable var commentFetchCanisterIndex: Nat = 0;
     stable var likeFetchCanisterIndex: Nat = 0;
@@ -18,29 +23,66 @@ actor class RootFetch(
     let commentFetchMap = TrieMap.TrieMap<Nat, Principal>(Nat.equal, Hash.hash);    
     let likeFetchMap = TrieMap.TrieMap<Nat, Principal>(Nat.equal, Hash.hash);    
 
+    public shared({caller}) func init(_rootFeedCanister: Principal): async () {
+        rootFeedCanister := _rootFeedCanister;
+    };
+
     public shared({caller}) func createPostFetchCanister(): async Principal {
-        let _canister = Principal.fromActor((await PostFetch.PostFetch()));
-        postFetchMap.put(postFetchCanisterIndex, _canister);
+        let _canister = await PostFetch.PostFetch();
+        let _canisterId = Principal.fromActor(_canister);
+        postFetchMap.put(postFetchCanisterIndex, _canisterId);
         postFetchCanisterIndex += 1;
-        _canister
+
+        // postFetch : initUserToFeed
+        assert(not Principal.isAnonymous(rootFeedCanister));
+        let rootFeedActor: RootFeedActor = actor(Principal.toText(rootFeedCanister));
+        assert(await _canister.initUserToFeed((await rootFeedActor.getAllUserFeedCanister())));
+
+        _canisterId
     };
 
     public shared({caller}) func createCommentFetchCanister(): async Principal {
-        let _canister = Principal.fromActor((await CommentFetch.CommentFetch(
+        let _canister = await CommentFetch.CommentFetch(
             userCanister
-        )));
-        commentFetchMap.put(commentFetchCanisterIndex, _canister);
+        );
+        let _canisterId = Principal.fromActor(_canister);
+        commentFetchMap.put(commentFetchCanisterIndex, _canisterId);
         commentFetchCanisterIndex += 1;
-        _canister
+
+        // initUserToFeed
+        assert(not Principal.isAnonymous(rootFeedCanister));
+        let rootFeedActor: RootFeedActor = actor(Principal.toText(rootFeedCanister));
+        assert(await _canister.initUserToFeed((await rootFeedActor.getAllUserFeedCanister())));
+
+        _canisterId
     };
 
     public shared({caller}) func createLikeFetchCanister(): async Principal {
-        let _canister = Principal.fromActor((await LikeFetch.LikeFetch(
+        let _canister = await LikeFetch.LikeFetch(
             userCanister
-        )));
-        likeFetchMap.put(likeFetchCanisterIndex, _canister);
+        );
+        let _canisterId = Principal.fromActor(_canister);
+        likeFetchMap.put(likeFetchCanisterIndex, _canisterId);
         likeFetchCanisterIndex += 1;
-        _canister
+
+        // initUserToFeed
+        assert(not Principal.isAnonymous(rootFeedCanister));
+        let rootFeedActor: RootFeedActor = actor(Principal.toText(rootFeedCanister));
+        assert(await _canister.initUserToFeed((await rootFeedActor.getAllUserFeedCanister())));
+
+        _canisterId
     };
 
+    public query func getAllPostFetchCanister(): async [Principal] {
+        Iter.toArray(postFetchMap.vals())
+    };
+
+    public query func getAllCommentFetchCanister(): async [Principal] {
+        Iter.toArray(commentFetchMap.vals())
+    };
+
+    public query func getAllLikeFetchCanister(): async [Principal] {
+        Iter.toArray(likeFetchMap.vals())
+    };
+    
 };

@@ -1,3 +1,5 @@
 .dfx/
 .DS_Store
 .mops
+
+node_modules/

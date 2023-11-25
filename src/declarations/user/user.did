@@ -1,0 +1,33 @@
+type Vertex = principal;
+type UserId__1 = principal;
+type UserId = principal;
+type User = 
+ service {
+   createProfile: (NewProfile) -> ();
+   follow: (Vertex, Vertex) -> ();
+   getFollowersList: (Vertex) -> (vec Vertex) query;
+   getFollowingList: (Vertex) -> (vec Vertex) query;
+   getProfile: (UserId__1) -> (opt Profile) query;
+   searchProfile: (text) -> (vec Profile) query;
+   updateProfile: (NewProfile) -> ();
+ };
+type Profile = 
+ record {
+   biography: text;
+   company: text;
+   education: text;
+   feedCanister: opt principal;
+   id: UserId;
+   imgUrl: text;
+   name: text;
+ };
+type NewProfile = 
+ record {
+   biography: text;
+   company: text;
+   education: text;
+   feedCanister: opt principal;
+   imgUrl: text;
+   name: text;
+ };
+service : () -> User

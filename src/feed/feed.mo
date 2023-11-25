@@ -184,20 +184,8 @@ actor class Feed(
     type UserActor = Types.UserActor;
     type CommentFetchActor = Types.CommentFetchActor;
     type LikeFetchActor = Types.LikeFetchActor;
-    
-    let feedDirectory = Database.FeedDirectory();
 
-    // public shared({caller}) func sendFeed(): async () {
-    //     assert(caller == owner or caller == Principal.fromActor(this));
-    //     let userActor: UserActor = actor(Principal.toText(userCanister));
-    //     Debug.print("userCanister : " # Principal.toText(userCanister));
-    //     let followersList = await userActor.getFollowersList(owner);
-    //     for(user in followersList.vals()) {
-    //         let feedActor: FeedActor = actor(Principal.toText(user));
-    //         await feedActor.receiveFeed();
-    //     };
-    //     await postActor.receiveFeed();
-    // };
+    let feedDirectory = Database.FeedDirectory();
 
     public shared({caller}) func receiveFeed(postId: Text): async Bool {
         let (_bucket, _, _) = Utils.checkPostId(postId);
@@ -248,6 +236,30 @@ actor class Feed(
         };
     };
 
+    public shared({caller}) func batchReceiveComment(postIdArray: [Text]): async () {
+        for(_postId in postIdArray.vals()) {
+            let (_bucket, _, _) = Utils.checkPostId(_postId);
+            let bucketActor: BucketActor = actor(Principal.toText(_bucket));
+            switch((await bucketActor.getPost(_postId))) {
+                case(null) { };
+                case(?_post) {
+
+                    feedDirectory.storeFeed(_post);
+
+                    if(Utils._isRepostUser(_post, owner)) {
+                        // 如果 follower D 转发过这个帖子，D 的 Feed 在收到新评论通知后，                    
+                        let userActor: UserActor = actor(Principal.toText(userCanister));
+                        let repostUserFollowers = await userActor.getFollowersList(owner);
+
+                        // 会继续向 Comment Fetch 通知：post15_id 、D 的 followers 。
+                        let commentFetchActor: CommentFetchActor = actor(Principal.toText(commentFetchCanister));
+                        ignore commentFetchActor.receiveRepostUserNotify(repostUserFollowers, _postId);
+                    };
+                };
+            };
+        };
+    };
+
     public shared({caller}) func receiveLike(postId: Text): async Bool {
         let (_bucket, _, _) = Utils.checkPostId(postId);
         let bucketActor: BucketActor = actor(Principal.toText(_bucket));
@@ -268,6 +280,30 @@ actor class Feed(
                 };
 
                 return true;
+            };
+        };
+    };
+
+    public shared({caller}) func batchReceiveLike(postIdArray: [Text]): async () {
+        for(_postId in postIdArray.vals()) {
+            let (_bucket, _, _) = Utils.checkPostId(_postId);
+            let bucketActor: BucketActor = actor(Principal.toText(_bucket));
+            switch((await bucketActor.getPost(_postId))) {
+                case(null) {};
+                case(?_post) {
+
+                    feedDirectory.storeFeed(_post);
+
+                    if(Utils._isRepostUser(_post, owner)) {
+                        // 如果 follower D 转发过这个帖子，D 的 Feed 在收到新点赞通知后，                    
+                        let userActor: UserActor = actor(Principal.toText(userCanister));
+                        let repostUserFollowers = await userActor.getFollowersList(owner);
+
+                        // 会继续向 Like Fetch 通知：post15_id 、D 的 followers 。
+                        let likeFetchActor: LikeFetchActor = actor(Principal.toText(likeFetchCanister));
+                        ignore likeFetchActor.receiveRepostUserNotify(repostUserFollowers, _postId);
+                    };
+                };
             };
         };
     };

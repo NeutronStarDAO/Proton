@@ -8,10 +8,16 @@ import Iter "mo:base/Iter";
 actor class RootFeed(
     rootPostCanister: Principal,
     userCanister: Principal,
+    rootFetchCanister: Principal,
     _postFetchCanister: Principal,
     _commentFetchCanister: Principal,
     _likeFetchCanister: Principal
 ) = this {
+    
+    type RootFetchActor = Types.RootFetchActor;
+    type PostFetchActor = Types.PostFetchActor;
+    type CommentFetchActor = Types.CommentFetchActor;
+    type LikeFetchActor = Types.LikeFetchActor;
 
     let userFeedCanisterMap = TrieMap.TrieMap<Principal, Principal>(Principal.equal, Principal.hash);
     let ic: IC.Service = actor("aaaaa-aa");
@@ -36,7 +42,38 @@ actor class RootFeed(
                 compute_allocation = null;
             }
         });
+
+        // 更新 fetch 中的信息
+
+
+        
         ?feedCanisterId
+    };
+
+    func updateFetchUserToFeed(entry: (Principal, Principal)): async () {
+        let rootFetchActor: RootFetchActor = actor(Principal.toText(rootFetchCanister));
+
+        // 更新 postFetch 中的信息
+        let postFetchCanisterArray = await rootFetchActor.getAllPostFetchCanister();
+        for(_canister in postFetchCanisterArray.vals()) {
+            let postFetchActor: PostFetchActor = actor(Principal.toText(_canister));
+            ignore postFetchActor.addUserToFeedEntry(entry);
+        };
+
+        // 更新 commentFetch
+        let commentFetchCanisterArray = await rootFetchActor.getAllCommentFetchCanister();
+        for(_canister in commentFetchCanisterArray.vals()) {
+            let commentFetchActor: CommentFetchActor = actor(Principal.toText(_canister));
+            ignore commentFetchActor.addUserToFeedEntry(entry);
+        };
+
+        // 更新 likeFetch
+        let likeFetchCanisterArray = await rootFetchActor.getAllLikeFetchCanister();
+        for(_canister in likeFetchCanisterArray.vals()) {
+            let likeFetchActor: LikeFetchActor = actor(Principal.toText(_canister));
+            ignore likeFetchActor.addUserToFeedEntry(entry);
+        };
+
     };
 
     public query func getUserFeedCanister(user: Principal): async ?Principal {
@@ -95,5 +132,5 @@ actor class RootFeed(
     ): async () {
         likeFetchCanister := newLikeFetchCanister;
     };
-    
+
 }

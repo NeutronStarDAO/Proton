@@ -1,0 +1,14 @@
+type PostFetch = 
+ service {
+   addUserToFeedEntry: (record {
+                          principal;
+                          principal;
+                        }) -> (bool);
+   initUserToFeed: (vec record {
+                          principal;
+                          principal;
+                        }) -> (bool);
+   receiveNotify: (vec principal, text) -> ();
+   whoami: () -> (principal) query;
+ };
+service : () -> PostFetch

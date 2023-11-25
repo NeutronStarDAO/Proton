@@ -13,6 +13,7 @@ import Buffer "mo:base/Buffer";
 import Utils "../utils";
 
 shared(msg) actor class Bucket(
+    rootPostCanister: Principal,
     _commentFetchCanister: Principal,
     _likeFetchCanister: Principal
 ) = this {
@@ -24,6 +25,10 @@ shared(msg) actor class Bucket(
     type NewRepost = Types.NewRepost;
     type CommentFetchActor = Types.CommentFetchActor;
     type LikeFetchActor = Types.LikeFetchActor;
+    type RootPostActor = Types.RootPostActor;
+
+    stable let BUCKET_MAX_POST_NUMBER: Nat = 5000; // 每个Bucket可以存储的最大帖子数 (待计算)
+    stable let FLOOR_BUCKET_MAX_POST_NUMBER: Nat = BUCKET_MAX_POST_NUMBER - 50;
 
     stable let installer = msg.caller;
 
@@ -32,7 +37,15 @@ shared(msg) actor class Bucket(
 
     // 存储帖子
     public shared({caller}) func storeFeed(post: PostImmutable): async Bool {
-        _storeFeed(post)
+        ignore checkBucketMemory();
+        _storeFeed(post);
+    };
+
+    func checkBucketMemory(): async () {
+        if(feedMap.size() > FLOOR_BUCKET_MAX_POST_NUMBER) {
+            let rootPostActor: RootPostActor = actor(Principal.toText(rootPostCanister));
+            ignore rootPostActor.reCreateBucket(feedMap.size());
+        }
     };
 
     public shared({caller}) func batchStoreFeed(posts: [PostImmutable]): async () {
@@ -208,31 +221,4 @@ shared(msg) actor class Bucket(
         likeFetchCanister := newLikeFetchCanister;
     };
 
-
-    // public query({caller}) func getFeed(): async [PostImmutable] {
-    //     var ans: [PostImmutable] = [];
-    //     for(posts in feedMap.vals()) {
-    //         ans := Array.append<PostImmutable>(ans, posts);
-    //     };
-    //     Array.sort(
-    //         ans,
-    //         func (x: PostImmutable, y: PostImmutable): Order.Order {
-    //             if(x.createdAt > y.createdAt) return #less
-    //             else if(x.createdAt < y.createdAt) return #greater
-    //             else return #equal
-    //         }
-    //     )
-    // };
-
-    // private func _feedMap_equal(a: (Principal, Nat), b: (Principal, Nat)): Bool {
-    //     if(a.0 == b.0 and a.1 == b.1) return true;
-    //     false
-    // };
-
-    // private func _feedMap_hash(x: (Principal, Nat)): Hash.Hash {
-    //     Text.hash(
-    //         "User : " # Principal.toText(x.0) #
-    //         "PostIndex : " # Nat.toText(x.1)
-    //     )
-    // };
 };

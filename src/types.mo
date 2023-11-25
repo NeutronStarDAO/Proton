@@ -6,7 +6,7 @@ module {
 
     public type UserId = Principal;
     public type Time = Time.Time;
-    public type PostId = Text; // 帖子 ID 是 Bucket Canister ID 加 UserId 加自增
+    public type PostId = Text; // 帖子 ID = BucketCanisterID + UserId + 自增
 
     public type Post = {
         postId: PostId; // 帖子 ID 
@@ -54,9 +54,16 @@ module {
 
     public type NewLike = [Like];
 
+    public type RootFeedActor = actor {
+        getAllUserFeedCanister : shared query () -> async [(Principal, Principal)];
+    };
+
     public type FeedActor = actor {
         getPosts : shared query () -> async [PostImmutable];
-        receiveFeed : shared () -> async ();
+        receiveFeed : shared (Text) -> async Bool;
+        batchReceiveFeed : shared ([Text]) -> async ();
+        batchReceiveComment : shared ([Text]) -> async ();
+        batchReceiveLike : shared ([Text]) -> async ();
         createComment : shared (Principal, Nat, Text) -> async ();
         deleteComment : shared (Principal, Nat, Nat) -> async ();
         createLike : shared (Principal, Nat) -> async ();
@@ -75,6 +82,7 @@ module {
         getAvailableBucket : shared query () -> async ?BucketInfoImmutable;
         getAllBuckets : shared query () -> async [BucketInfoImmutable];
         getUnavailableBuckets : shared query () -> async [BucketInfoImmutable];
+        reCreateBucket : shared (Nat) -> async ();
     };
 
 // Bucket 
@@ -89,18 +97,31 @@ module {
     };
 
 // Fetch
+
+    public type RootFetchActor = actor {
+        createPostFetchCanister : shared () -> async Principal;
+        createCommentFetchCanister : shared () -> async Principal;
+        createLikeFetchCanister : shared () -> async Principal;
+        getAllPostFetchCanister : shared query () -> async [Principal];
+        getAllCommentFetchCanister : shared query () -> async [Principal];
+        getAllLikeFetchCanister : shared query () -> async [Principal];
+    };
+
     public type PostFetchActor = actor {
         receiveNotify : shared ([Principal], Text) -> async ();
+        addUserToFeedEntry : shared ((Principal, Principal)) -> async Bool;
     };
 
     public type CommentFetchActor = actor {
         receiveNotify : shared (PostImmutable) -> async ();
         receiveRepostUserNotify : shared ([Principal], Text) -> async ();
+        addUserToFeedEntry : shared ((Principal, Principal)) -> async Bool;
     };
     
     public type LikeFetchActor = actor {
         receiveNotify : shared (PostImmutable) -> async ();
         receiveRepostUserNotify : shared ([Principal], Text) -> async ();
+        addUserToFeedEntry : shared ((Principal, Principal)) -> async Bool;
     };
 
 // User 

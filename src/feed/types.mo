@@ -38,4 +38,6 @@ module {
 
   public type LikeFetchActor = Types.LikeFetchActor;
   
+  public type RootFetchActor = Types.RootFetchActor;
+  
 }
