@@ -8,6 +8,12 @@ rm -rf .dfx/
 echo "启动网络"
 dfx start --background --clean
 
+echo "生成描述接口"
+dfx generate
+
+echo "切换到 Default 用户"
+dfx identity use default
+
 # 部署 user canister
 echo "部署user canister"
 dfx deploy user
@@ -17,24 +23,51 @@ user_canister_id=$(dfx canister id user)
 
 echo "部署 rootFetch canister"
 dfx deploy rootFetch --argument "(principal \"$user_canister_id\")"
+rootFetch_canister_id=$(dfx canister id rootFetch)
 
-# # 部署 post canister
-# dfx deploy post
+echo "部署 postFetch canister"
+dfx deploy postFetch 
+postFetch_canister_id=$(dfx canister id postFetch)
 
-# # 获取 post canister 的 id
-# post_canister_id=$(dfx canister id post)
+echo "部署 commentFetch canister"
+dfx deploy commentFetch --argument "(principal \"$user_canister_id\")"
+commentFetch_canister_id=$(dfx canister id commentFetch)
 
-# # 输出 post canister 的 id
-# echo "post_canister_id : $post_canister_id"
+echo "部署 likeFetch canister"
+dfx deploy likeFetch --argument "(principal \"$user_canister_id\")"
+likeFetch_canister_id=$(dfx canister id likeFetch)
+
+echo "部署 rootPost canister"
+dfx deploy rootPost --argument "(
+    principal \"$commentFetch_canister_id\",
+    principal \"$likeFetch_canister_id\")"
+rootPost_canister_id=$(dfx canister id rootPost)
+
+echo "部署 rootFeed canister"
+dfx deploy rootFeed --argument "(
+    principal \"$rootPost_canister_id\",
+    principal \"$user_canister_id\",
+    principal \"$rootFetch_canister_id\",
+    principal \"$postFetch_canister_id\",
+    principal \"$commentFetch_canister_id\",
+    principal \"$likeFetch_canister_id\")"
+rootFeed_canister_id=$(dfx canister id rootFeed)
 
 
-# # 输出 user canister 的 id
-# echo "user_canister_id : $user_canister_id"
 
-# #owner="2vxsx-fae"
-# owner=$(dfx identity get-principal)
+echo "增发 cycles"
+wallet=$(dfx identity get-wallet)
+dfx ledger fabricate-cycles --t 500 --canister $wallet
+dfx wallet balance
 
-# dfx deploy feed --argument "(
-#     principal \"$owner\", 
-#     principal \"$post_canister_id\",
-#     principal \"$user_canister_id\",)"
+# 给 rootFeed canister 充值cycles
+echo "给 rootFeed canister 充值 20T cycles"
+dfx wallet send $rootFeed_canister_id 20000000000000
+echo "查询 rootFeed canister 状态"
+dfx canister status $rootFeed_canister_id
+
+# 给 rootPost canister 充值cycles
+echo "给 rootPost canister 充值 40T cycles"
+dfx wallet send $rootPost_canister_id 40000000000000
+echo "查询 rootPost canister 状态"
+dfx canister status $rootPost_canister_id

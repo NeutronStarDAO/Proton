@@ -4,6 +4,8 @@ import TrieMap "mo:base/TrieMap";
 import Principal "mo:base/Principal";
 import Feed "./feed";
 import Iter "mo:base/Iter";
+import Cycles "mo:base/ExperimentalCycles";
+import Debug "mo:base/Debug";
 
 actor class RootFeed(
     rootPostCanister: Principal,
@@ -19,12 +21,14 @@ actor class RootFeed(
     type CommentFetchActor = Types.CommentFetchActor;
     type LikeFetchActor = Types.LikeFetchActor;
 
+    stable let T_CYCLES = 1_000_000_000_000;
     let userFeedCanisterMap = TrieMap.TrieMap<Principal, Principal>(Principal.equal, Principal.hash);
     let ic: IC.Service = actor("aaaaa-aa");
 
     // 给用户创建一个用户自己的 Canister
     public shared({caller}) func createFeedCanister(): async ?Principal {
         assert(_getUserFeedCanister(caller) == null);
+        Cycles.add(4 * T_CYCLES);
         let feedCanister = await Feed.Feed(
             caller, rootPostCanister, userCanister, 
             postFetchCanister,

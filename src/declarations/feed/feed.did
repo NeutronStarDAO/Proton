@@ -31,7 +31,7 @@ type Feed =
    checkAvailableBucket: () -> (bool);
    createComment: (text, text) -> (bool);
    createLike: (text) -> (bool);
-   createPost: (text, text) -> (bool);
+   createPost: (text, text) -> (text);
    createRepost: (text) -> (bool);
    getAllPost: () -> (vec PostImmutable) query;
    getCommentFetchCanister: () -> (principal) query;

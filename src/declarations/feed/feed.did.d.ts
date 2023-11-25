@@ -13,7 +13,7 @@ export interface Feed {
   'checkAvailableBucket' : ActorMethod<[], boolean>,
   'createComment' : ActorMethod<[string, string], boolean>,
   'createLike' : ActorMethod<[string], boolean>,
-  'createPost' : ActorMethod<[string, string], boolean>,
+  'createPost' : ActorMethod<[string, string], string>,
   'createRepost' : ActorMethod<[string], boolean>,
   'getAllPost' : ActorMethod<[], Array<PostImmutable>>,
   'getCommentFetchCanister' : ActorMethod<[], Principal>,

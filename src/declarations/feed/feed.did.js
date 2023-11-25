@@ -27,7 +27,7 @@ export const idlFactory = ({ IDL }) => {
     'checkAvailableBucket' : IDL.Func([], [IDL.Bool], []),
     'createComment' : IDL.Func([IDL.Text, IDL.Text], [IDL.Bool], []),
     'createLike' : IDL.Func([IDL.Text], [IDL.Bool], []),
-    'createPost' : IDL.Func([IDL.Text, IDL.Text], [IDL.Bool], []),
+    'createPost' : IDL.Func([IDL.Text, IDL.Text], [IDL.Text], []),
     'createRepost' : IDL.Func([IDL.Text], [IDL.Bool], []),
     'getAllPost' : IDL.Func([], [IDL.Vec(PostImmutable)], ['query']),
     'getCommentFetchCanister' : IDL.Func([], [IDL.Principal], ['query']),

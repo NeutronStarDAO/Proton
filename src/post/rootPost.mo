@@ -5,6 +5,7 @@ import Principal "mo:base/Principal";
 import Types "./types";
 import Bucket "./bucket";
 import Iter "mo:base/Iter";
+import Cycles "mo:base/ExperimentalCycles";
 
 actor class RootPost(
     _commentFetchCanister: Principal,
@@ -14,6 +15,7 @@ actor class RootPost(
     type BucketInfo = Types.BucketInfo;
     type BucketInfoImmutable = Types.BucketInfoImmutable;
 
+    stable let T_CYCLES = 1_000_000_000_000;
     stable let BUCKET_MAX_POST_NUMBER: Nat = 5000; // 每个Bucket可以存储的最大帖子数 (待计算)
     stable var bucketIndex: Nat = 0;
 
@@ -27,6 +29,7 @@ actor class RootPost(
         label l loop {
             if(i >= 5) break l;
 
+            Cycles.add(4 * T_CYCLES);
             let newBucket = await Bucket.Bucket(
                 Principal.fromActor(this),
                 commentFetchCanister,
@@ -52,6 +55,7 @@ actor class RootPost(
     };
 
     private func _createBucket(): async Principal {
+        Cycles.add(4 * T_CYCLES);
         let newBucket = await Bucket.Bucket(
             Principal.fromActor(this),
             commentFetchCanister,

@@ -116,7 +116,7 @@ actor class Feed(
         postDirectory.getAllPost()
     };
 
-    public shared({caller}) func createPost(title: Text, content: Text): async Bool {
+    public shared({caller}) func createPost(title: Text, content: Text): async Text {
         assert(caller == owner and bucket != null);
         let _bucket = Option.unwrap(bucket);
         let post: PostImmutable = postDirectory.createPost(caller, title, content, Time.now(), _bucket);
@@ -128,7 +128,8 @@ actor class Feed(
         // 通知 PostFetch 
         let postFetchActor: PostFetchActor = actor(Principal.toText(postFetchCanister));
         ignore postFetchActor.receiveNotify(followers, post.postId);
-        true
+        
+        post.postId
     };
 
     public shared({caller}) func createRepost(postId: Text): async Bool {
