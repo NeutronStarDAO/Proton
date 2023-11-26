@@ -9,5 +9,11 @@ module {
     public type RootFeedActor = Types.RootFeedActor;
     
     public type FeedActor = Types.FeedActor;
+
+    public type PostFetchActor = Types.PostFetchActor;
+    
+    public type CommentFetchActor = Types.CommentFetchActor;
+    
+    public type LikeFetchActor = Types.LikeFetchActor;   
     
 }

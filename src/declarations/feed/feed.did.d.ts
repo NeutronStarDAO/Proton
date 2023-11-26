@@ -19,6 +19,7 @@ export interface Feed {
   'getCommentFetchCanister' : ActorMethod<[], Principal>,
   'getFeed' : ActorMethod<[string], [] | [PostImmutable]>,
   'getFeedNumber' : ActorMethod<[], bigint>,
+  'getFollowers' : ActorMethod<[], Array<Principal>>,
   'getLatestFeed' : ActorMethod<[bigint], Array<PostImmutable>>,
   'getLikeFetchCanister' : ActorMethod<[], Principal>,
   'getOwner' : ActorMethod<[], Principal>,

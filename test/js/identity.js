@@ -9,7 +9,9 @@ const identity = Secp256k1KeyIdentity.fromSeedPhrase(seed);
 
 // console.log(`identity principal : ${identity.getPrincipal()}`)
 
-export const identityA = identity;
+export const identityTest = identity;
+
+export const identityA = Secp256k1KeyIdentity.generate();
 
 export const identityB = Secp256k1KeyIdentity.generate();
 

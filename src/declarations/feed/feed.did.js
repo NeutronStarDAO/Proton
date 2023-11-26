@@ -33,6 +33,7 @@ export const idlFactory = ({ IDL }) => {
     'getCommentFetchCanister' : IDL.Func([], [IDL.Principal], ['query']),
     'getFeed' : IDL.Func([IDL.Text], [IDL.Opt(PostImmutable)], ['query']),
     'getFeedNumber' : IDL.Func([], [IDL.Nat], ['query']),
+    'getFollowers' : IDL.Func([], [IDL.Vec(IDL.Principal)], ['query']),
     'getLatestFeed' : IDL.Func([IDL.Nat], [IDL.Vec(PostImmutable)], ['query']),
     'getLikeFetchCanister' : IDL.Func([], [IDL.Principal], ['query']),
     'getOwner' : IDL.Func([], [IDL.Principal], ['query']),

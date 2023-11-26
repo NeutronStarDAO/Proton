@@ -20,10 +20,12 @@ export interface Profile {
 }
 export interface User {
   'createProfile' : ActorMethod<[NewProfile], undefined>,
-  'follow' : ActorMethod<[Vertex, Vertex], undefined>,
+  'follow' : ActorMethod<[Vertex], undefined>,
   'getFollowersList' : ActorMethod<[Vertex], Array<Vertex>>,
   'getFollowingList' : ActorMethod<[Vertex], Array<Vertex>>,
   'getProfile' : ActorMethod<[UserId__1], [] | [Profile]>,
+  'getRootFeedCanister' : ActorMethod<[], Principal>,
+  'init' : ActorMethod<[Principal], undefined>,
   'searchProfile' : ActorMethod<[string], Array<Profile>>,
   'updateProfile' : ActorMethod<[NewProfile], undefined>,
 }

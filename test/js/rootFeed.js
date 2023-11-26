@@ -28,12 +28,3 @@ export class RootFeed {
         }
     }
 }
-
-// export async function testCreateFeedCanister() {
-//     console.log("Test CreateFeedCanister, identityA");
-//     const result = await createFeedCanister();
-//     if(result.length > 0) {
-//         console.log("created feed canister : ", result[0].toString());
-//         console.log("Test CreateFeedCanister Ok !");
-//     }
-// }

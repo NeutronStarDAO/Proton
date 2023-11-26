@@ -24,6 +24,14 @@ type LikeFetch =
                           principal;
                           principal;
                         }) -> (bool);
+   getNotifyMapEntries: () -> (vec record {
+                                     principal;
+                                     vec text;
+                                   }) query;
+   getUserToFeedEntries: () -> (vec record {
+                                      principal;
+                                      principal;
+                                    }) query;
    initUserToFeed: (vec record {
                           principal;
                           principal;

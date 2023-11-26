@@ -11,8 +11,8 @@ dfx start --background --clean
 echo "生成描述接口"
 dfx generate
 
-echo "切换到 Default 用户"
-dfx identity use default
+echo "切换到 Proton 用户"
+dfx identity use proton
 
 # 部署 user canister
 echo "部署user canister"
@@ -53,21 +53,38 @@ dfx deploy rootFeed --argument "(
     principal \"$likeFetch_canister_id\")"
 rootFeed_canister_id=$(dfx canister id rootFeed)
 
-
-
 echo "增发 cycles"
 wallet=$(dfx identity get-wallet)
-dfx ledger fabricate-cycles --t 500 --canister $wallet
+dfx ledger fabricate-cycles --t 1000 --canister $wallet
 dfx wallet balance
 
 # 给 rootFeed canister 充值cycles
-echo "给 rootFeed canister 充值 20T cycles"
-dfx wallet send $rootFeed_canister_id 20000000000000
+echo "给 rootFeed canister 充值 100T cycles"
+dfx wallet send $rootFeed_canister_id 100000000000000
 echo "查询 rootFeed canister 状态"
 dfx canister status $rootFeed_canister_id
 
 # 给 rootPost canister 充值cycles
-echo "给 rootPost canister 充值 40T cycles"
-dfx wallet send $rootPost_canister_id 40000000000000
+echo "给 rootPost canister 充值 100T cycles"
+dfx wallet send $rootPost_canister_id 100000000000000
 echo "查询 rootPost canister 状态"
 dfx canister status $rootPost_canister_id
+
+# 给 rootFetch canister 充值cycles
+echo "给 rootFetch canister 充值 100T cycles"
+dfx wallet send $rootFetch_canister_id 100000000000000
+echo "查询 rootPost canister 状态"
+dfx canister status $rootFetch_canister_id
+
+echo "初始化 rootPost"
+dfx canister call rootPost init
+
+echo "init rootFetch canister"
+dfx canister call rootFetch init "(
+    principal \"$rootFeed_canister_id\",
+    principal \"$postFetch_canister_id\",
+    principal \"$commentFetch_canister_id\",
+    principal \"$likeFetch_canister_id\")"
+
+echo "init user canister"
+dfx canister call user init "(principal \"$rootFeed_canister_id\")"

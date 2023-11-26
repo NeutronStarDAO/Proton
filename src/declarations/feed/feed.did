@@ -37,6 +37,7 @@ type Feed =
    getCommentFetchCanister: () -> (principal) query;
    getFeed: (text) -> (opt PostImmutable) query;
    getFeedNumber: () -> (nat) query;
+   getFollowers: () -> (vec principal) query;
    getLatestFeed: (nat) -> (vec PostImmutable) query;
    getLikeFetchCanister: () -> (principal) query;
    getOwner: () -> (principal) query;

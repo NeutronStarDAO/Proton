@@ -3,6 +3,7 @@ import TrieMap "mo:base/TrieMap";
 import Types "./types";
 import Array "mo:base/Array";
 import Timer "mo:base/Timer";
+import Iter "mo:base/Iter";
 
 actor class CommentFetch(
     userCanister: Principal
@@ -39,6 +40,10 @@ actor class CommentFetch(
         };
     };
 
+    public query func getNotifyMapEntries(): async [(Principal, [Text])] {
+        Iter.toArray(notifyMap.entries())
+    };
+
 // userToFeed
 
     var userToFeed = TrieMap.TrieMap<Principal, Principal>(Principal.equal, Principal.hash);
@@ -62,6 +67,10 @@ actor class CommentFetch(
         }
     };
 
+    public query func getUserToFeedEntries(): async [(Principal, Principal)] {
+        Iter.toArray(userToFeed.entries())
+    };
+    
     public query({caller}) func whoami(): async Principal { caller };
 
 // Timer

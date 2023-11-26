@@ -4,10 +4,12 @@ type UserId = principal;
 type User = 
  service {
    createProfile: (NewProfile) -> ();
-   follow: (Vertex, Vertex) -> ();
+   follow: (Vertex) -> ();
    getFollowersList: (Vertex) -> (vec Vertex) query;
    getFollowingList: (Vertex) -> (vec Vertex) query;
    getProfile: (UserId__1) -> (opt Profile) query;
+   getRootFeedCanister: () -> (principal) query;
+   init: (principal) -> () oneway;
    searchProfile: (text) -> (vec Profile) query;
    updateProfile: (NewProfile) -> ();
  };

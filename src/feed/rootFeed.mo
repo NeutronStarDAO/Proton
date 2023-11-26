@@ -46,10 +46,9 @@ actor class RootFeed(
                 compute_allocation = null;
             }
         });
-
+        
         // 更新 fetch 中的信息
-
-
+        ignore updateFetchUserToFeed((caller, feedCanisterId));
         
         ?feedCanisterId
     };

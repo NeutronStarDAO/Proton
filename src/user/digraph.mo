@@ -17,6 +17,10 @@ module {
 
     // 添加 from 到 to 的单向边
     public func addEdge(fromVertex: Vertex, toVertex: Vertex) {
+      // 检查是否已经存在
+      assert(Array.find<(Vertex, Vertex)>(edgeList, func((x, y): (Vertex, Vertex)): Bool {
+        x == fromVertex and y == toVertex
+      }) == null);
       edgeList := Array.append<(Vertex, Vertex)>(edgeList, [(fromVertex, toVertex)]);
     };
 

@@ -9,6 +9,8 @@ export interface Comment {
 export interface Like { 'createdAt' : Time, 'user' : UserId }
 export interface LikeFetch {
   'addUserToFeedEntry' : ActorMethod<[[Principal, Principal]], boolean>,
+  'getNotifyMapEntries' : ActorMethod<[], Array<[Principal, Array<string>]>>,
+  'getUserToFeedEntries' : ActorMethod<[], Array<[Principal, Principal]>>,
   'initUserToFeed' : ActorMethod<[Array<[Principal, Principal]>], boolean>,
   'receiveNotify' : ActorMethod<[PostImmutable], undefined>,
   'receiveRepostUserNotify' : ActorMethod<

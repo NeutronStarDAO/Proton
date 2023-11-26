@@ -6,6 +6,6 @@ type RootFetch =
    getAllCommentFetchCanister: () -> (vec principal) query;
    getAllLikeFetchCanister: () -> (vec principal) query;
    getAllPostFetchCanister: () -> (vec principal) query;
-   init: (principal) -> ();
+   init: (principal, principal, principal, principal) -> ();
  };
 service : (principal) -> RootFetch

@@ -8,6 +8,6 @@ export interface RootFetch {
   'getAllCommentFetchCanister' : ActorMethod<[], Array<Principal>>,
   'getAllLikeFetchCanister' : ActorMethod<[], Array<Principal>>,
   'getAllPostFetchCanister' : ActorMethod<[], Array<Principal>>,
-  'init' : ActorMethod<[Principal], undefined>,
+  'init' : ActorMethod<[Principal, Principal, Principal, Principal], undefined>,
 }
 export interface _SERVICE extends RootFetch {}

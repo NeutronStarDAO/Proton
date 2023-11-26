@@ -18,7 +18,11 @@ export const idlFactory = ({ IDL }) => {
         [IDL.Vec(IDL.Principal)],
         ['query'],
       ),
-    'init' : IDL.Func([IDL.Principal], [], []),
+    'init' : IDL.Func(
+        [IDL.Principal, IDL.Principal, IDL.Principal, IDL.Principal],
+        [],
+        [],
+      ),
   });
   return RootFetch;
 };

@@ -21,10 +21,12 @@ export const idlFactory = ({ IDL }) => {
   });
   const User = IDL.Service({
     'createProfile' : IDL.Func([NewProfile], [], []),
-    'follow' : IDL.Func([Vertex, Vertex], [], []),
+    'follow' : IDL.Func([Vertex], [], []),
     'getFollowersList' : IDL.Func([Vertex], [IDL.Vec(Vertex)], ['query']),
     'getFollowingList' : IDL.Func([Vertex], [IDL.Vec(Vertex)], ['query']),
     'getProfile' : IDL.Func([UserId__1], [IDL.Opt(Profile)], ['query']),
+    'getRootFeedCanister' : IDL.Func([], [IDL.Principal], ['query']),
+    'init' : IDL.Func([IDL.Principal], [], ['oneway']),
     'searchProfile' : IDL.Func([IDL.Text], [IDL.Vec(Profile)], ['query']),
     'updateProfile' : IDL.Func([NewProfile], [], []),
   });

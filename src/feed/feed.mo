@@ -76,6 +76,10 @@ actor class Feed(
         followers := newFollowers;
     };
 
+    public query func getFollowers(): async [Principal] {
+        followers
+    };
+
 // Bucket
 
     type RootPostActor = Types.RootPostActor;
@@ -123,10 +127,14 @@ actor class Feed(
         
         // 将帖子内容发送给公共区的 Bucket 
         let bucketActor: BucketActor = actor(Principal.toText(_bucket));
-        ignore await bucketActor.storeFeed(post); 
-
+        ignore await bucketActor.storeFeed(post);
+        
         // 通知 PostFetch 
         let postFetchActor: PostFetchActor = actor(Principal.toText(postFetchCanister));
+        Debug.print("postFetchCanister :  " # Principal.toText(postFetchCanister));
+        for(_follower in followers.vals()) {
+            Debug.print("Canister Feed, Func createPost, follower : " # Principal.toText(_follower));
+        };
         ignore postFetchActor.receiveNotify(followers, post.postId);
         
         post.postId
@@ -174,8 +182,6 @@ actor class Feed(
                 return true;
             };
         };
-
-        // await sendFeed();
     };
 
 // Feed

@@ -26,6 +26,16 @@ export const idlFactory = ({ IDL }) => {
         [IDL.Bool],
         [],
       ),
+    'getNotifyMapEntries' : IDL.Func(
+        [],
+        [IDL.Vec(IDL.Tuple(IDL.Principal, IDL.Vec(IDL.Text)))],
+        ['query'],
+      ),
+    'getUserToFeedEntries' : IDL.Func(
+        [],
+        [IDL.Vec(IDL.Tuple(IDL.Principal, IDL.Principal))],
+        ['query'],
+      ),
     'initUserToFeed' : IDL.Func(
         [IDL.Vec(IDL.Tuple(IDL.Principal, IDL.Principal))],
         [IDL.Bool],

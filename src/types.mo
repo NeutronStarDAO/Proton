@@ -68,6 +68,7 @@ module {
         deleteComment : shared (Principal, Nat, Nat) -> async ();
         createLike : shared (Principal, Nat) -> async ();
         deleteLike : shared (Principal, Nat) -> async ();
+        updateFollowers : shared ([Principal]) -> async ();
     };
 
 // Post 
@@ -110,18 +111,21 @@ module {
     public type PostFetchActor = actor {
         receiveNotify : shared ([Principal], Text) -> async ();
         addUserToFeedEntry : shared ((Principal, Principal)) -> async Bool;
+        initUserToFeed : shared ([(Principal, Principal)]) -> async Bool;
     };
 
     public type CommentFetchActor = actor {
         receiveNotify : shared (PostImmutable) -> async ();
         receiveRepostUserNotify : shared ([Principal], Text) -> async ();
         addUserToFeedEntry : shared ((Principal, Principal)) -> async Bool;
+        initUserToFeed : shared ([(Principal, Principal)]) -> async Bool;
     };
     
     public type LikeFetchActor = actor {
         receiveNotify : shared (PostImmutable) -> async ();
         receiveRepostUserNotify : shared ([Principal], Text) -> async ();
         addUserToFeedEntry : shared ((Principal, Principal)) -> async Bool;
+        initUserToFeed : shared ([(Principal, Principal)]) -> async Bool;
     };
 
 // User 
