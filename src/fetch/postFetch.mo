@@ -72,7 +72,7 @@ actor class PostFetch() = this {
     // 根据算法用 ignore call 分批次通知 followers 的 Feed 。
     // 用 Timers 来处理
     func notify(): async () {
-        Debug.print("postFetch notify !");
+        // Debug.print("postFetch notify !");
         let _notifyMap = notifyMap;
         for((_user, _postIdArray) in _notifyMap.entries()) {
             switch(userToFeed.get(_user)) {

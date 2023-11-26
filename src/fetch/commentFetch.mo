@@ -4,6 +4,7 @@ import Types "./types";
 import Array "mo:base/Array";
 import Timer "mo:base/Timer";
 import Iter "mo:base/Iter";
+import Debug "mo:base/Debug";
 
 actor class CommentFetch(
     userCanister: Principal
@@ -33,8 +34,7 @@ actor class CommentFetch(
                     notifyMap.put(_follower, [postId]);
                 };
                 case(?_postIdArray) {
-                    let _newPostIdArray = Array.append(_postIdArray, [postId]);
-                    notifyMap.put(_follower, _newPostIdArray);
+                    notifyMap.put(_follower, Array.append(_postIdArray, [postId]));
                 };
             };
         };
@@ -78,12 +78,16 @@ actor class CommentFetch(
     type FeedActor = Types.FeedActor;
 
     func notify(): async () {
-        for((_user, _postIdArray) in notifyMap.entries()) {
+        // Debug.print("commentFetch notify !");
+        let _notifyMap = notifyMap; 
+        for((_user, _postIdArray) in _notifyMap.entries()) {
             switch(userToFeed.get(_user)) {
                 case(null) { };
                 case(?_feedId) {
+                    Debug.print("commentFetch Notify feed canister " # Principal.toText(_feedId));
                     let feedActor: FeedActor = actor(Principal.toText(_feedId));
                     ignore feedActor.batchReceiveComment(_postIdArray);
+                    notifyMap.delete(_user);
                 };
             };
         };

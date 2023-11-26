@@ -55,12 +55,12 @@ rootFeed_canister_id=$(dfx canister id rootFeed)
 
 echo "增发 cycles"
 wallet=$(dfx identity get-wallet)
-dfx ledger fabricate-cycles --t 1000 --canister $wallet
+dfx ledger fabricate-cycles --t 2000 --canister $wallet
 dfx wallet balance
 
 # 给 rootFeed canister 充值cycles
-echo "给 rootFeed canister 充值 100T cycles"
-dfx wallet send $rootFeed_canister_id 100000000000000
+echo "给 rootFeed canister 充值 200T cycles"
+dfx wallet send $rootFeed_canister_id 200000000000000
 echo "查询 rootFeed canister 状态"
 dfx canister status $rootFeed_canister_id
 
@@ -75,6 +75,21 @@ echo "给 rootFetch canister 充值 100T cycles"
 dfx wallet send $rootFetch_canister_id 100000000000000
 echo "查询 rootPost canister 状态"
 dfx canister status $rootFetch_canister_id
+
+echo "给 postFetch canister 充值 50T cycles"
+dfx wallet send $postFetch_canister_id 50000000000000
+echo "查询 postFetch canister 状态"
+dfx canister status $postFetch_canister_id
+
+echo "给 commentFetch canister 充值 50T cycles"
+dfx wallet send $commentFetch_canister_id 50000000000000
+echo "查询 commentFetch canister 状态"
+dfx canister status $commentFetch_canister_id
+
+echo "给 likeFetch canister 充值 50T cycles"
+dfx wallet send $likeFetch_canister_id 50000000000000
+echo "查询 likeFetch canister 状态"
+dfx canister status $likeFetch_canister_id
 
 echo "初始化 rootPost"
 dfx canister call rootPost init

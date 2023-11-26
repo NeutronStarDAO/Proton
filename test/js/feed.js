@@ -45,4 +45,13 @@ export class Feed {
     const result = await this.actor.getFeedNumber();
     return result;
   }
+
+  async getFeed(postId) {
+    return await this.actor.getFeed(postId);
+  }
+
+  async getLatestFeed(n) {
+    return await this.actor.getLatestFeed(n);
+  }
+
 }

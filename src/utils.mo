@@ -15,7 +15,7 @@ module {
         let bucket = Principal.fromText(words[0]);
         let user = Principal.fromText(words[1]);
         let postIndex = Option.unwrap(Nat.fromText(words[2]));
-        Debug.print("(bucket, user, index) : (" # words[0] # "," # words[1] # "," # words[2] # ")"); 
+        // Debug.print("(bucket, user, index) : (" # words[0] # "," # words[1] # "," # words[2] # ")"); 
         (bucket, user, postIndex)
     };
 

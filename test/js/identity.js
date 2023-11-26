@@ -11,16 +11,6 @@ const identity = Secp256k1KeyIdentity.fromSeedPhrase(seed);
 
 export const identityTest = identity;
 
-export const identityA = Secp256k1KeyIdentity.generate();
-
-export const identityB = Secp256k1KeyIdentity.generate();
-
-export const identityC = Secp256k1KeyIdentity.generate();
-
-export const identityD = Secp256k1KeyIdentity.generate();
-
-export const identityE = Secp256k1KeyIdentity.generate();
-
 export function newIdentity() {
     return Secp256k1KeyIdentity.generate();
 }

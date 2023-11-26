@@ -186,14 +186,19 @@ shared(msg) actor class Bucket(
 
     // 查询最新的 n 个帖子
     public query func getLatestFeed(n: Nat): async [PostImmutable] {
-      Array.subArray(Iter.toArray(
-        Iter.sort<PostImmutable>(
-        feedMap.vals(),
-        func (x: PostImmutable, y: PostImmutable): Order.Order {
-            if(x.createdAt > y.createdAt) return #less
-            else if(x.createdAt < y.createdAt) return #greater
-            else return #equal
-        })), 0, n)
+        let feedArray = Iter.toArray(
+            Iter.sort<PostImmutable>(
+            feedMap.vals(),
+            func (x: PostImmutable, y: PostImmutable): Order.Order {
+                if(x.createdAt > y.createdAt) return #less
+                else if(x.createdAt < y.createdAt) return #greater
+                else return #equal
+        }));
+        if(n <= feedArray.size()) {
+            Array.subArray(feedArray, 0, n)
+        } else {
+            Array.subArray(feedArray, 0, feedArray.size())
+        }
     };
 
 // CommentFetchCanister

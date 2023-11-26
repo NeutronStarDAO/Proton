@@ -250,7 +250,7 @@ actor class Feed(
             switch((await bucketActor.getPost(_postId))) {
                 case(null) { };
                 case(?_post) {
-
+                    Debug.print("Canister Feed, Func batchReceiveComment");
                     feedDirectory.storeFeed(_post);
 
                     if(Utils._isRepostUser(_post, owner)) {

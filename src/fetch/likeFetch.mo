@@ -4,6 +4,7 @@ import Types "./types";
 import Array "mo:base/Array";
 import Timer "mo:base/Timer";
 import Iter "mo:base/Iter";
+import Debug "mo:base/Debug";
 
 actor class LikeFetch(
     userCanister: Principal
@@ -77,12 +78,15 @@ actor class LikeFetch(
     type FeedActor = Types.FeedActor;
 
     func notify(): async () {
-        for((_user, _postIdArray) in notifyMap.entries()) {
+        // Debug.print("likeFetch notify !");
+        let _notifyMap = notifyMap; 
+        for((_user, _postIdArray) in _notifyMap.entries()) {
             switch(userToFeed.get(_user)) {
                 case(null) { };
                 case(?_feedId) {
                     let feedActor: FeedActor = actor(Principal.toText(_feedId));
                     ignore feedActor.batchReceiveLike(_postIdArray);
+                    notifyMap.delete(_user);
                 };
             };
         };

@@ -4,11 +4,6 @@ import { RootFeed } from './rootFeed.js';
 import { Feed } from './feed.js';
 import {
     identityTest,
-    identityA, 
-    identityB, 
-    identityC,
-    identityD,
-    identityE,
     newIdentity
 } from './identity.js';
 import { RootPost } from './rootPost.js'
@@ -88,11 +83,15 @@ async function testFeed() {
 }
 
 async function testPostFetch() {
-
-    console.log("User A  初始化 Profile \n");
-    let userActor = new User(identityA);
-    await userActor.createProfile();
-
+    
+    console.log("test postFetch \n");
+ 
+    const identityA = newIdentity();
+    const identityB = newIdentity();
+    const identityC = newIdentity();
+    const identityD = newIdentity();
+    const identityE = newIdentity();
+ 
     console.log("User A 创建一个 feed canister\n");
     const rootFeed = new RootFeed(identityA);
     const feedCanister = await rootFeed.createFeedCanister();
@@ -113,13 +112,13 @@ async function testPostFetch() {
     await new User(identityE).follow(identityA.getPrincipal());
 
     // console.log((await userActor.getFollowersList(identityA.getPrincipal())));
-    console.log("User A 的粉丝 : ", (await userActor.getFollowersList(identityA.getPrincipal())).map((value) => {
+    console.log("User A 的粉丝 : ", (await new User(identityA).getFollowersList(identityA.getPrincipal())).map((value) => {
         return value.toString();
     }));
 
     console.log("User A 先创建一个帖子 \n");
     const feed = new Feed(feedCanister, identityA);
-    const postId = await feed.createPost(feedCanister, identityA);
+    const postId = await feed.createPost();
     console.log("user A create post result ", postId, "\n");
 
     // 暂停三秒
@@ -131,9 +130,201 @@ async function testPostFetch() {
     assert(await new Feed(userD_FeedCanister, identityD).getFeedNumber(), BigInt(1));
     assert(await new Feed(userE_FeedCanister, identityE).getFeedNumber(), BigInt(1));
 
+    console.log("User B Feed : ", await new Feed(userB_FeedCanister, identityB).getLatestFeed(2))
+
 }
+
+async function testCommentFetch() {
+
+    console.log("test commentFetch \n");
+
+    const identityA = newIdentity();
+    const identityB = newIdentity();
+    const identityC = newIdentity();
+    const identityD = newIdentity();
+    const identityE = newIdentity();
+
+    console.log("User A 创建一个 feed canister\n");
+
+    const userA_FeedCanister = await new RootFeed(identityA).createFeedCanister();
+    const userB_FeedCanister = await new RootFeed(identityB).createFeedCanister();
+    const userC_FeedCanister = await new RootFeed(identityC).createFeedCanister();
+    const userD_FeedCanister = await new RootFeed(identityD).createFeedCanister();
+    const userE_FeedCanister = await new RootFeed(identityE).createFeedCanister();
+    console.log("User A feed canister : ", userA_FeedCanister.toString(), "\n");
+    console.log("User B feed canister : ", userB_FeedCanister.toString(), "\n");
+    console.log("User C feed canister : ", userC_FeedCanister.toString(), "\n");
+    console.log("User D feed canister : ", userD_FeedCanister.toString(), "\n");
+    console.log("User E feed canister : ", userE_FeedCanister.toString(), "\n");
+
+    console.log("User B, C, D, E 去关注 User A \n");
+    await new User(identityB).follow(identityA.getPrincipal());
+    await new User(identityC).follow(identityA.getPrincipal());
+    await new User(identityD).follow(identityA.getPrincipal());
+    await new User(identityE).follow(identityA.getPrincipal());
+
+    // console.log((await userActor.getFollowersList(identityA.getPrincipal())));
+    console.log("User A 的粉丝 : ", (await new User(identityA).getFollowersList(identityA.getPrincipal())).map((value) => {
+        return value.toString();
+    })), "\n";
+
+    console.log("User A 先创建一个帖子 \n");
+    const userA_feed = new Feed(userA_FeedCanister, identityA);
+    const postId = await userA_feed.createPost();
+    console.log("user A create post result ", postId, "\n");
+
+    console.log("User B 去给 User A 的帖子评论 \n");
+    const commentResult = await new Feed(userA_FeedCanister, identityB).createComment(postId, "User B Comment");
+    assert(commentResult, true);
+
+    // 暂停5秒
+    await new Promise(resolve => setTimeout(resolve, 5000));
+
+    console.log("查看 commentFetch 是否正常工作 \n");
+    console.log("评论后的 user B 的 Feed : ", (await new Feed(userB_FeedCanister, identityB).getFeed(postId))[0], "\n");
+    console.log("评论后的 user C 的 Feed : ", (await new Feed(userC_FeedCanister, identityC).getFeed(postId))[0], "\n");
+    console.log("评论后的 user D 的 Feed : ", (await new Feed(userD_FeedCanister, identityD).getFeed(postId))[0], "\n");
+    console.log("评论后的 user E 的 Feed : ", (await new Feed(userE_FeedCanister, identityE).getFeed(postId))[0], "\n");
+
+}
+
+async function testLikeFetch() {
+
+    console.log("test likeFetch \n");
+
+    const identityA = newIdentity();
+    const identityB = newIdentity();
+    const identityC = newIdentity();
+    const identityD = newIdentity();
+    const identityE = newIdentity();
+
+    console.log("User A 创建一个 feed canister\n");
+
+    const userA_FeedCanister = await new RootFeed(identityA).createFeedCanister();
+    const userB_FeedCanister = await new RootFeed(identityB).createFeedCanister();
+    const userC_FeedCanister = await new RootFeed(identityC).createFeedCanister();
+    const userD_FeedCanister = await new RootFeed(identityD).createFeedCanister();
+    const userE_FeedCanister = await new RootFeed(identityE).createFeedCanister();
+    console.log("User A feed canister : ", userA_FeedCanister.toString(), "\n");
+    console.log("User B feed canister : ", userB_FeedCanister.toString(), "\n");
+    console.log("User C feed canister : ", userC_FeedCanister.toString(), "\n");
+    console.log("User D feed canister : ", userD_FeedCanister.toString(), "\n");
+    console.log("User E feed canister : ", userE_FeedCanister.toString(), "\n");
+
+    console.log("User B, C, D, E 去关注 User A \n");
+    await new User(identityB).follow(identityA.getPrincipal());
+    await new User(identityC).follow(identityA.getPrincipal());
+    await new User(identityD).follow(identityA.getPrincipal());
+    await new User(identityE).follow(identityA.getPrincipal());
+
+    console.log("User A 的粉丝 : ", (await new User(identityA).getFollowersList(identityA.getPrincipal())).map((value) => {
+        return value.toString();
+    })), "\n";
+
+    console.log("User A 先创建一个帖子 \n");
+    const userA_feed = new Feed(userA_FeedCanister, identityA);
+    const postId = await userA_feed.createPost();
+    console.log("user A create post result ", postId, "\n");
+
+    console.log("User B 去给 User A 的帖子点赞 \n");
+    const likeResult = await new Feed(userA_FeedCanister, identityB).createLike(postId);
+    assert(likeResult, true);
+
+    // 暂停5秒
+    await new Promise(resolve => setTimeout(resolve, 5000));
+
+    console.log("查看 likeFetch 是否正常工作 \n");
+    console.log("点赞后的 user B 的 Feed : ", (await new Feed(userB_FeedCanister, identityB).getFeed(postId))[0], "\n");
+    console.log("点赞后的 user C 的 Feed : ", (await new Feed(userC_FeedCanister, identityC).getFeed(postId))[0], "\n");
+    console.log("点赞后的 user D 的 Feed : ", (await new Feed(userD_FeedCanister, identityD).getFeed(postId))[0], "\n");
+    console.log("点赞后的 user E 的 Feed : ", (await new Feed(userE_FeedCanister, identityE).getFeed(postId))[0], "\n");
+    
+}
+
+async function testRepostFetch() {
+
+    console.log("Test Repost Fetch \n");
+
+    const identityA = newIdentity();
+    const identityB = newIdentity();
+    const identityC = newIdentity();
+    const identityD = newIdentity();
+    const identityE = newIdentity();
+
+    const userA_FeedCanister = await new RootFeed(identityA).createFeedCanister();
+    const userB_FeedCanister = await new RootFeed(identityB).createFeedCanister();
+    const userC_FeedCanister = await new RootFeed(identityC).createFeedCanister();
+    const userD_FeedCanister = await new RootFeed(identityD).createFeedCanister();
+    const userE_FeedCanister = await new RootFeed(identityE).createFeedCanister();
+    console.log("User A feed canister : ", userA_FeedCanister.toString(), "\n");
+    console.log("User B feed canister : ", userB_FeedCanister.toString(), "\n");
+    console.log("User C feed canister : ", userC_FeedCanister.toString(), "\n");
+    console.log("User D feed canister : ", userD_FeedCanister.toString(), "\n");
+    console.log("User E feed canister : ", userE_FeedCanister.toString(), "\n");
+
+    console.log("User B 关注 A");
+    await new User(identityB).follow(identityA.getPrincipal());
+    console.log("User C, D, E 去关注 User B \n");
+    await new User(identityC).follow(identityB.getPrincipal());
+    await new User(identityD).follow(identityB.getPrincipal());
+    await new User(identityE).follow(identityB.getPrincipal());
+
+    console.log("User A 的粉丝 : ", (await new User(identityA).getFollowersList(identityA.getPrincipal())).map((value) => {
+        return value.toString();
+    })), "\n";
+
+    console.log("User B 的粉丝 : ", (await new User(identityB).getFollowersList(identityB.getPrincipal())).map((value) => {
+        return value.toString();
+    })), "\n";
+
+    console.log("User A 先创建一个帖子 \n");
+    const userA_feed = new Feed(userA_FeedCanister, identityA);
+    const postId = await userA_feed.createPost();
+    console.log("user A create post result ", postId, "\n");
+
+    console.log("User B 去转发 A 的帖子 \n");
+    const repostResult = await new Feed(userA_FeedCanister, identityB).createRepost(postId);
+    assert(repostResult, true);
+
+    // 暂停5秒
+    await new Promise(resolve => setTimeout(resolve, 5000));
+
+    console.log("查看 postFetch 是否正常工作 \n");
+    console.log("转发后的 user C 的 Feed : ", (await new Feed(userC_FeedCanister, identityC).getFeed(postId))[0], "\n");
+    console.log("转发后的 user D 的 Feed : ", (await new Feed(userD_FeedCanister, identityD).getFeed(postId))[0], "\n");
+    console.log("转发后的 user E 的 Feed : ", (await new Feed(userE_FeedCanister, identityE).getFeed(postId))[0], "\n");
+
+    console.log("User B 去给转发过的帖子评论 \n");
+    const commentResult = await new Feed(userA_FeedCanister, identityB).createComment(postId, "User B Repost Comment");
+    assert(commentResult, true);
+
+    // 暂停5秒
+    await new Promise(resolve => setTimeout(resolve, 5000));
+
+    console.log("查看 commentFetch 是否正常工作 \n");
+    console.log("转发后的 user C 的 Feed : ", (await new Feed(userC_FeedCanister, identityC).getFeed(postId))[0], "\n");
+    console.log("转发后的 user D 的 Feed : ", (await new Feed(userD_FeedCanister, identityD).getFeed(postId))[0], "\n");
+    console.log("转发后的 user E 的 Feed : ", (await new Feed(userE_FeedCanister, identityE).getFeed(postId))[0], "\n");
+
+    console.log("User B 去给转发过的帖子点赞 \n");
+    const likeResult = await new Feed(userA_FeedCanister, identityB).createLike(postId);
+    assert(likeResult, true);
+
+    // 暂停5秒
+    await new Promise(resolve => setTimeout(resolve, 5000));
+
+    console.log("查看 likeFetch 是否正常工作 \n");
+    console.log("转发后的 user C 的 Feed : ", (await new Feed(userC_FeedCanister, identityC).getFeed(postId))[0], "\n");
+    console.log("转发后的 user D 的 Feed : ", (await new Feed(userD_FeedCanister, identityD).getFeed(postId))[0], "\n");
+    console.log("转发后的 user E 的 Feed : ", (await new Feed(userE_FeedCanister, identityE).getFeed(postId))[0], "\n");
+
+}
+
 
 await init();
 await testUserCanister();
 await testFeed();
 await testPostFetch();
+await testCommentFetch();
+await testLikeFetch();
+await testRepostFetch();
