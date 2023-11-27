@@ -73,17 +73,12 @@ module {
 
 // Post 
 
-    public type BucketInfoImmutable = {
-        index: Nat;
-        canisterId: Principal;
-        postNumber: Nat; // 已经存储的帖子数量
-    };
-
     public type RootPostActor = actor {
-        getAvailableBucket : shared query () -> async ?BucketInfoImmutable;
-        getAllBuckets : shared query () -> async [BucketInfoImmutable];
-        getUnavailableBuckets : shared query () -> async [BucketInfoImmutable];
-        reCreateBucket : shared (Nat) -> async ();
+        getAvailableBucket : shared query () -> async ?Principal;
+        getAllBuckets : shared query () -> async [Principal];
+        getAllAvailableBuckets : shared query () -> async [Principal];        
+        getAllUnavailableBuckets : shared query () -> async [Principal];
+        reCreateBucket : shared () -> async ();
     };
 
 // Bucket 

@@ -12,6 +12,7 @@ actor class CommentFetch(
     
     type UserActor = Types.UserActor;
     type PostImmutable = Types.PostImmutable;
+    type Repost = Types.Repost;
 
     let notifyMap = TrieMap.TrieMap<Principal, [Text]>(Principal.equal, Principal.hash);
     
@@ -20,15 +21,27 @@ actor class CommentFetch(
         let userActor: UserActor = actor(Principal.toText(userCanister));
         let postUserFollowers = await userActor.getFollowersList(post.user);
 
+        // 通知粉丝
         _storeNotify(postUserFollowers, post.postId);
+
+        // 通知转帖者
+        _storeNotify(
+            Array.map<Repost, Principal>(
+                post.repost,
+                func (x: Repost): Principal {
+                    x.user
+                }
+            ), 
+            post.postId
+        );
     };
 
     public shared({caller}) func receiveRepostUserNotify(to: [Principal], postId: Text): async () {
         _storeNotify(to, postId);
     };
 
-    private func _storeNotify(followerArray: [Principal], postId: Text) {
-        for(_follower in followerArray.vals()) {
+    private func _storeNotify(to: [Principal], postId: Text) {
+        for(_follower in to.vals()) {
             switch(notifyMap.get(_follower)) {
                 case(null) {
                     notifyMap.put(_follower, [postId]);
@@ -84,7 +97,7 @@ actor class CommentFetch(
             switch(userToFeed.get(_user)) {
                 case(null) { };
                 case(?_feedId) {
-                    Debug.print("commentFetch Notify feed canister " # Principal.toText(_feedId));
+                    // Debug.print("commentFetch Notify feed canister " # Principal.toText(_feedId));
                     let feedActor: FeedActor = actor(Principal.toText(_feedId));
                     ignore feedActor.batchReceiveComment(_postIdArray);
                     notifyMap.delete(_user);

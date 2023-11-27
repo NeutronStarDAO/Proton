@@ -41,13 +41,6 @@ shared(msg) actor class Bucket(
         _storeFeed(post);
     };
 
-    func checkBucketMemory(): async () {
-        if(feedMap.size() > FLOOR_BUCKET_MAX_POST_NUMBER) {
-            let rootPostActor: RootPostActor = actor(Principal.toText(rootPostCanister));
-            ignore rootPostActor.reCreateBucket(feedMap.size());
-        }
-    };
-
     public shared({caller}) func batchStoreFeed(posts: [PostImmutable]): async () {
         for(post in posts.vals()) {
             ignore _storeFeed(post);
@@ -82,6 +75,13 @@ shared(msg) actor class Bucket(
             };     
         };
         true
+    };
+
+    func checkBucketMemory(): async () {
+        if(feedMap.size() > FLOOR_BUCKET_MAX_POST_NUMBER) {
+            let rootPostActor: RootPostActor = actor(Principal.toText(rootPostCanister));
+            ignore rootPostActor.reCreateBucket();
+        }
     };
 
     private func _updatePostComment(postId: Text, newComment: NewComment): ?PostImmutable {
@@ -150,7 +150,7 @@ shared(msg) actor class Bucket(
         ignore Utils.checkPostId(post.postId);
         switch(feedMap.get(post.postId)) {
             case(?_post) {
-                Debug.print("This post has been stored");
+                // Debug.print("This post has been stored");
                 return false;
             };
             case(null) {

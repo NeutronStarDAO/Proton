@@ -1,21 +1,16 @@
 import type { Principal } from '@dfinity/principal';
 import type { ActorMethod } from '@dfinity/agent';
 
-export interface BucketInfoImmutable {
-  'index' : bigint,
-  'canisterId' : Principal,
-  'postNumber' : bigint,
-}
 export interface RootPost {
-  'checkBucket' : ActorMethod<[], undefined>,
   'createBucket' : ActorMethod<[], Principal>,
-  'getAllBuckets' : ActorMethod<[], Array<BucketInfoImmutable>>,
-  'getAvailableBucket' : ActorMethod<[], [] | [BucketInfoImmutable]>,
+  'getAllAvailableBuckets' : ActorMethod<[], Array<Principal>>,
+  'getAllBuckets' : ActorMethod<[], Array<Principal>>,
+  'getAllUnavailableBuckets' : ActorMethod<[], Array<Principal>>,
+  'getAvailableBucket' : ActorMethod<[], [] | [Principal]>,
   'getCommentFetchCanister' : ActorMethod<[], Principal>,
   'getLikeFetchCanister' : ActorMethod<[], Principal>,
-  'getUnavailableBuckets' : ActorMethod<[], Array<BucketInfoImmutable>>,
   'init' : ActorMethod<[], undefined>,
-  'reCreateBucket' : ActorMethod<[bigint], undefined>,
+  'reCreateBucket' : ActorMethod<[], undefined>,
   'updateCommentFetchCanister' : ActorMethod<[Principal], undefined>,
   'updateLikeFetchCanister' : ActorMethod<[Principal], undefined>,
 }

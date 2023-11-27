@@ -90,12 +90,14 @@ actor class Feed(
     public shared func checkAvailableBucket(): async Bool {
         switch((await rootPostActor.getAvailableBucket())) {
             case(null) { return false; };
-            case(?bucketInfo) {
-                bucket := ?bucketInfo.canisterId;
+            case(?_bucket) {
+                bucket := ?_bucket;
                 return true;
             };
         };
     };
+
+    public query func getbucket(): async ?Principal { bucket };
 
 // Post
 
@@ -131,10 +133,10 @@ actor class Feed(
         
         // 通知 PostFetch 
         let postFetchActor: PostFetchActor = actor(Principal.toText(postFetchCanister));
-        Debug.print("postFetchCanister :  " # Principal.toText(postFetchCanister));
-        for(_follower in followers.vals()) {
-            Debug.print("Canister Feed, Func createPost, follower : " # Principal.toText(_follower));
-        };
+        // Debug.print("postFetchCanister :  " # Principal.toText(postFetchCanister));
+        // for(_follower in followers.vals()) {
+        //     Debug.print("Canister Feed, Func createPost, follower : " # Principal.toText(_follower));
+        // };
         ignore postFetchActor.receiveNotify(followers, post.postId);
         
         post.postId
@@ -229,11 +231,10 @@ actor class Feed(
                 feedDirectory.storeFeed(_post);
 
                 if(Utils._isRepostUser(_post, owner)) {
-                    // 如果 follower D 转发过这个帖子，D 的 Feed 在收到新评论通知后，                    
+                    // 如果该用户是此贴的转发者，则继续向自己的粉丝推流                    
                     let userActor: UserActor = actor(Principal.toText(userCanister));
                     let repostUserFollowers = await userActor.getFollowersList(owner);
 
-                    // 会继续向 Comment Fetch 通知：post15_id 、D 的 followers 。
                     let commentFetchActor: CommentFetchActor = actor(Principal.toText(commentFetchCanister));
                     ignore commentFetchActor.receiveRepostUserNotify(repostUserFollowers, postId);
                 };
@@ -250,15 +251,14 @@ actor class Feed(
             switch((await bucketActor.getPost(_postId))) {
                 case(null) { };
                 case(?_post) {
-                    Debug.print("Canister Feed, Func batchReceiveComment");
+                    // Debug.print("Canister Feed, Func batchReceiveComment");
                     feedDirectory.storeFeed(_post);
 
                     if(Utils._isRepostUser(_post, owner)) {
-                        // 如果 follower D 转发过这个帖子，D 的 Feed 在收到新评论通知后，                    
+                        // 如果该用户是此贴的转发者，则继续向自己的粉丝推流                
                         let userActor: UserActor = actor(Principal.toText(userCanister));
                         let repostUserFollowers = await userActor.getFollowersList(owner);
 
-                        // 会继续向 Comment Fetch 通知：post15_id 、D 的 followers 。
                         let commentFetchActor: CommentFetchActor = actor(Principal.toText(commentFetchCanister));
                         ignore commentFetchActor.receiveRepostUserNotify(repostUserFollowers, _postId);
                     };
@@ -277,11 +277,10 @@ actor class Feed(
                 feedDirectory.storeFeed(_post);
 
                 if(Utils._isRepostUser(_post, owner)) {
-                    // 如果 follower D 转发过这个帖子，D 的 Feed 在收到新点赞通知后，                    
+                    // 如果该用户是此贴的转发者，则继续向自己的粉丝推流                    
                     let userActor: UserActor = actor(Principal.toText(userCanister));
                     let repostUserFollowers = await userActor.getFollowersList(owner);
 
-                    // 会继续向 Like Fetch 通知：post15_id 、D 的 followers 。
                     let likeFetchActor: LikeFetchActor = actor(Principal.toText(likeFetchCanister));
                     ignore likeFetchActor.receiveRepostUserNotify(repostUserFollowers, postId);
                 };
@@ -302,11 +301,10 @@ actor class Feed(
                     feedDirectory.storeFeed(_post);
 
                     if(Utils._isRepostUser(_post, owner)) {
-                        // 如果 follower D 转发过这个帖子，D 的 Feed 在收到新点赞通知后，                    
+                        // 如果该用户是此贴的转发者，则继续向自己的粉丝推流                    
                         let userActor: UserActor = actor(Principal.toText(userCanister));
                         let repostUserFollowers = await userActor.getFollowersList(owner);
 
-                        // 会继续向 Like Fetch 通知：post15_id 、D 的 followers 。
                         let likeFetchActor: LikeFetchActor = actor(Principal.toText(likeFetchCanister));
                         ignore likeFetchActor.receiveRepostUserNotify(repostUserFollowers, _postId);
                     };

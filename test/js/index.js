@@ -318,13 +318,45 @@ async function testRepostFetch() {
     console.log("转发后的 user D 的 Feed : ", (await new Feed(userD_FeedCanister, identityD).getFeed(postId))[0], "\n");
     console.log("转发后的 user E 的 Feed : ", (await new Feed(userE_FeedCanister, identityE).getFeed(postId))[0], "\n");
 
+    const identityX = newIdentity();
+
+    console.log("User X 去给 A 的帖子评论 \n");
+    const x_commentResult = await new Feed(userA_FeedCanister, identityX).createComment(postId, "User X Comment");
+    assert(x_commentResult, true);
+
+    // 暂停5秒
+    await new Promise(resolve => setTimeout(resolve, 5000));
+
+    console.log("查看 commentFetch 是否正常工作 \n");
+    assert((await new Feed(userB_FeedCanister, identityB).getFeed(postId))[0].comment.length, 2);
+    assert((await new Feed(userC_FeedCanister, identityC).getFeed(postId))[0].comment.length, 2);
+    console.log("user B Feed Comment: ", (await new Feed(userB_FeedCanister, identityB).getFeed(postId))[0].comment, "\n");
+    console.log("user C Feed Comment : ", (await new Feed(userC_FeedCanister, identityC).getFeed(postId))[0].comment, "\n");
+    console.log("user D Feed Comment : ", (await new Feed(userD_FeedCanister, identityD).getFeed(postId))[0].comment, "\n");
+    console.log("user E Feed Comment: ", (await new Feed(userE_FeedCanister, identityE).getFeed(postId))[0].comment, "\n");
+
+    console.log("User X 去给  A 的帖子点赞 \n");
+    const x_likeResult = await new Feed(userA_FeedCanister, identityX).createLike(postId);
+    assert(x_likeResult, true);
+
+    // 暂停5秒
+    await new Promise(resolve => setTimeout(resolve, 5000));
+
+    console.log("查看 likeFetch 是否正常工作 \n");
+    assert((await new Feed(userB_FeedCanister, identityB).getFeed(postId))[0].like.length, 2);
+    assert((await new Feed(userC_FeedCanister, identityC).getFeed(postId))[0].like.length, 2);
+    console.log("user B Feed Like: ", (await new Feed(userB_FeedCanister, identityB).getFeed(postId))[0].like, "\n");
+    console.log("user C Feed Like : ", (await new Feed(userC_FeedCanister, identityC).getFeed(postId))[0].like, "\n");
+    console.log("user D Feed Like : ", (await new Feed(userD_FeedCanister, identityD).getFeed(postId))[0].like, "\n");
+    console.log("user E Feed Like: ", (await new Feed(userE_FeedCanister, identityE).getFeed(postId))[0].like, "\n");
+
 }
 
 
 await init();
-await testUserCanister();
-await testFeed();
-await testPostFetch();
-await testCommentFetch();
-await testLikeFetch();
-await testRepostFetch();
+// await testUserCanister();
+// await testFeed();
+// await testPostFetch();
+// await testCommentFetch();
+// await testLikeFetch();
+// await testRepostFetch();

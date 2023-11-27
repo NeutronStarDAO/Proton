@@ -29,6 +29,7 @@ type Feed =
    batchReceiveFeed: (vec text) -> ();
    batchReceiveLike: (vec text) -> ();
    checkAvailableBucket: () -> (bool);
+   com_checkAvailableBucket: () -> (bool) composite_query;
    createComment: (text, text) -> (bool);
    createLike: (text) -> (bool);
    createPost: (text, text) -> (text);
@@ -44,6 +45,7 @@ type Feed =
    getPost: (text) -> (opt PostImmutable) query;
    getPostFetchCanister: () -> (principal) query;
    getPostNumber: () -> (nat) query;
+   getbucket: () -> (opt principal) query;
    receiveComment: (text) -> (bool);
    receiveFeed: (text) -> (bool);
    receiveLike: (text) -> (bool);

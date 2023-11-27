@@ -15,5 +15,7 @@ module {
     public type CommentFetchActor = Types.CommentFetchActor;
     
     public type LikeFetchActor = Types.LikeFetchActor;   
+
+    public type Repost = Types.Repost;   
     
 }

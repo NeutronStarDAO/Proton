@@ -78,7 +78,7 @@ actor class PostFetch() = this {
             switch(userToFeed.get(_user)) {
                 case(null) { };
                 case(?_feedId) {
-                    Debug.print("Notify feed canister " # Principal.toText(_feedId));
+                    // Debug.print("Notify feed canister " # Principal.toText(_feedId));
                     let feedActor: FeedActor = actor(Principal.toText(_feedId));
                     ignore feedActor.batchReceiveFeed(_postIdArray);
                     notifyMap.delete(_user);

@@ -1,27 +1,22 @@
 export const idlFactory = ({ IDL }) => {
-  const BucketInfoImmutable = IDL.Record({
-    'index' : IDL.Nat,
-    'canisterId' : IDL.Principal,
-    'postNumber' : IDL.Nat,
-  });
   const RootPost = IDL.Service({
-    'checkBucket' : IDL.Func([], [], []),
     'createBucket' : IDL.Func([], [IDL.Principal], []),
-    'getAllBuckets' : IDL.Func([], [IDL.Vec(BucketInfoImmutable)], ['query']),
-    'getAvailableBucket' : IDL.Func(
+    'getAllAvailableBuckets' : IDL.Func(
         [],
-        [IDL.Opt(BucketInfoImmutable)],
+        [IDL.Vec(IDL.Principal)],
         ['query'],
       ),
+    'getAllBuckets' : IDL.Func([], [IDL.Vec(IDL.Principal)], ['query']),
+    'getAllUnavailableBuckets' : IDL.Func(
+        [],
+        [IDL.Vec(IDL.Principal)],
+        ['query'],
+      ),
+    'getAvailableBucket' : IDL.Func([], [IDL.Opt(IDL.Principal)], ['query']),
     'getCommentFetchCanister' : IDL.Func([], [IDL.Principal], ['query']),
     'getLikeFetchCanister' : IDL.Func([], [IDL.Principal], ['query']),
-    'getUnavailableBuckets' : IDL.Func(
-        [],
-        [IDL.Vec(BucketInfoImmutable)],
-        ['query'],
-      ),
     'init' : IDL.Func([], [], []),
-    'reCreateBucket' : IDL.Func([IDL.Nat], [], []),
+    'reCreateBucket' : IDL.Func([], [], []),
     'updateCommentFetchCanister' : IDL.Func([IDL.Principal], [], []),
     'updateLikeFetchCanister' : IDL.Func([IDL.Principal], [], []),
   });

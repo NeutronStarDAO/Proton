@@ -1,21 +1,15 @@
 type RootPost = 
  service {
-   checkBucket: () -> ();
    createBucket: () -> (principal);
-   getAllBuckets: () -> (vec BucketInfoImmutable) query;
-   getAvailableBucket: () -> (opt BucketInfoImmutable) query;
+   getAllAvailableBuckets: () -> (vec principal) query;
+   getAllBuckets: () -> (vec principal) query;
+   getAllUnavailableBuckets: () -> (vec principal) query;
+   getAvailableBucket: () -> (opt principal) query;
    getCommentFetchCanister: () -> (principal) query;
    getLikeFetchCanister: () -> (principal) query;
-   getUnavailableBuckets: () -> (vec BucketInfoImmutable) query;
    init: () -> ();
-   reCreateBucket: (nat) -> ();
+   reCreateBucket: () -> ();
    updateCommentFetchCanister: (principal) -> ();
    updateLikeFetchCanister: (principal) -> ();
- };
-type BucketInfoImmutable = 
- record {
-   canisterId: principal;
-   index: nat;
-   postNumber: nat;
  };
 service : (principal, principal) -> RootPost

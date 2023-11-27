@@ -12,6 +12,7 @@ actor class LikeFetch(
 
     type UserActor = Types.UserActor;
     type PostImmutable = Types.PostImmutable;
+    type Repost = Types.Repost;
 
     let notifyMap = TrieMap.TrieMap<Principal, [Text]>(Principal.equal, Principal.hash);
     
@@ -20,7 +21,19 @@ actor class LikeFetch(
         let userActor: UserActor = actor(Principal.toText(userCanister));
         let postUserFollowers = await userActor.getFollowersList(post.user);
 
+        // 通知粉丝
         _storeNotify(postUserFollowers, post.postId);
+
+        // 通知转帖者
+        _storeNotify(
+            Array.map<Repost, Principal>(
+                post.repost,
+                func (x: Repost): Principal {
+                    x.user
+                }
+            ), 
+            post.postId
+        );
     };
 
     public shared({caller}) func receiveRepostUserNotify(to: [Principal], postId: Text): async () {
@@ -31,8 +44,8 @@ actor class LikeFetch(
         Iter.toArray(notifyMap.entries())
     };
 
-    private func _storeNotify(followerArray: [Principal], postId: Text) {
-        for(_follower in followerArray.vals()) {
+    private func _storeNotify(to: [Principal], postId: Text) {
+        for(_follower in to.vals()) {
             switch(notifyMap.get(_follower)) {
                 case(null) {
                     notifyMap.put(_follower, [postId]);
