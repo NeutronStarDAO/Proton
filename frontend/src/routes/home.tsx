@@ -5,7 +5,7 @@ import Comment from "../components/comment";
 
 export const Home = React.memo(()=>{
   return <>
-    <Layout.Content style={{
+    <Layout.Content className={"posts"} style={{
       backgroundColor: "white",
       overflowY: 'auto',
       scrollbarWidth: 'thin',
@@ -21,7 +21,7 @@ export const Home = React.memo(()=>{
       <Post/>
       <Post/>
     </Layout.Content>
-    <Layout.Content style={{
+    <Layout.Content className={"posts"} style={{
       backgroundColor: 'white',
       overflowY: 'auto',
       scrollbarWidth: 'thin',

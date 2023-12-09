@@ -17,17 +17,23 @@ code {
     align-items: center;
 }
 
-::-webkit-scrollbar {
-    width: 0px;
+.posts::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
 }
-::-webkit-scrollbar-track {
+
+.posts::-webkit-scrollbar-track {
     border-radius: 3px;
-    background: rgba(0,0,0,0.06);
-    -webkit-box-shadow: inset 0 0 5px rgba(0,0,0,0.08);
+    background: white;
 }
+
 /* 滚动条滑块 */
-::-webkit-scrollbar-thumb {
+.posts::-webkit-scrollbar-thumb {
     border-radius: 3px;
-    background: rgba(0,0,0,0.12);
-    -webkit-box-shadow: inset 0 0 10px rgba(0,0,0,0.2);
+    background: white;
+}
+
+.posts:hover::-webkit-scrollbar-thumb {
+    border-radius: 3px;
+    background: rgba(0, 0, 0, 0.12);
 }
