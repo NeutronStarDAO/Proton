@@ -35,19 +35,19 @@ const items: MenuItemType[] = [
 
   getItem("Home", '1', <HomeOutlined style={{
     color: '#D3D540',
-    fontSize: '30px'
+    fontSize: '20px'
   }}/>),
   getItem("Explore", '2', <SearchOutlined style={{
     color: '#D3D540',
-    fontSize: '30px'
+    fontSize: '20px'
   }}/>),
   getItem("Profile", '3', <ProfileOutlined style={{
     color: '#D3D540',
-    fontSize: '30px'
+    fontSize: '20px'
   }}/>),
   getItem("Settings", '4', <SettingOutlined style={{
     color: '#D3D540',
-    fontSize: '30px'
+    fontSize: '20px'
   }}/>),
 
 ];
@@ -93,6 +93,7 @@ export default function Sider() {
         </h1>
 
         <Menu
+          className={"sider"}
           mode="vertical"
           items={items}
           style={{
