@@ -354,9 +354,9 @@ async function testRepostFetch() {
 
 
 await init();
-// await testUserCanister();
-// await testFeed();
-// await testPostFetch();
-// await testCommentFetch();
-// await testLikeFetch();
-// await testRepostFetch();
+await testUserCanister();
+await testFeed();
+await testPostFetch();
+await testCommentFetch();
+await testLikeFetch();
+await testRepostFetch();

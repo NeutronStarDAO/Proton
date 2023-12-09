@@ -1,0 +1,15 @@
+type RootPost = 
+ service {
+   createBucket: () -> (principal);
+   getAllAvailableBuckets: () -> (vec principal) query;
+   getAllBuckets: () -> (vec principal) query;
+   getAllUnavailableBuckets: () -> (vec principal) query;
+   getAvailableBucket: () -> (opt principal) query;
+   getCommentFetchCanister: () -> (principal) query;
+   getLikeFetchCanister: () -> (principal) query;
+   init: () -> ();
+   reCreateBucket: () -> ();
+   updateCommentFetchCanister: (principal) -> ();
+   updateLikeFetchCanister: (principal) -> ();
+ };
+service : (principal, principal) -> RootPost

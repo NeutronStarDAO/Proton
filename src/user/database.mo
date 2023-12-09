@@ -59,7 +59,8 @@ module {
         biography = profile.biography;
         company = profile.company;
         education = profile.education;
-        imgUrl = profile.imgUrl;
+        backImgUrl = profile.backImgUrl;
+        avatarUrl = profile.avatarUrl;
         feedCanister = profile.feedCanister;
       }
     };

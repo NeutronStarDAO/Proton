@@ -13,7 +13,8 @@ module {
         biography: Text;
         company: Text;
         education: Text;
-        imgUrl: Text;
+        backImgUrl: Text;
+        avatarUrl: Text;
         feedCanister: ?Principal;
     };
 
@@ -23,7 +24,8 @@ module {
         biography: Text;
         company: Text;
         education: Text;
-        imgUrl: Text;
+        backImgUrl: Text;
+        avatarUrl: Text;
         feedCanister: ?Principal;
     };
     

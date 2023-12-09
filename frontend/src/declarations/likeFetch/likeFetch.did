@@ -1,0 +1,54 @@
+type UserId = principal;
+type Time = int;
+type Repost = 
+ record {
+   createdAt: Time;
+   user: UserId;
+ };
+type PostImmutable = 
+ record {
+   comment: vec Comment;
+   content: text;
+   createdAt: Time;
+   index: nat;
+   like: vec Like;
+   postId: PostId;
+   repost: vec Repost;
+   title: text;
+   user: UserId;
+ };
+type PostId = text;
+type LikeFetch = 
+ service {
+   addUserToFeedEntry: (record {
+                          principal;
+                          principal;
+                        }) -> (bool);
+   getNotifyMapEntries: () -> (vec record {
+                                     principal;
+                                     vec text;
+                                   }) query;
+   getUserToFeedEntries: () -> (vec record {
+                                      principal;
+                                      principal;
+                                    }) query;
+   initUserToFeed: (vec record {
+                          principal;
+                          principal;
+                        }) -> (bool);
+   receiveNotify: (PostImmutable) -> ();
+   receiveRepostUserNotify: (vec principal, text) -> ();
+   whoami: () -> (principal) query;
+ };
+type Like = 
+ record {
+   createdAt: Time;
+   user: UserId;
+ };
+type Comment = 
+ record {
+   content: text;
+   createdAt: Time;
+   user: UserId;
+ };
+service : (principal) -> LikeFetch

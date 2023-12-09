@@ -129,7 +129,7 @@ actor class Feed(
         
         // 将帖子内容发送给公共区的 Bucket 
         let bucketActor: BucketActor = actor(Principal.toText(_bucket));
-        ignore await bucketActor.storeFeed(post);
+        assert(await bucketActor.storeFeed(post));
         
         // 通知 PostFetch 
         let postFetchActor: PostFetchActor = actor(Principal.toText(postFetchCanister));
@@ -137,7 +137,7 @@ actor class Feed(
         // for(_follower in followers.vals()) {
         //     Debug.print("Canister Feed, Func createPost, follower : " # Principal.toText(_follower));
         // };
-        ignore postFetchActor.receiveNotify(followers, post.postId);
+        await postFetchActor.receiveNotify(followers, post.postId);
         
         post.postId
     };
@@ -148,7 +148,7 @@ actor class Feed(
             case(?(_bucket, _newRepost)) {
                 // 通知 bucket 更新转发信息
                 let bucketActor: BucketActor = actor(Principal.toText(_bucket));
-                ignore await bucketActor.updatePostRepost(postId, _newRepost);
+                assert(await bucketActor.updatePostRepost(postId, _newRepost));
 
                 // 获取转发者的粉丝
                 let userActor: UserActor = actor(Principal.toText(userCanister));
@@ -156,7 +156,7 @@ actor class Feed(
 
                 // 通知 PostFetch
                 let postFetchActor: PostFetchActor = actor(Principal.toText(postFetchCanister));
-                ignore postFetchActor.receiveNotify(_repostUserFollowers, postId);
+                await postFetchActor.receiveNotify(_repostUserFollowers, postId);
                 return true;
             };
         };
@@ -168,7 +168,7 @@ actor class Feed(
             case(?(_bucket, _newComment)) {
                 // 通知对应的 bucket 更新评论
                 let bucketActor: BucketActor = actor(Principal.toText(_bucket));
-                ignore bucketActor.updatePostComment(postId, _newComment);
+                assert(await bucketActor.updatePostComment(postId, _newComment));
                 return true;
             };
         };
@@ -180,7 +180,7 @@ actor class Feed(
             case(?(_bucket, _newLike)) {
                 // 通知 bucket 更新点赞信息
                 let bucketActor: BucketActor = actor(Principal.toText(_bucket));
-                ignore bucketActor.updatePostLike(postId, _newLike);
+                assert(await bucketActor.updatePostLike(postId, _newLike));
                 return true;
             };
         };
@@ -236,7 +236,7 @@ actor class Feed(
                     let repostUserFollowers = await userActor.getFollowersList(owner);
 
                     let commentFetchActor: CommentFetchActor = actor(Principal.toText(commentFetchCanister));
-                    ignore commentFetchActor.receiveRepostUserNotify(repostUserFollowers, postId);
+                    await commentFetchActor.receiveRepostUserNotify(repostUserFollowers, postId);
                 };
 
                 return true;
@@ -260,7 +260,7 @@ actor class Feed(
                         let repostUserFollowers = await userActor.getFollowersList(owner);
 
                         let commentFetchActor: CommentFetchActor = actor(Principal.toText(commentFetchCanister));
-                        ignore commentFetchActor.receiveRepostUserNotify(repostUserFollowers, _postId);
+                        await commentFetchActor.receiveRepostUserNotify(repostUserFollowers, _postId);
                     };
                 };
             };
@@ -282,7 +282,7 @@ actor class Feed(
                     let repostUserFollowers = await userActor.getFollowersList(owner);
 
                     let likeFetchActor: LikeFetchActor = actor(Principal.toText(likeFetchCanister));
-                    ignore likeFetchActor.receiveRepostUserNotify(repostUserFollowers, postId);
+                    await likeFetchActor.receiveRepostUserNotify(repostUserFollowers, postId);
                 };
 
                 return true;
@@ -306,7 +306,7 @@ actor class Feed(
                         let repostUserFollowers = await userActor.getFollowersList(owner);
 
                         let likeFetchActor: LikeFetchActor = actor(Principal.toText(likeFetchCanister));
-                        ignore likeFetchActor.receiveRepostUserNotify(repostUserFollowers, _postId);
+                        await likeFetchActor.receiveRepostUserNotify(repostUserFollowers, _postId);
                     };
                 };
             };

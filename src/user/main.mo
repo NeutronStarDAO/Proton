@@ -46,6 +46,14 @@ actor class User() = this {
         graph.getReverseAdjacent(user)
     };
 
+    public query({caller}) func getFollowingNumber(user: Vertex): async Nat {
+        Array.size<Vertex>(graph.getForwardAdjacent(user))
+    };
+
+    public query({caller}) func getFollowerNumber(user: Vertex): async Nat {
+        Array.size<Vertex>(graph.getReverseAdjacent(user))
+    };
+
 // Profiles
     
     type NewProfile = Types.NewProfile;
