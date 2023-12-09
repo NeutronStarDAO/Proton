@@ -13,20 +13,20 @@ export default function UserProfile() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [userProfile, setUserProfile] = useState<Profile | undefined>();
 
-  useEffect(() => {
-    if (!isAuth || !identity || !principal) return
-    const userActor = new User(identity);
-    userActor.actor.getProfile(principal).then(
-      (result) => {
-        if (result.length > 0) {
-          setUserProfile(result[0]);
-        }
-      },
-      (error) => {
-        console.error('query profile error : ', error);
-      }
-    );
-  }, [isAuth, identity]);
+  // useEffect(() => {
+  //   if (!isAuth || !identity || !principal) return
+  //   const userActor = new User(identity);
+  //   userActor.actor.getProfile(principal).then(
+  //     (result) => {
+  //       if (result.length > 0) {
+  //         setUserProfile(result[0]);
+  //       }
+  //     },
+  //     (error) => {
+  //       console.error('query profile error : ', error);
+  //     }
+  //   );
+  // }, [isAuth, identity]);
 
   const [api, contextHolder] = notification.useNotification();
 

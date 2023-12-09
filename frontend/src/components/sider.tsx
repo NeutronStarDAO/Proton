@@ -51,13 +51,6 @@ const items: MenuItemType[] = [
   }}/>),
 
 ];
-
-interface SiderProps {
-  authClient?: AuthClient;
-  isLogIn?: Boolean;
-  handleLogIn?: Function;
-}
-
 // const getUserProfile = (
 //     user_principal: Principal
 //     identity: Identity
@@ -113,14 +106,6 @@ export default function Sider() {
           width: '100px'
         }}> Post
         </Button>
-        {
-          isAuth ? (
-            <p>{principal?.toString()}</p>
-          ) : (
-            <></>
-          )
-        }
-
       </div>
       {
         isAuth ? (

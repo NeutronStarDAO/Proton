@@ -24,6 +24,7 @@ export const useProvideAuth = (authClient: IIForIdentity): Props => {
       authClient.getIdentity(),
       authClient.isAuthenticated(),
     ])
+    if (!isAuthenticated) return {message: "not login"}
     const principal = identity?.getPrincipal() as Principal | undefined;
     setPrincipal(principal);
     _setIdentity(identity as DelegationIdentity | undefined);

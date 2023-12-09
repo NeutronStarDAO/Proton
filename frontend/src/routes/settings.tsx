@@ -1,7 +1,9 @@
 import {Layout, Image, Typography, Avatar, Flex, Space, Button} from 'antd';
 import Sider from '../components/sider';
+import {useAuth} from "../utils/useAuth";
 
 export default function Settings() {
+  const {logOut} = useAuth()
   return (
     <>
       <Layout.Content style={{
@@ -30,7 +32,7 @@ export default function Settings() {
             <Button>Light</Button>
           </Space>
           <Space>
-            <Button>LogOut</Button>
+            <Button onClick={() => logOut?.()}>LogOut</Button>
           </Space>
         </Flex>
 
