@@ -40,7 +40,6 @@ export const useProvideAuth = (authClient: IIForIdentity): Props => {
     if (!authClient) return {message: "connect error"};
     const identity = await authClient.login();
     const principal = identity.getPrincipal();
-    // const subAccountId = principalToAccountIdentifier(principal, 0);
     setPrincipal(principal);
     if (identity) {
       _setIdentity(_identity);

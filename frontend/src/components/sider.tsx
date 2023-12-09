@@ -69,11 +69,6 @@ interface SiderProps {
 export default function Sider() {
   const navigate = useNavigate();
   const {isAuth, principal, logIn} = useAuth()
-  console.log('isLogIn : ', isAuth);
-  // if(props.authClient != undefined) {
-  //     console.log(props.authClient);
-  //     getUserProfile(props.authClient.getIdentity());
-  // }
 
   const onClick = (info: MenuInfo) => {
     if (info.key === '1') {

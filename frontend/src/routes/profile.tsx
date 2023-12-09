@@ -1,84 +1,32 @@
 import {useState, useEffect} from 'react';
 import {Layout, Image, Typography, Avatar, Flex, Space, Button, Modal, notification} from 'antd';
-import Sider from '../components/sider';
 import Post from '../components/post';
-import {AuthClient} from "@dfinity/auth-client";
 import ProfileForm from '../components/form';
 import User from '../actors/user';
 import {Profile} from '../declarations/user/user.did';
+import {useAuth} from "../utils/useAuth";
 
 type NotificationType = 'success' | 'info' | 'warning' | 'error';
 
 export default function UserProfile() {
-  const [authClient, setAuthClient] = useState<AuthClient | undefined>();
-  const [isLogin, setIsLogin] = useState<Boolean>(false);
+  const {isAuth, identity, principal} = useAuth()
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [userProfile, setUserProfile] = useState<Profile | undefined>();
 
-  const handleLogIn = async () => {
-    const _authClient = await AuthClient.create();
-    _authClient.login({
-      maxTimeToLive: BigInt(7 * 24 * 60 * 60 * 1000 * 1000 * 1000),
-      onSuccess: async () => {
-        setAuthClient(_authClient);
-        setIsLogin(true);
-        localStorage.setItem('authClient', JSON.stringify(_authClient));
-        localStorage.setItem('isLogin', JSON.stringify(true));
-      }
-    });
-  }
-
   useEffect(() => {
-
-    const loadAuthFromLocalStorage = async () => {
-      const storedAuthClient = localStorage.getItem('authClient');
-      const storedIsLogin = localStorage.getItem('isLogin');
-
-      if (storedAuthClient && storedIsLogin) {
-        const _auth = JSON.parse(storedAuthClient);
-        console.log('_auth : ', _auth);
-        try {
-          const createdAuthClient = await AuthClient.create({
-            identity: _auth._identity,
-            idleOptions: _auth._idleManager,
-            storage: _auth._storage,
-          });
-          setAuthClient(createdAuthClient);
-          setIsLogin(JSON.parse(storedIsLogin));
-        } catch (error) {
-          console.error('Error creating AuthClient:', error);
+    if (!isAuth || !identity || !principal) return
+    const userActor = new User(identity);
+    userActor.actor.getProfile(principal).then(
+      (result) => {
+        if (result.length > 0) {
+          setUserProfile(result[0]);
         }
+      },
+      (error) => {
+        console.error('query profile error : ', error);
       }
-    };
-
-    // if (storedAuthClient && storedIsLogin) {
-    //   const _auth = JSON.parse(storedAuthClient);
-    //   console.log('_auth : ', _auth);
-    //   setAuthClient(
-    //     awaiAuthClient.create({
-    //       identity: _auth._identity,
-    //       idleOptions:  _auth._idleManager,
-    //       storage: _auth._storage
-    //     })
-    //   );
-    //   setIsLogin(JSON.parse(storedIsLogin));
-    // }
-
-    if (isLogin) {
-      const userActor = new User(authClient!.getIdentity());
-      const userPrincipal = authClient!.getIdentity().getPrincipal();
-      userActor.actor.getProfile(userPrincipal).then(
-        (result) => {
-          if (result.length > 0) {
-            setUserProfile(result[0]);
-          }
-        },
-        (error) => {
-          console.error('query profile error : ', error);
-        }
-      );
-    }
-  }, [isLogin]);
+    );
+  }, [isAuth, identity]);
 
   const [api, contextHolder] = notification.useNotification();
 
@@ -92,16 +40,12 @@ export default function UserProfile() {
   };
 
   const handleEditProfile = () => {
-    if (!isLogin) {
+    if (!isAuth) {
       openNotificationWithIcon('error')
     } else {
       setIsModalOpen(true);
     }
   };
-
-  useEffect(() => {
-
-  }, [authClient, isLogin]);
 
   return (
     <>

@@ -1,5 +1,4 @@
-import React, {useEffect, useState} from 'react';
-import logo from './logo.svg';
+import React from 'react';
 import './App.css';
 import {Layout} from 'antd';
 import Sider from './components/sider';
