@@ -8,7 +8,7 @@ import {
 export default function Post() {
 
   return (
-    <div style={{
+    <div className={"content"} style={{
       padding: "12px",
       border: "1px solid rgba(0,0,0,0.2)",
       borderRadius: "20px",

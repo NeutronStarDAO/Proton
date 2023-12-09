@@ -49,16 +49,16 @@ export default function UserProfile() {
 
   return (
     <>
-      <Layout.Content style={{
+      <Layout.Content className={"posts"} style={{
         backgroundColor: "white",
-        // paddingLeft: '3px',
-        // paddingRight: '3px',
+        padding:"0 20px",
         width: '200px',
         overflowY: 'auto',
         scrollbarWidth: 'thin',
         borderRight: '1px solid',
       }}>
         <Image
+          style={{borderRadius:"5px"}}
           src='https://infura-ipfs.mora.host/ipfs/QmbEN76wm4PExViLVmUbKf4vDfx3XkpnYvm6qr3JKCSPDT'
           alt='Profile Bakcground Picture'
         />
@@ -95,6 +95,7 @@ export default function UserProfile() {
         </Flex>
         <div style={{
           paddingLeft: '20px',
+          marginBottom:"20px"
         }}>
           <Space size='large'>
             <Typography.Text>Education : {userProfile?.education}</Typography.Text>

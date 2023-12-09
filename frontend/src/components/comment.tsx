@@ -4,6 +4,7 @@ export default function Comment() {
   return (
     <Flex
       vertical
+      className={"content"}
     >
       <Space>
         <Avatar
@@ -21,7 +22,7 @@ export default function Comment() {
         This is Comment;This is Comment;This is Comment;
         This is Comment;This is Comment;This is Comment;
       </Typography.Paragraph>
-      <Divider />
+      <Divider style={{marginBottom:"0"}}/>
     </Flex>
   )
 }
