@@ -16,7 +16,7 @@ export function getPrincipal(auth: AuthClient) {
 
 export const checkIdentity = (auth: AuthClient | undefined) => {
     // console.log('checkIdentity auth : ', auth);
-    if(auth == undefined) return false;
+    if(auth === undefined) return false;
     let _principal = auth.getIdentity().getPrincipal();
     return _principal.isAnonymous();
     // let _isAuthenticated = false;
