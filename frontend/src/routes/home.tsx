@@ -10,7 +10,8 @@ export const Home = React.memo(()=>{
       overflowY: 'auto',
       scrollbarWidth: 'thin',
       width: '200px',
-      borderRight: '1px solid',
+      borderRight: '1px solid rgba(0,0,0,0.2)',
+      padding:"40px 20px"
     }}>
       <Post/>
       <Post/>
@@ -20,11 +21,11 @@ export const Home = React.memo(()=>{
       <Post/>
       <Post/>
     </Layout.Content>
-
     <Layout.Content style={{
       backgroundColor: 'white',
       overflowY: 'auto',
       scrollbarWidth: 'thin',
+      padding:"40px 20px"
     }}>
       <Comment/>
       <Comment/>

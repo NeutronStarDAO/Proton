@@ -21,7 +21,7 @@ function App() {
       >
         <Layout.Sider
           theme='light'
-          width={370}
+          width={300}
         >
           <Sider/>
         </Layout.Sider>

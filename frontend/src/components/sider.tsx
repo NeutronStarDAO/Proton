@@ -83,6 +83,7 @@ export default function Sider() {
         height: '100vh',
         paddingLeft: '20px',
         paddingBottom: '20px',
+        borderRight: "1px solid rgba(0,0,0,0.2)"
       }}>
       <div>
         <h1 style={{
@@ -98,6 +99,7 @@ export default function Sider() {
           items={items}
           style={{
             marginTop: '50px',
+            border: "none"
           }}
           onClick={onClick}
         />
