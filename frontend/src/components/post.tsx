@@ -4,15 +4,16 @@ import {
   RedoOutlined,
   HeartOutlined
 } from '@ant-design/icons';
+import {PostImmutable} from "../declarations/feed/feed";
 
-export default function Post() {
-
+export default function Post(props: { content: PostImmutable }) {
+  const {content} = props
   return (
     <div className={"content"} style={{
       padding: "12px",
       border: "1px solid rgba(0,0,0,0.2)",
       borderRadius: "20px",
-      marginBottom:"20px",
+      marginBottom: "20px",
     }}>
       {/*<Divider/>*/}
       <Space>
