@@ -2,11 +2,13 @@ import {createContext, useContext, useEffect, useState} from "react";
 import {authClient, IIForIdentity} from "./IIForIdentity";
 import {DelegationIdentity} from "@dfinity/identity";
 import {Principal} from "@dfinity/principal";
+import {rootFeedApi} from "../actors/rootFeed";
 
 export interface Props {
   readonly identity: DelegationIdentity | undefined;
   readonly isAuthClientReady: boolean;
   readonly principal: Principal | undefined;
+  readonly userFeedCai: Principal | undefined
   readonly logOut: Function | undefined;
   readonly logIn: Function | undefined;
   readonly isAuth: boolean;
@@ -16,6 +18,7 @@ export const useProvideAuth = (authClient: IIForIdentity): Props => {
   const [_identity, _setIdentity] = useState<DelegationIdentity | undefined>(undefined);
   const [isAuthClientReady, setAuthClientReady] = useState(false);
   const [principal, setPrincipal] = useState<Principal | undefined>(undefined);
+  const [userFeedCai, setUserFeedCai] = useState<Principal | undefined>()
   const [authenticated, setAuthenticated] = useState<boolean>(false);
   if (!isAuthClientReady) authClient.create().then(() => setAuthClientReady(true));
 
@@ -36,6 +39,20 @@ export const useProvideAuth = (authClient: IIForIdentity): Props => {
   useEffect(() => {
     isAuthClientReady && init().then()
   }, [isAuthClientReady]);
+
+  const getFeedCai = async () => {
+    if (!principal) return
+    const e = await rootFeedApi.getUserFeedCanister(principal)
+    let cai = e
+    if (!e) {
+      cai = await rootFeedApi.createFeedCanister()
+    }
+    setUserFeedCai(cai)
+  }
+
+  useEffect(() => {
+    getFeedCai()
+  }, [principal])
 
   const logIn = async (): Promise<{ message?: string; status?: number } | undefined> => {
     if (!authClient) return {message: "connect error"};
@@ -62,6 +79,7 @@ export const useProvideAuth = (authClient: IIForIdentity): Props => {
     principal,
     logIn,
     logOut,
+    userFeedCai,
     isAuth: authenticated,
   };
   return Context;
@@ -74,6 +92,7 @@ const props: Props = {
   logIn: undefined,
   logOut: undefined,
   isAuth: false,
+  userFeedCai: undefined
 }
 
 const authContext = createContext(props);
