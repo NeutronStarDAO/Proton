@@ -28,7 +28,7 @@ actor class RootFeed(
     // 给用户创建一个用户自己的 Canister
     public shared({caller}) func createFeedCanister(): async ?Principal {
         assert(_getUserFeedCanister(caller) == null);
-        Cycles.add(4 * T_CYCLES);
+        Cycles.add(2 * T_CYCLES);
         let feedCanister = await Feed.Feed(
             caller, rootPostCanister, userCanister, 
             postFetchCanister,
@@ -41,7 +41,8 @@ actor class RootFeed(
             canister_id = feedCanisterId;
             settings = {
                 freezing_threshold = null;
-                controllers = ?[Principal.fromActor(this), caller, feedCanisterId];
+                // controllers = ?[Principal.fromActor(this), caller, feedCanisterId];
+                controllers = ?[Principal.fromActor(this), feedCanisterId];
                 memory_allocation = null;
                 compute_allocation = null;
             }
