@@ -8,11 +8,22 @@ import Explore from './routes/explore';
 import Profile from './routes/profile';
 import Settings from './routes/settings';
 import {Home} from "./routes/home";
-import {userApi} from "./actors/user";
-import {Principal} from "@dfinity/principal";
 import {useAuth} from "./utils/useAuth";
+import Feed from "./actors/feed";
 
 function App() {
+  const {userFeedCai} = useAuth()
+
+  const fetch = async () => {
+    if (!userFeedCai) return
+    const feedApi = new Feed(userFeedCai)
+    await feedApi.getAllPost()
+    await feedApi.getLatestFeed(20)
+  }
+
+  useEffect(() => {
+    fetch()
+  }, [userFeedCai])
 
   return (
     <div className="App">

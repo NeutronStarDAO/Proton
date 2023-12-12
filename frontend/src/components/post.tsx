@@ -1,4 +1,4 @@
-import {Card, Avatar, Divider, Space, Typography} from "antd";
+import {Avatar, Modal, Space, Typography} from "antd";
 import {
   CommentOutlined,
   RedoOutlined,
@@ -8,12 +8,13 @@ import {PostImmutable} from "../declarations/feed/feed";
 import {useAuth} from "../utils/useAuth";
 import Feed from "../actors/feed";
 import React, {useState} from "react";
+import {CommentForm} from "./Modal/commentForm";
+import {PostForm} from "./Modal/postForm";
 
 export default function Post(props: { content: PostImmutable, setPostItem?: Function }) {
-  const {content: data, setPostItem} = props
+  const {content, setPostItem} = props
   const {userFeedCai} = useAuth()
-  const [content, setContent] = useState(data)
-
+  const [open, setOpen] = useState(false)
   const feedApi = React.useMemo(() => {
     if (!userFeedCai) return undefined
     return new Feed(userFeedCai)
@@ -21,10 +22,7 @@ export default function Post(props: { content: PostImmutable, setPostItem?: Func
 
   const update = async () => {
     if (!feedApi) return
-    const updateData = await feedApi.getPost(content.postId)
-    console.log("updateData", updateData)
-    if (!updateData[0]) return
-    setContent(updateData[0])
+    await feedApi.getAllPost()
   }
 
   const repost = async () => {
@@ -39,6 +37,7 @@ export default function Post(props: { content: PostImmutable, setPostItem?: Func
     update().then()
   }
 
+
   return (
     <div className={"content"} style={{
       padding: "12px",
@@ -47,7 +46,6 @@ export default function Post(props: { content: PostImmutable, setPostItem?: Func
       marginBottom: "20px",
       cursor: "pointer"
     }} onClick={() => setPostItem?.(content)}>
-      {/*<Divider/>*/}
       <Space>
         <Avatar
           size={32}
@@ -69,7 +67,15 @@ export default function Post(props: { content: PostImmutable, setPostItem?: Func
           paddingLeft: '25px'
         }}
       >
-        <div style={{cursor: "pointer"}}>
+        <Modal
+          title="Edit"
+          open={open}
+          footer={null}
+          onCancel={() => setOpen(false)}
+        >
+          <CommentForm setOpen={setOpen}/>
+        </Modal>
+        <div style={{cursor: "pointer"}} onClick={() => setOpen(true)}>
           <CommentOutlined/> &nbsp;
           {content.comment.length}
         </div>

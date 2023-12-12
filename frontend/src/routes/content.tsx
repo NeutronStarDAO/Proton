@@ -4,7 +4,7 @@ import Post from "../components/post";
 import {Comments} from "../components/comment";
 import {Like, PostId, PostImmutable, Repost, Time, UserId} from "../declarations/feed/feed";
 
-export const Content = React.memo((props: { contents: PostImmutable[] }) => {
+export const Content = React.memo((props: { contents?: PostImmutable[] }) => {
   const {contents} = props
   const [postItem, setPostItem] = useState<PostImmutable>()
   return <>
@@ -16,7 +16,7 @@ export const Content = React.memo((props: { contents: PostImmutable[] }) => {
       borderRight: '1px solid rgba(0,0,0,0.2)',
       padding: "40px 20px"
     }}>
-      {contents.map((v, k) => {
+      {contents && contents.map((v, k) => {
         return <Post setPostItem={setPostItem} content={v} key={k}/>
       })}
     </Layout.Content>

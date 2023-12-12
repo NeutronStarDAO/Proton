@@ -1,12 +1,11 @@
 import React, {useState, useEffect} from 'react';
 import {Layout, Image, Typography, Avatar, Flex, Space, Button, Modal, notification} from 'antd';
 import Post from '../components/post';
-import ProfileForm from '../components/form';
 import {userApi} from '../actors/user';
 import {Profile} from '../declarations/user/user';
 import {useAuth} from "../utils/useAuth";
-import {PostImmutable} from "../declarations/feed/feed";
-import Feed from "../actors/feed";
+import {useAllDataStore} from "../redux";
+import ProfileForm from "../components/Modal/form";
 
 type NotificationType = 'success' | 'info' | 'warning' | 'error';
 
@@ -16,21 +15,7 @@ export default function UserProfile() {
   const [userProfile, setUserProfile] = useState<Profile | undefined>();
   const [following, setFollowing] = useState(0)
   const [followers, setFollowers] = useState(0)
-  const {userFeedCai} = useAuth()
-  const [contents, setContents] = useState<PostImmutable[]>([])
-
-  const fetch = async () => {
-    if (!userFeedCai) return
-    const feedApi = new Feed(userFeedCai)
-    const posts = await feedApi.getAllPost()
-    console.log(posts)
-    setContents(posts)
-    // await feedApi.createPost()
-  }
-
-  useEffect(() => {
-    fetch()
-  }, [userFeedCai])
+  const {allPost} = useAllDataStore()
 
   const getInfo = () => {
     if (!principal) return
@@ -127,7 +112,7 @@ export default function UserProfile() {
             <Typography.Text>{followers} Followers</Typography.Text>
           </Space>
         </div>
-        {contents.map((v, k) => {
+        {allPost && allPost.map((v, k) => {
           return <Post content={v} key={k}/>
         })}
       </Layout.Content>

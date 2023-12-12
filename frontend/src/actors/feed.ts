@@ -2,6 +2,7 @@ import {Principal} from "@dfinity/principal";
 import {idlFactory} from "../declarations/feed/feed.did.js";
 import {getActor} from "../utils/Actor";
 import {PostImmutable} from "../declarations/feed/feed";
+import {updateAllData} from "../redux";
 
 
 export default class Feed {
@@ -16,14 +17,12 @@ export default class Feed {
     return await getActor.createActor(idlFactory, this.canisterId.toString());
   }
 
-  async createPost() {
+  async createPost(title: string, content: string) {
     const actor = await this.getActor()
     try {
       const checkAvailableBucket = await this.checkAvailableBucket()
       if (!checkAvailableBucket) throw new Error("have no available bucket")
-      const res = await actor.createPost("test", "我是一个推文") as string
-      console.log("post res", res)
-      return res
+      return await actor.createPost(title ? title : "", content) as string
     } catch (e) {
       console.log("post error", e)
       throw e
@@ -40,10 +39,11 @@ export default class Feed {
     }
   }
 
-  async getAllPost(): Promise<PostImmutable[]> {
+  async getAllPost() {
     const actor = await this.getActor()
     try {
-      return await actor.getAllPost() as PostImmutable[]
+      const res = await actor.getAllPost() as PostImmutable[]
+      updateAllData({allPost: res})
     } catch (e) {
       console.log("getAllPost", e)
       throw e
@@ -90,12 +90,11 @@ export default class Feed {
     }
   }
 
-  async getLatestFeed(n: number): Promise<PostImmutable[]> {
+  async getLatestFeed(n: number) {
     const actor = await this.getActor()
     try {
       const res = await actor.getLatestFeed(BigInt(n)) as PostImmutable[]
-      console.log("feeds", res)
-      return res
+      updateAllData({allFeed: res})
     } catch (e) {
       console.log("getLatestFeed error", e)
       throw e

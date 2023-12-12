@@ -1,22 +1,11 @@
-
 import React, { useState } from 'react';
-import type { CascaderProps } from 'antd';
-import { Principal } from '@dfinity/principal';
 import {
-  AutoComplete,
   Button,
-  Cascader,
-  Checkbox,
-  Col,
   Form,
   Input,
-  InputNumber,
-  Row,
   Select,
 } from 'antd';
-import { Profile } from '../declarations/user/user';
-
-const { Option } = Select;
+import {Profile} from "../../declarations/user/user";
 
 interface DataNodeType {
   value: string;
@@ -59,21 +48,6 @@ export default function ProfileForm(props: ProfileFormProps) {
   const onFinish = (values: any) => {
     console.log('Received values of form: ', values);
   };
-
-  const [autoCompleteResult, setAutoCompleteResult] = useState<string[]>([]);
-
-  const onWebsiteChange = (value: string) => {
-    if (!value) {
-      setAutoCompleteResult([]);
-    } else {
-      setAutoCompleteResult(['.com', '.org', '.net'].map((domain) => `${value}${domain}`));
-    }
-  };
-
-  const websiteOptions = autoCompleteResult.map((website) => ({
-    label: website,
-    value: website,
-  }));
 
   return (
     <Form

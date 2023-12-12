@@ -1,4 +1,4 @@
-import {Menu, Button, Avatar, Flex, Card, Space} from "antd";
+import {Menu, Button, Avatar, Flex, Card, Space, Modal} from "antd";
 import {
   HomeOutlined,
   SettingOutlined,
@@ -9,14 +9,9 @@ import {
 import type {MenuInfo} from 'rc-menu/lib/interface'
 import type {MenuItemType} from 'antd/es/menu/hooks/useItems';
 import {useNavigate} from "react-router-dom";
-import {AuthClient} from "@dfinity/auth-client";
-import {
-  getPrincipal,
-  checkIdentity
-} from '../utils/common';
-import {Principal} from "@dfinity/principal";
-import {Identity} from "@dfinity/agent";
 import {useAuth} from "../utils/useAuth";
+import React, {useState} from "react";
+import {PostForm} from "./Modal/postForm";
 
 function getItem(
   label: React.ReactNode,
@@ -60,7 +55,8 @@ const items: MenuItemType[] = [
 
 export default function Sider() {
   const navigate = useNavigate();
-  const {isAuth, principal, logIn} = useAuth()
+  const {isAuth, logIn} = useAuth()
+  const [open, setOpen] = useState(false)
 
   const onClick = (info: MenuInfo) => {
     if (info.key === '1') {
@@ -102,11 +98,18 @@ export default function Sider() {
           }}
           onClick={onClick}
         />
-
+        <Modal
+          title="Edit"
+          open={open}
+          footer={null}
+          onCancel={() => setOpen(false)}
+        >
+          <PostForm setOpen={setOpen}/>
+        </Modal>
         <Button style={{
           marginLeft: '23px',
           width: '100px'
-        }}> Post
+        }} onClick={() => setOpen(true)}> Post
         </Button>
       </div>
       {
