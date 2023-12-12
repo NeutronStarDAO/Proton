@@ -1,4 +1,4 @@
-import {Menu, Button, Avatar, Flex, Card, Space, Modal} from "antd";
+import {Menu, Button, Avatar, Flex, Card, Space, Modal, message} from "antd";
 import {
   HomeOutlined,
   SettingOutlined,
@@ -45,17 +45,10 @@ const items: MenuItemType[] = [
   }}/>),
 
 ];
-// const getUserProfile = (
-//     user_principal: Principal
-//     identity: Identity
-// ) => {
-//     const user = new User(identity);
-//     user.actor.getProfile(user_principal)
-// }
 
 export default function Sider() {
   const navigate = useNavigate();
-  const {isAuth, logIn} = useAuth()
+  const {isAuth, logIn, principal} = useAuth()
   const [open, setOpen] = useState(false)
 
   const onClick = (info: MenuInfo) => {
@@ -64,7 +57,8 @@ export default function Sider() {
     } else if (info.key === '2') {
       navigate('/explore');
     } else if (info.key === '3') {
-      navigate('/profile');
+      if (!principal) return message.warning("please login first")
+      navigate(`/profile/${principal.toText()}`);
     } else if (info.key === '4') {
       navigate('/settings');
     }

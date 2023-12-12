@@ -53,6 +53,16 @@ class User {
       throw e
     }
   }
+
+  async follow(who: Principal) {
+    const actor = await User.getActor()
+    try {
+      await actor.follow(who)
+    } catch (e) {
+      console.log("follow", e)
+      throw e
+    }
+  }
 }
 
 

@@ -43,7 +43,7 @@ function App() {
           <Route path="/" element={<Home/>}/>
           <Route path="home" element={<Home/>}/>
           <Route path="explore" element={<Explore/>}/>
-          <Route path="profile" element={<Profile/>}/>
+          <Route path="profile/:userid" element={<Profile/>}/>
           <Route path="settings" element={<Settings/>}/>
           <Route path="*" element={<ErrorPage/>}/>
         </Routes>

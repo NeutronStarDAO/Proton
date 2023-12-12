@@ -1,29 +1,70 @@
 import React, {useState, useEffect} from 'react';
-import {Layout, Image, Typography, Avatar, Flex, Space, Button, Modal, notification} from 'antd';
+import {Layout, Image, Typography, Avatar, Flex, Space, Button, Modal, message} from 'antd';
 import Post from '../components/post';
 import {userApi} from '../actors/user';
 import {Profile} from '../declarations/user/user';
-import {useAuth} from "../utils/useAuth";
-import {useAllDataStore} from "../redux";
 import ProfileForm from "../components/Modal/form";
 import {Comments} from "../components/comment";
 import {PostImmutable} from "../declarations/feed/feed";
-
-type NotificationType = 'success' | 'info' | 'warning' | 'error';
+import {useNavigate, useParams, useLocation} from "react-router-dom";
+import {Principal} from "@dfinity/principal";
+import {rootFeedApi} from "../actors/rootFeed";
+import Feed from "../actors/feed";
+import {useAllDataStore} from "../redux";
+import {useAuth} from "../utils/useAuth";
 
 export default function UserProfile() {
-  const {principal} = useAuth()
+  const {principal: me} = useAuth()
+  const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [userProfile, setUserProfile] = useState<Profile | undefined>();
   const [postItem, setPostItem] = useState<PostImmutable>()
   const [following, setFollowing] = useState(0)
   const [followers, setFollowers] = useState(0)
+  const [allPosts, setAllPosts] = useState<PostImmutable[]>()
+  const {userid} = useParams()
   const {allPost} = useAllDataStore()
+  const principal = React.useMemo(() => {
+    try {
+      return Principal.from(userid)
+    } catch (e) {
+      message.warning("id is illegal")
+      navigate("/")
+    }
+  }, [userid])
+
+  const isMe: boolean = React.useMemo(() => {
+    if (!me) return false
+    if (!principal) return false
+    return principal.toText() === me.toString()
+  }, [principal, me])
+
+
+  const getAllPost = async () => {
+    if (!principal || !me) {
+      setAllPosts([])
+      return
+    }
+    if (isMe) return setAllPosts(allPost)
+    const userFeedCai = await rootFeedApi.getUserFeedCanister(principal)
+    if (!userFeedCai) {
+      setAllPosts([])
+      return
+    }
+    const feedApi = new Feed(userFeedCai)
+    const posts = await feedApi.getAllPostWithoutUpate()
+    setAllPosts(posts)
+  }
+
 
   const getInfo = () => {
     if (!principal) return
     userApi.getProfile(principal).then(res => {
-      if (!res[0]) return
+      if (!res[0]) {
+        // message.warning("User does not exist")
+        // navigate("/")
+        return
+      }
       setUserProfile(res[0])
     })
     userApi.getFollowerNumber(principal).then(res => setFollowers(res))
@@ -32,26 +73,25 @@ export default function UserProfile() {
 
   useEffect(() => {
     getInfo()
-  }, [principal]);
+  }, [userid]);
 
-  const [api, contextHolder] = notification.useNotification();
+  useEffect(() => {
+    getAllPost()
+  }, [userid, me, allPost])
 
-  const openNotificationWithIcon = (type: NotificationType) => {
-    api[type]({
-      message: 'Not Login',
-      description:
-        'You should login to edit profile/',
-      duration: 1
-    });
-  };
 
   const handleEditProfile = () => {
-    if (!principal) {
-      openNotificationWithIcon('error')
-    } else {
-      setIsModalOpen(true);
-    }
+    setIsModalOpen(true);
   };
+
+  const handleClick = async () => {
+    if (isMe) {
+      handleEditProfile()
+    } else {
+      if (!principal) return
+      userApi.follow(principal).then()
+    }
+  }
 
   return (
     <>
@@ -88,8 +128,7 @@ export default function UserProfile() {
             />
             <Typography.Text>{userProfile?.name}</Typography.Text>
           </Space>
-          {contextHolder}
-          <Button onClick={handleEditProfile}> Edit Profile </Button>
+          <Button onClick={handleClick}> {isMe ? "Edit Profile" : "Follow"} </Button>
           <Modal
             title="Edit Profile Information"
             open={isModalOpen}
@@ -115,7 +154,7 @@ export default function UserProfile() {
             <Typography.Text>{followers} Followers</Typography.Text>
           </Space>
         </div>
-        {allPost && allPost.map((v, k) => {
+        {allPosts && allPosts.map((v, k) => {
           return <Post setPostItem={setPostItem} content={v} key={k}/>
         })}
       </Layout.Content>

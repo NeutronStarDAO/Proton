@@ -1,4 +1,4 @@
-import {Avatar, Modal, Space, Typography} from "antd";
+import {Avatar, message, Modal, Space, Typography} from "antd";
 import {
   CommentOutlined,
   RedoOutlined,
@@ -9,34 +9,35 @@ import {useAuth} from "../utils/useAuth";
 import Feed from "../actors/feed";
 import React, {useState} from "react";
 import {CommentForm} from "./Modal/commentForm";
-import {PostForm} from "./Modal/postForm";
 
 export default function Post(props: { content: PostImmutable, setPostItem?: Function }) {
   const {content, setPostItem} = props
   const {userFeedCai} = useAuth()
   const [open, setOpen] = useState(false)
+
   const feedApi = React.useMemo(() => {
     if (!userFeedCai) return undefined
     return new Feed(userFeedCai)
   }, [userFeedCai])
 
+  const tip = () => message.warning("please login first")
+
   const update = async () => {
-    if (!feedApi) return
+    if (!feedApi) return tip()
     await feedApi.getAllPost()
   }
 
   const repost = async () => {
-    if (!feedApi) return
+    if (!feedApi) return tip()
     await feedApi.createRepost(content.postId)
     update().then()
   }
 
   const like = async () => {
-    if (!feedApi) return
+    if (!feedApi) return tip()
     await feedApi.createLike(content.postId)
     update().then()
   }
-
 
   return (
     <div className={"content"} style={{
@@ -78,7 +79,10 @@ export default function Post(props: { content: PostImmutable, setPostItem?: Func
         >
           <CommentForm postId={content.postId} setOpen={setOpen}/>
         </Modal>
-        <div style={{cursor: "pointer"}} onClick={() => setOpen(true)}>
+        <div style={{cursor: "pointer"}} onClick={() => {
+          if (!feedApi) return tip()
+          setOpen(true)
+        }}>
           <CommentOutlined/> &nbsp;
           {content.comment.length}
         </div>

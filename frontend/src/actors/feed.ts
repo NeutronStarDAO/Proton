@@ -17,6 +17,11 @@ export default class Feed {
     return await getActor.createActor(idlFactory, this.canisterId.toString());
   }
 
+  private async getNoIdentityActor() {
+    return await getActor.noIdentityActor(idlFactory, this.canisterId.toString());
+
+  }
+
   async createPost(title: string, content: string) {
     const actor = await this.getActor()
     try {
@@ -40,10 +45,20 @@ export default class Feed {
   }
 
   async getAllPost() {
-    const actor = await this.getActor()
+    const actor = await this.getNoIdentityActor()
     try {
       const res = await actor.getAllPost() as PostImmutable[]
       updateAllData({allPost: res})
+    } catch (e) {
+      console.log("getAllPost", e)
+      throw e
+    }
+  }
+
+  async getAllPostWithoutUpate() {
+    const actor = await this.getNoIdentityActor()
+    try {
+      return await actor.getAllPost() as PostImmutable[]
     } catch (e) {
       console.log("getAllPost", e)
       throw e

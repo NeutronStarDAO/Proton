@@ -40,8 +40,7 @@ export const useProvideAuth = (authClient: IIForIdentity): Props => {
     isAuthClientReady && init().then()
   }, [isAuthClientReady]);
 
-  const getFeedCai = async () => {
-    if (!principal) return
+  const getFeedCai = async (principal: Principal) => {
     const e = await rootFeedApi.getUserFeedCanister(principal)
     let cai = e
     if (!e) {
@@ -49,21 +48,25 @@ export const useProvideAuth = (authClient: IIForIdentity): Props => {
     }
     setUserFeedCai(cai)
   }
-
+//aa3zr-2je3k-6vmid-vj657-x36hs-ylxag-e2jd5-pufmf-hh26e-uttum-rae
   useEffect(() => {
-    getFeedCai()
+    principal && getFeedCai(principal)
   }, [principal])
 
   const logIn = async (): Promise<{ message?: string; status?: number } | undefined> => {
-    if (!authClient) return {message: "connect error"};
-    const identity = await authClient.login();
-    const principal = identity.getPrincipal();
-    setPrincipal(principal);
-    if (identity) {
-      _setIdentity(_identity);
-      setAuthenticated(true);
-    } else {
-      return {message: "connect error"};
+    try {
+      if (!authClient) return {message: "connect error"};
+      const identity = await authClient.login();
+      const principal = identity.getPrincipal();
+      setPrincipal(principal);
+      if (identity) {
+        _setIdentity(_identity);
+        setAuthenticated(true);
+      } else {
+        return {message: "connect error"};
+      }
+    } catch (e) {
+      console.warn(e)
     }
   };
 
