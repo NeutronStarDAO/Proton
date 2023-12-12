@@ -1,6 +1,9 @@
 import {Flex, Space, Avatar, Typography, Divider} from 'antd';
+import {Comment} from "../declarations/feed/feed"
 
-export default function Comment() {
+
+export function Comments(props: { content: Comment }) {
+  const {content} = props
   return (
     <Flex
       vertical
@@ -17,12 +20,9 @@ export default function Comment() {
         <p>NeutronStarDAO</p>
       </Space>
       <Typography.Paragraph>
-        This is Comment;This is Comment;This is Comment;
-        This is Comment;This is Comment;This is Comment;
-        This is Comment;This is Comment;This is Comment;
-        This is Comment;This is Comment;This is Comment;
+        {content.content}
       </Typography.Paragraph>
-      <Divider style={{marginBottom:"0"}}/>
+      <Divider style={{marginBottom: "0"}}/>
     </Flex>
   )
 }

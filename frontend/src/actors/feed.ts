@@ -50,29 +50,45 @@ export default class Feed {
     }
   }
 
-  // async createComment(postId, content) {
-  //     const result = await this.actor.createComment(postId, content);
-  //     return result;
-  // }
+  async createComment(postId: string, content: string) {
+    const actor = await this.getActor()
+    try {
+      return await actor.createComment(postId, content) as boolean
+    } catch (e) {
+      console.log("createComment", e)
+      throw e
+    }
+  }
 
-  // async createRepost(postId) {
-  //     const result = await this.actor.createRepost(postId);
-  //     return result;
-  // }
+  async createRepost(postId: string) {
+    const actor = await this.getActor()
+    try {
+      return await actor.createRepost(postId) as boolean
+    } catch (e) {
+      console.log("createRepost", e)
+      throw e
+    }
+  }
 
-  // async createLike(postId) {
-  //     const result = await this.actor.createLike(postId);
-  //     return result;
-  // }
+  async createLike(postId: string) {
+    const actor = await this.getActor()
+    try {
+      return await actor.createLike(postId) as boolean
+    } catch (e) {
+      console.log("createLike", e)
+      throw e
+    }
+  }
 
-  // async getFeedNumber() {
-  //     const result = await this.actor.getFeedNumber();
-  //     return result;
-  // }
-
-  // async getFeed(postId) {
-  //     return await this.actor.getFeed(postId);
-  // }
+  async getPost(postId: string) {
+    const actor = await this.getActor()
+    try {
+      return await actor.getPost(postId) as [] | [PostImmutable]
+    } catch (e) {
+      console.log("getPost", e)
+      throw e
+    }
+  }
 
   async getLatestFeed(n: number): Promise<PostImmutable[]> {
     const actor = await this.getActor()

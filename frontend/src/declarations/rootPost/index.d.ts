@@ -7,7 +7,7 @@ import type {
 import type { Principal } from "@dfinity/principal";
 import type { IDL } from "@dfinity/candid";
 
-import { _SERVICE } from './rootPost.did';
+import { _SERVICE } from './rootPost';
 
 export declare const idlFactory: IDL.InterfaceFactory;
 export declare const canisterId: string;
