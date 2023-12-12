@@ -20,6 +20,6 @@ export function PostForm(props: { setOpen: Function }) {
   };
 
   return (
-    <EditModal form={form} onFinish={onFinish}/>
+    <EditModal isComment={false} form={form} onFinish={onFinish}/>
   );
 };

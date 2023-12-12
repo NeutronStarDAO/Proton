@@ -44,23 +44,26 @@ export default function Post(props: { content: PostImmutable, setPostItem?: Func
       border: "1px solid rgba(0,0,0,0.2)",
       borderRadius: "20px",
       marginBottom: "20px",
-      cursor: "pointer"
-    }} onClick={() => setPostItem?.(content)}>
-      <Space>
-        <Avatar
-          size={32}
-          src="https://avatars.githubusercontent.com/u/120618331?s=200&v=4"
-          style={{
-            border: '1px solid #D3D540',
-          }}
-        />
-        <p>NeutronStarDAO</p>
-      </Space>
-      <Typography.Paragraph style={{
-        paddingLeft: '12px'
-      }}>
-        {content.content}
-      </Typography.Paragraph>
+    }}>
+      <div style={{
+        cursor: "pointer"
+      }} onClick={() => setPostItem?.(content)}>
+        <Space>
+          <Avatar
+            size={32}
+            src="https://avatars.githubusercontent.com/u/120618331?s=200&v=4"
+            style={{
+              border: '1px solid #D3D540',
+            }}
+          />
+          <p>NeutronStarDAO</p>
+        </Space>
+        <Typography.Paragraph style={{
+          paddingLeft: '12px'
+        }}>
+          {content.content}
+        </Typography.Paragraph>
+      </div>
       <Space
         size={140}
         style={{
@@ -73,7 +76,7 @@ export default function Post(props: { content: PostImmutable, setPostItem?: Func
           footer={null}
           onCancel={() => setOpen(false)}
         >
-          <CommentForm setOpen={setOpen}/>
+          <CommentForm postId={content.postId} setOpen={setOpen}/>
         </Modal>
         <div style={{cursor: "pointer"}} onClick={() => setOpen(true)}>
           <CommentOutlined/> &nbsp;

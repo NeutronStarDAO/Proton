@@ -6,6 +6,8 @@ import {Profile} from '../declarations/user/user';
 import {useAuth} from "../utils/useAuth";
 import {useAllDataStore} from "../redux";
 import ProfileForm from "../components/Modal/form";
+import {Comments} from "../components/comment";
+import {PostImmutable} from "../declarations/feed/feed";
 
 type NotificationType = 'success' | 'info' | 'warning' | 'error';
 
@@ -13,6 +15,7 @@ export default function UserProfile() {
   const {principal} = useAuth()
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [userProfile, setUserProfile] = useState<Profile | undefined>();
+  const [postItem, setPostItem] = useState<PostImmutable>()
   const [following, setFollowing] = useState(0)
   const [followers, setFollowers] = useState(0)
   const {allPost} = useAllDataStore()
@@ -113,13 +116,19 @@ export default function UserProfile() {
           </Space>
         </div>
         {allPost && allPost.map((v, k) => {
-          return <Post content={v} key={k}/>
+          return <Post setPostItem={setPostItem} content={v} key={k}/>
         })}
       </Layout.Content>
 
-      <Layout.Content style={{
+      <Layout.Content className={"posts"} style={{
         backgroundColor: 'white',
+        overflowY: 'auto',
+        scrollbarWidth: 'thin',
+        padding: "40px 20px"
       }}>
+        {postItem && postItem.comment.map((v, k) => {
+          return <Comments content={v} key={k}/>
+        })}
       </Layout.Content>
     </>
   )

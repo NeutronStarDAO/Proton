@@ -8,6 +8,7 @@ export function Comments(props: { content: Comment }) {
     <Flex
       vertical
       className={"content"}
+      style={{padding: "0 20px"}}
     >
       <Space>
         <Avatar
