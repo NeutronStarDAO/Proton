@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import './App.css';
 import {Layout} from 'antd';
 import Sider from './components/sider';
@@ -8,6 +8,9 @@ import Explore from './routes/explore';
 import Profile from './routes/profile';
 import Settings from './routes/settings';
 import {Home} from "./routes/home";
+import {userApi} from "./actors/user";
+import {Principal} from "@dfinity/principal";
+import {useAuth} from "./utils/useAuth";
 
 function App() {
 

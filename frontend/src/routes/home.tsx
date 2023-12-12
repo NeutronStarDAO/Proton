@@ -7,17 +7,18 @@ import {PostImmutable} from "../declarations/feed/feed";
 
 export const Home = React.memo(() => {
   const {userFeedCai} = useAuth()
-  const [content, setContent] = useState<PostImmutable[]>([])
+  const [contents, setContents] = useState<PostImmutable[]>([])
 
   const fetch = async () => {
     if (!userFeedCai) return
     const feedApi = new Feed(userFeedCai)
     const feeds = await feedApi.getLatestFeed(20)
-    setContent(feeds)
+    setContents(feeds)
+    // await feedApi.createPost()
   }
 
   useEffect(() => {
     fetch()
   }, [userFeedCai])
-  return <Content content={content}/>
+  return <Content contents={contents}/>
 })

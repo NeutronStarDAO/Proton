@@ -29,9 +29,7 @@ export default function Post(props: { content: PostImmutable }) {
       <Typography.Paragraph style={{
         paddingLeft: '12px'
       }}>
-        If you’ve been in the Ordinals space for a while the experience on Bioniq is going to be different, but in a
-        good way I hope. You don’t need a browser extension wallet, you login with a Google account (non-custodial via
-        Web3Auth), and we have a cross-chain wallet built directly into Bioniq.
+        {content.content}
       </Typography.Paragraph>
       <Space
         size={140}
@@ -39,9 +37,19 @@ export default function Post(props: { content: PostImmutable }) {
           paddingLeft: '25px'
         }}
       >
-        <CommentOutlined/>
-        <RedoOutlined/>
-        <HeartOutlined/>
+        <div>
+          <CommentOutlined/> &nbsp;
+          {content.comment.length}
+        </div>
+        <div>
+          <RedoOutlined/>
+          &nbsp;
+          {content.repost.length}
+        </div>
+        <div>
+          <HeartOutlined/>&nbsp;
+          {content.like.length}
+        </div>
       </Space>
     </div>
   );

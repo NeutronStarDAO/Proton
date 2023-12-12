@@ -14,7 +14,7 @@ import {
   Row,
   Select,
 } from 'antd';
-import { Profile } from '../declarations/user/user.did';
+import { Profile } from '../declarations/user/user';
 
 const { Option } = Select;
 
@@ -81,7 +81,7 @@ export default function ProfileForm(props: ProfileFormProps) {
       form={form}
       name="register"
       onFinish={onFinish}
-      initialValues={{ 
+      initialValues={{
         name: props.userProfile?.name,
         company: props.userProfile?.company,
         education: props.userProfile?.education,
@@ -133,7 +133,7 @@ export default function ProfileForm(props: ProfileFormProps) {
       >
         <Input />
       </Form.Item>
-      
+
       <Form.Item
         name="feedCanister"
         label="Feed Canister Id"

@@ -14,7 +14,6 @@ import {
   getPrincipal,
   checkIdentity
 } from '../utils/common';
-import User from '../actors/user';
 import {Principal} from "@dfinity/principal";
 import {Identity} from "@dfinity/agent";
 import {useAuth} from "../utils/useAuth";

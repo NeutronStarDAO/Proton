@@ -16,17 +16,39 @@ export default class Feed {
     return await getActor.createActor(idlFactory, this.canisterId.toString());
   }
 
-  // async createPost() {
-  //     // 发帖前更新当前可用的bucket
-  //     assert(await this.actor.checkAvailableBucket(), true);
+  async createPost() {
+    const actor = await this.getActor()
+    try {
+      const checkAvailableBucket = await this.checkAvailableBucket()
+      if (!checkAvailableBucket) throw new Error("have no available bucket")
+      const res = await actor.createPost("test", "我是一个推文") as string
+      console.log("post res", res)
+      return res
+    } catch (e) {
+      console.log("post error", e)
+      throw e
+    }
+  }
 
-  //     const result = await this.actor.createPost(
-  //         "this is title",
-  //         "this is content"
-  //     );
-  //     // console.log('createPost result', result);
-  //     return result
-  // }
+  async checkAvailableBucket(): Promise<boolean> {
+    const actor = await this.getActor()
+    try {
+      return await actor.checkAvailableBucket() as boolean
+    } catch (e) {
+      console.log("checkAvailableBucket", e)
+      throw e
+    }
+  }
+
+  async getAllPost(): Promise<PostImmutable[]> {
+    const actor = await this.getActor()
+    try {
+      return await actor.getAllPost() as PostImmutable[]
+    } catch (e) {
+      console.log("getAllPost", e)
+      throw e
+    }
+  }
 
   // async createComment(postId, content) {
   //     const result = await this.actor.createComment(postId, content);
