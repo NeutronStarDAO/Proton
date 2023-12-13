@@ -1,10 +1,10 @@
 import React from 'react';
 import {
-  Form,notification
+  Form, notification
 } from 'antd';
 import Feed from "../../actors/feed";
 import {EditModal} from "./EditModal";
-import { LoadingOutlined, CheckOutlined ,CloseOutlined} from '@ant-design/icons';
+import {LoadingOutlined, CheckOutlined, CloseOutlined} from '@ant-design/icons';
 import {useLocation} from "react-router-dom";
 import {Principal} from "@dfinity/principal";
 
@@ -21,34 +21,33 @@ export function CommentForm(props: { postId: string, setOpen: Function, userFeed
       key: 'createComment',
       duration: null,
       description: '',
-      icon: <LoadingOutlined />
+      icon: <LoadingOutlined/>
     });
     try {
       await feedApi.createComment(props.postId, values.content)
       if (pathname.includes("profile")) {
         await feedApi.getAllPost()
-      } else if (pathname.includes("home")) {
-        await feedApi.getLatestFeed(20)
-      } else {
+      } else if (pathname.includes("explore")) {
         const newPost = await feedApi.getPost(props.postId)
         if (!newPost[0]) return
         setData(newPost[0])
+      } else {
+        await feedApi.getLatestFeed(20)
       }
       api.success({
         message: 'Create Comment Successful !',
         key: 'createComment',
         description: '',
-        icon: <CheckOutlined />
+        icon: <CheckOutlined/>
       })
-    }catch (e) {
+    } catch (e) {
       api.error({
         message: 'Create Comment Failed !',
         key: 'createComment',
         description: '',
-        icon: <CloseOutlined />
+        icon: <CloseOutlined/>
       })
     }
-    await feedApi.getAllPost()
     form.resetFields()
     props.setOpen(false)
   };

@@ -7,7 +7,7 @@ import { Layout, Result } from 'antd';
 
 export const Home = React.memo(() => {
   const {allFeed} = useAllDataStore()
-  
+
   if(allFeed?.length === 0 || allFeed === undefined) {
     return (
       <>
@@ -34,12 +34,10 @@ export const Home = React.memo(() => {
           scrollbarWidth: 'thin',
           padding: "40px 20px"
         }}>
-
         </Layout.Content>
       </>
     )
-
   } else {
     return <Content contents={allFeed}/>
-  };
+  }
 })

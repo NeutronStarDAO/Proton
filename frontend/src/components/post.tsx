@@ -35,11 +35,11 @@ export default function Post(props: { content: PostImmutable, setPostItem?: Func
     if (pathname.includes("profile")) {
       await feedApi.getAllPost()
     } else if (pathname.includes("home")) {
-      await feedApi.getLatestFeed(20)
-    } else {
       const newPost = await feedApi.getPost(data.postId)
       if (!newPost[0]) return
       setData(newPost[0])
+    } else {
+      await feedApi.getLatestFeed(20)
     }
   }
 
