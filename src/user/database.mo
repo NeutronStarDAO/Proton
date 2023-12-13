@@ -17,9 +17,9 @@ module {
   type UserId = Types.UserId;
   type Time = Time.Time;
 
-  public class Directory() {
+  public class Directory(hashMapEntries: [(UserId, Profile)]) {
 
-    let hashMap = HashMap.HashMap<UserId, Profile>(1, isEq, Principal.hash);
+    let hashMap = HashMap.fromIter<UserId, Profile>(hashMapEntries.vals(), Array.size(hashMapEntries), isEq, Principal.hash);
 
     public func createOne(userId: UserId, profile: NewProfile) {
       hashMap.put(userId, makeProfile(userId, profile));
@@ -33,6 +33,8 @@ module {
       hashMap.get(userId)
     };
 
+    public func getHashMapEntries(): [(UserId, Profile)] { Iter.toArray(hashMap.entries() )};
+    
     public func findMany(userIds: [UserId]): [Profile] {
       func getProfile(userId: UserId): Profile {
         Option.unwrap<Profile>(hashMap.get(userId))

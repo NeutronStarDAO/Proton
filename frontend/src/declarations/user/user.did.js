@@ -1,14 +1,4 @@
 export const idlFactory = ({ IDL }) => {
-  const NewProfile = IDL.Record({
-    'backImgUrl' : IDL.Text,
-    'name' : IDL.Text,
-    'education' : IDL.Text,
-    'biography' : IDL.Text,
-    'company' : IDL.Text,
-    'avatarUrl' : IDL.Text,
-    'feedCanister' : IDL.Opt(IDL.Principal),
-  });
-  const Vertex = IDL.Principal;
   const UserId__1 = IDL.Principal;
   const UserId = IDL.Principal;
   const Profile = IDL.Record({
@@ -21,7 +11,22 @@ export const idlFactory = ({ IDL }) => {
     'avatarUrl' : IDL.Text,
     'feedCanister' : IDL.Opt(IDL.Principal),
   });
+  const NewProfile = IDL.Record({
+    'backImgUrl' : IDL.Text,
+    'name' : IDL.Text,
+    'education' : IDL.Text,
+    'biography' : IDL.Text,
+    'company' : IDL.Text,
+    'avatarUrl' : IDL.Text,
+    'feedCanister' : IDL.Opt(IDL.Principal),
+  });
+  const Vertex = IDL.Principal;
   const User = IDL.Service({
+    'batchGetProfile' : IDL.Func(
+        [IDL.Vec(UserId__1)],
+        [IDL.Vec(Profile)],
+        ['query'],
+      ),
     'createProfile' : IDL.Func([NewProfile], [], []),
     'follow' : IDL.Func([Vertex], [], []),
     'getFollowerNumber' : IDL.Func([Vertex], [IDL.Nat], ['query']),

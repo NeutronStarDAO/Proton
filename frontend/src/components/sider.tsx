@@ -1,4 +1,4 @@
-import {Menu, Button, Avatar, Flex, Card, Space, Modal, message} from "antd";
+import {Menu, Button, Avatar, Flex, Card, Space, Modal, message, Typography} from "antd";
 import {
   HomeOutlined,
   SettingOutlined,
@@ -10,8 +10,10 @@ import type {MenuInfo} from 'rc-menu/lib/interface'
 import type {MenuItemType} from 'antd/es/menu/hooks/useItems';
 import {useNavigate} from "react-router-dom";
 import {useAuth} from "../utils/useAuth";
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {PostForm} from "./Modal/postForm";
+import {Profile} from "../declarations/user/user";
+import { userApi } from "../actors/user";
 
 function getItem(
   label: React.ReactNode,
@@ -48,8 +50,24 @@ const items: MenuItemType[] = [
 
 export default function Sider() {
   const navigate = useNavigate();
-  const {isAuth, logIn, principal} = useAuth()
+  const {isAuth, logIn, principal} = useAuth();
   const [open, setOpen] = useState(false)
+  const [profile, setProfile] = useState<Profile>();
+
+  useEffect(() => {
+    const initUserProfile = async () => {
+      if(principal?._isPrincipal === true) {
+        const _profile = await userApi.getProfile(principal);
+        console.log('side bar init profile : ', _profile);
+        if(_profile.length > 0) {
+          setProfile(_profile[0]);
+        };
+      };
+    };
+
+    initUserProfile();
+
+  }, [principal]);
 
   const onClick = (info: MenuInfo) => {
     if (info.key === '1') {
@@ -114,13 +132,23 @@ export default function Sider() {
             <Card.Meta
               avatar={<Avatar
                 size={{xs: 24, sm: 32, md: 40, lg: 64, xl: 80, xxl: 100}}
-                src="https://avatars.githubusercontent.com/u/120618331?s=200&v=4"
+                src={ profile?.avatarUrl ? profile.avatarUrl : "https://avatars.githubusercontent.com/u/120618331?s=200&v=4" }
                 style={{
                   border: '1px solid #D3D540',
                 }}
               />}
-              title="NeutronStarDAO"
-              description="@NeutronStarDAO"
+              title={
+                profile ? profile.name : "NeutronstarDao"
+              }
+              description={
+                <Typography.Text
+                  copyable={true}
+                  // style={{width: '100px'}}
+                  ellipsis
+                >
+                {principal?.toString()}
+                </Typography.Text>
+              }
             />
           </Card>) : (
           <Space onClick={() => logIn?.()}>

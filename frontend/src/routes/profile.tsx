@@ -12,6 +12,7 @@ import {rootFeedApi} from "../actors/rootFeed";
 import Feed from "../actors/feed";
 import {useAllDataStore} from "../redux";
 import {useAuth} from "../utils/useAuth";
+import { profile } from 'console';
 
 export default function UserProfile() {
   const {principal: me} = useAuth()
@@ -104,8 +105,8 @@ export default function UserProfile() {
         borderRight: '1px solid',
       }}>
         <Image
-          style={{borderRadius: "5px"}}
-          src='https://infura-ipfs.mora.host/ipfs/QmbEN76wm4PExViLVmUbKf4vDfx3XkpnYvm6qr3JKCSPDT'
+          style={{borderRadius: "5px", maxHeight: '100px', maxWidth: '100%'}}
+          src={userProfile?.backImgUrl ? userProfile.backImgUrl : 'https://infura-ipfs.mora.host/ipfs/QmbEN76wm4PExViLVmUbKf4vDfx3XkpnYvm6qr3JKCSPDT'}
           alt='Profile Bakcground Picture'
         />
         <Flex
@@ -126,7 +127,7 @@ export default function UserProfile() {
                 border: '1px solid #D3D540',
               }}
             />
-            <Typography.Text>{userProfile?.name}</Typography.Text>
+            <Typography.Text strong>{userProfile?.name}</Typography.Text>
           </Space>
           <Button onClick={handleClick}> {isMe ? "Edit Profile" : "Follow"} </Button>
           <Modal
@@ -135,7 +136,7 @@ export default function UserProfile() {
             footer={null}
             onCancel={() => setIsModalOpen(false)}
           >
-            <ProfileForm userProfile={userProfile}/>
+            <ProfileForm userProfile={userProfile} drawCallBack={() => setIsModalOpen(false)}/>
           </Modal>
         </Flex>
         <div style={{

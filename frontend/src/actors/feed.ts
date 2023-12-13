@@ -19,7 +19,6 @@ export default class Feed {
 
   private async getNoIdentityActor() {
     return await getActor.noIdentityActor(idlFactory, this.canisterId.toString());
-
   }
 
   async createPost(title: string, content: string) {

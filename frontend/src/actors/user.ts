@@ -32,6 +32,18 @@ class User {
     }
   }
 
+  async batchGetProfile(who: Principal[]): Promise<Profile[]> {
+  // async batchGetProfile(who: Principal[]): Promise<unknown> {
+    const actor = await User.getActor();
+    try {
+      return await actor.batchGetProfile(who) as Profile[]
+      // return await actor.batchGetProfile(who)
+    } catch(e) {
+      console.log("batchGetProfile", e)
+      throw e
+    }
+  }
+
   async getFollowerNumber(who: Principal): Promise<number> {
     const actor = await User.getActor()
     try {

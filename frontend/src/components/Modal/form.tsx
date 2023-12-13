@@ -3,9 +3,11 @@ import {
   Button,
   Form,
   Input,
-  Select,
+  notification,
 } from 'antd';
 import {Profile} from "../../declarations/user/user";
+import { userApi } from '../../actors/user';
+import { LoadingOutlined, CheckOutlined } from '@ant-design/icons';
 
 interface DataNodeType {
   value: string;
@@ -39,13 +41,37 @@ const tailFormItemLayout = {
 
 interface ProfileFormProps {
     userProfile: Profile | undefined;
+    drawCallBack: () => void;
 }
 
 export default function ProfileForm(props: ProfileFormProps) {
-
   const [form] = Form.useForm();
+  const [api, contextHolder] = notification.useNotification();
 
-  const onFinish = (values: any) => {
+  const onFinish = async (values: any) => {
+    api.info({
+      message: 'Update Profile ing ...',
+      key: 'updateProfile',
+      duration: null,
+      description: '',
+      icon: <LoadingOutlined />
+    })
+    await userApi.createProfile({
+      'backImgUrl' : values.backImgUrl === undefined? '' : values.backImgUrl,
+      'name' : values.name === undefined? '' : values.name,
+      'education' : values.education === undefined? '' : values.education,
+      'biography' : values.biography === undefined? '' : values.biography,
+      'company' : values.company === undefined? '' : values.company,
+      'avatarUrl' : values.avatarUrl === undefined? '' : values.avatarUrl,
+      'feedCanister' : [],
+    });
+    api.success({
+      message: 'Update Profile Successful !',
+      key: 'updateProfile',
+      description: '',
+      icon: <CheckOutlined />
+    });
+    props.drawCallBack();
     console.log('Received values of form: ', values);
   };
 
@@ -67,6 +93,7 @@ export default function ProfileForm(props: ProfileFormProps) {
       style={{ maxWidth: 600 }}
       scrollToFirstError
     >
+      {contextHolder}
       <Form.Item
         name="name"
         label="Name"

@@ -6,15 +6,22 @@ module {
 
   type Vertex = Types.Vertex;
 
-  public class Digraph() {
+  public class Digraph(
+    vertexListEntries: [Vertex],
+    edgeListEntries: [(Vertex, Vertex)]
+  ) {
 
-    var vertexList: [Vertex] = [];
-    var edgeList: [(Vertex, Vertex)] = []; // 单向边
+    var vertexList: [Vertex] = vertexListEntries;
+    var edgeList: [(Vertex, Vertex)] = edgeListEntries; // 单向边
 
     public func addVertex(vertex: Vertex) {
       vertexList := Array.append<Vertex>(vertexList, [vertex]);
     };
 
+    public func getVertexListEntries(): [Vertex] { vertexList };
+    
+    public func getEdgeListEntries(): [(Vertex, Vertex)] { edgeList };
+    
     // 添加 from 到 to 的单向边
     public func addEdge(fromVertex: Vertex, toVertex: Vertex) {
       // 检查是否已经存在

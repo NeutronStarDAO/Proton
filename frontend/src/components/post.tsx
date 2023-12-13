@@ -10,7 +10,7 @@ import Feed from "../actors/feed";
 import React, {useState} from "react";
 import {CommentForm} from "./Modal/commentForm";
 
-export default function Post(props: { content: PostImmutable, setPostItem?: Function }) {
+export default function Post(props: { content: PostImmutable, setPostItem?: Function, avatar?: string, name?: string}) {
   const {content, setPostItem} = props
   const {userFeedCai} = useAuth()
   const [open, setOpen] = useState(false)
@@ -52,12 +52,12 @@ export default function Post(props: { content: PostImmutable, setPostItem?: Func
         <Space>
           <Avatar
             size={32}
-            src="https://avatars.githubusercontent.com/u/120618331?s=200&v=4"
+            src={props.avatar ? props.avatar : "https://avatars.githubusercontent.com/u/120618331?s=200&v=4"}
             style={{
               border: '1px solid #D3D540',
             }}
           />
-          <p>NeutronStarDAO</p>
+          <p>{props.name ? props.name : 'NeutronStarDAO'}</p>
         </Space>
         <Typography.Paragraph style={{
           paddingLeft: '12px'

@@ -3,6 +3,7 @@ type UserId__1 = principal;
 type UserId = principal;
 type User = 
  service {
+   batchGetProfile: (vec UserId__1) -> (vec Profile) query;
    createProfile: (NewProfile) -> ();
    follow: (Vertex) -> ();
    getFollowerNumber: (Vertex) -> (nat) query;

@@ -21,6 +21,7 @@ export interface Profile {
   'feedCanister' : [] | [Principal],
 }
 export interface User {
+  'batchGetProfile' : ActorMethod<[Array<UserId__1>], Array<Profile>>,
   'createProfile' : ActorMethod<[NewProfile], undefined>,
   'follow' : ActorMethod<[Vertex], undefined>,
   'getFollowerNumber' : ActorMethod<[Vertex], bigint>,
