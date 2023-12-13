@@ -1,8 +1,11 @@
-import {createContext, useContext, useEffect, useState} from "react";
+import React, {createContext, useContext, useEffect, useState} from "react";
 import {authClient, IIForIdentity} from "./IIForIdentity";
 import {DelegationIdentity} from "@dfinity/identity";
 import {Principal} from "@dfinity/principal";
 import {rootFeedApi} from "../actors/rootFeed";
+import {notification} from "antd";
+import {NotificationInstance} from "antd/es/notification/interface";
+import {CheckOutlined, CloseOutlined, LoadingOutlined} from "@ant-design/icons";
 
 export interface Props {
   readonly identity: DelegationIdentity | undefined;
@@ -14,7 +17,7 @@ export interface Props {
   readonly isAuth: boolean;
 }
 
-export const useProvideAuth = (authClient: IIForIdentity): Props => {
+export const useProvideAuth = (api: NotificationInstance, authClient: IIForIdentity): Props => {
   const [_identity, _setIdentity] = useState<DelegationIdentity | undefined>(undefined);
   const [isAuthClientReady, setAuthClientReady] = useState(false);
   const [principal, setPrincipal] = useState<Principal | undefined>(undefined);
@@ -44,7 +47,29 @@ export const useProvideAuth = (authClient: IIForIdentity): Props => {
     const e = await rootFeedApi.getUserFeedCanister(principal)
     let cai = e
     if (!e) {
-      cai = await rootFeedApi.createFeedCanister()
+      api.info({
+        message: 'Creating Feed Canister ...',
+        key: 'createFeed',
+        duration: null,
+        description: '',
+        icon: <LoadingOutlined/>
+      })
+      try {
+        cai = await rootFeedApi.createFeedCanister()
+        api.success({
+          message: 'Create Successful !',
+          key: 'createFeed',
+          description: '',
+          icon: <CheckOutlined/>
+        });
+      } catch (e) {
+        api.error({
+          message: 'Create Failed !',
+          key: 'createFeed',
+          description: '',
+          icon: <CloseOutlined/>
+        })
+      }
     }
     setUserFeedCai(cai)
   }
@@ -101,9 +126,11 @@ const props: Props = {
 const authContext = createContext(props);
 
 export function ProvideAuth({children}: any) {
-  const auth = useProvideAuth(authClient);
+  const [api, contextHolder] = notification.useNotification();
+  const auth = useProvideAuth(api, authClient);
   return (
     <authContext.Provider value={Object.assign(auth)}>
+      {contextHolder}
       {children}
     </authContext.Provider>
   );
