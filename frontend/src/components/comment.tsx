@@ -2,8 +2,8 @@ import {Flex, Space, Avatar, Typography, Divider} from 'antd';
 import {Comment} from "../declarations/feed/feed"
 
 
-export function Comments(props: { content: Comment }) {
-  const {content} = props
+export function Comments(props: { content: Comment, avatar?: string, name?: string }) {
+  const {content, avatar, name} = props
   return (
     <Flex
       vertical
@@ -13,12 +13,12 @@ export function Comments(props: { content: Comment }) {
       <Space>
         <Avatar
           size={32}
-          src="https://avatars.githubusercontent.com/u/120618331?s=200&v=4"
+          src={avatar ? avatar : "https://avatars.githubusercontent.com/u/120618331?s=200&v=4"}
           style={{
             border: '1px solid #D3D540',
           }}
         />
-        <p>NeutronStarDAO</p>
+        <p>{name ? name : "NeutronStarDAO"}</p>
       </Space>
       <Typography.Paragraph>
         {content.content}

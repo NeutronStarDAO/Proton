@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {Layout, Image, Typography, Avatar, Flex, Space, Button, Modal, message} from 'antd';
+import {Layout, Image, Typography, Avatar, Flex, Space, Button, Modal, message, Spin} from 'antd';
 import Post from '../components/post';
 import {userApi} from '../actors/user';
 import {Profile} from '../declarations/user/user';
@@ -24,7 +24,22 @@ export default function UserProfile() {
   const [followers, setFollowers] = useState(0)
   const [allPosts, setAllPosts] = useState<PostImmutable[]>()
   const {userid} = useParams()
+  const [commentProfiles, setCommentProfiles] = useState<Profile[]>()
+  const [commentLoading, setCommentLoading] = useState(true)
   const {allPost} = useAllDataStore()
+  const getAllCommentProfiles = async () => {
+    if (!postItem) return setCommentProfiles([])
+    const comments = postItem.comment
+    const allIds = comments.map(v => v.user)
+    const result = await userApi.batchGetProfile(allIds);
+    setCommentProfiles(result)
+    setCommentLoading(false)
+  }
+
+  useEffect(() => {
+    getAllCommentProfiles()
+  }, [postItem])
+
   const principal = React.useMemo(() => {
     try {
       return Principal.from(userid)
@@ -155,7 +170,8 @@ export default function UserProfile() {
           </Space>
         </div>
         {allPosts && allPosts.map((v, k) => {
-          return <Post setPostItem={setPostItem} content={v} key={k}/>
+          return <Post name={userProfile?.name} avatar={userProfile?.avatarUrl} setPostItem={setPostItem} content={v}
+                       key={k}/>
         })}
       </Layout.Content>
 
@@ -165,9 +181,13 @@ export default function UserProfile() {
         scrollbarWidth: 'thin',
         padding: "40px 20px"
       }}>
-        {postItem && postItem.comment.map((v, k) => {
-          return <Comments content={v} key={k}/>
-        })}
+        {postItem ? !commentLoading ? postItem.comment.map((v, k) => {
+          return <Comments avatar={commentProfiles?.[k] ? commentProfiles [k]?.avatarUrl : ""}
+                           name={commentProfiles?.[k] ? commentProfiles [k]?.name : ""}
+                           content={v} key={k}/>
+        }) : <Flex align="center" justify="center">
+          <Spin size="large"/>
+        </Flex> : <></>}
       </Layout.Content>
     </>
   )
