@@ -10,15 +10,15 @@ import {useNavigate, useParams, useLocation} from "react-router-dom";
 import {Principal} from "@dfinity/principal";
 import {rootFeedApi} from "../actors/rootFeed";
 import Feed from "../actors/feed";
-import {useAllDataStore} from "../redux";
+import {useAllDataStore, useProfileStore} from "../redux";
 import {useAuth} from "../utils/useAuth";
-import { profile } from 'console';
 
 export default function UserProfile() {
   const {principal: me} = useAuth()
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [userProfile, setUserProfile] = useState<Profile | undefined>();
+  const myProfile = useProfileStore()
   const [postItem, setPostItem] = useState<PostImmutable>()
   const [following, setFollowing] = useState(0)
   const [followers, setFollowers] = useState(0)
@@ -60,10 +60,9 @@ export default function UserProfile() {
 
   const getInfo = () => {
     if (!principal) return
-    userApi.getProfile(principal).then(res => {
+    if (isMe) setUserProfile(myProfile)
+    else userApi.getProfile(principal).then(res => {
       if (!res[0]) {
-        // message.warning("User does not exist")
-        // navigate("/")
         return
       }
       setUserProfile(res[0])
@@ -74,11 +73,11 @@ export default function UserProfile() {
 
   useEffect(() => {
     getInfo()
-  }, [userid]);
+  }, [principal, isMe, myProfile]);
 
   useEffect(() => {
     getAllPost()
-  }, [userid, me, allPost])
+  }, [userid, isMe, allPost])
 
 
   const handleEditProfile = () => {

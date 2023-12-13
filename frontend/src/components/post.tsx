@@ -7,13 +7,18 @@ import {
 import {PostImmutable} from "../declarations/feed/feed";
 import {useAuth} from "../utils/useAuth";
 import Feed from "../actors/feed";
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {CommentForm} from "./Modal/commentForm";
 
-export default function Post(props: { content: PostImmutable, setPostItem?: Function, avatar?: string, name?: string}) {
+export default function Post(props: { content: PostImmutable, setPostItem?: Function, avatar?: string, name?: string }) {
   const {content, setPostItem} = props
   const {userFeedCai} = useAuth()
   const [open, setOpen] = useState(false)
+  const [data, setData] = useState<any>()
+
+  useEffect(() => {
+    setData(content)
+  }, [content])
 
   const feedApi = React.useMemo(() => {
     if (!userFeedCai) return undefined
@@ -24,18 +29,20 @@ export default function Post(props: { content: PostImmutable, setPostItem?: Func
 
   const update = async () => {
     if (!feedApi) return tip()
-    await feedApi.getAllPost()
+    const newPost = await feedApi.getPost(data.postId)
+    if (!newPost[0]) return
+    setData(newPost[0])
   }
 
   const repost = async () => {
     if (!feedApi) return tip()
-    await feedApi.createRepost(content.postId)
+    await feedApi.createRepost(data.postId)
     update().then()
   }
 
   const like = async () => {
     if (!feedApi) return tip()
-    await feedApi.createLike(content.postId)
+    await feedApi.createLike(data.postId)
     update().then()
   }
 
@@ -48,7 +55,7 @@ export default function Post(props: { content: PostImmutable, setPostItem?: Func
     }}>
       <div style={{
         cursor: "pointer"
-      }} onClick={() => setPostItem?.(content)}>
+      }} onClick={() => setPostItem?.(data)}>
         <Space>
           <Avatar
             size={32}
@@ -62,7 +69,7 @@ export default function Post(props: { content: PostImmutable, setPostItem?: Func
         <Typography.Paragraph style={{
           paddingLeft: '12px'
         }}>
-          {content.content}
+          {data?.content}
         </Typography.Paragraph>
       </div>
       <Space
@@ -77,23 +84,23 @@ export default function Post(props: { content: PostImmutable, setPostItem?: Func
           footer={null}
           onCancel={() => setOpen(false)}
         >
-          <CommentForm postId={content.postId} setOpen={setOpen}/>
+          <CommentForm postId={data?.postId} setOpen={setOpen}/>
         </Modal>
         <div style={{cursor: "pointer"}} onClick={() => {
           if (!feedApi) return tip()
           setOpen(true)
         }}>
           <CommentOutlined/> &nbsp;
-          {content.comment.length}
+          {data?.comment.length}
         </div>
         <div style={{cursor: "pointer"}} onClick={repost}>
           <RedoOutlined/>
           &nbsp;
-          {content.repost.length}
+          {data?.repost.length}
         </div>
         <div style={{cursor: "pointer"}} onClick={like}>
           <HeartOutlined/>&nbsp;
-          {content.like.length}
+          {data?.like.length}
         </div>
       </Space>
     </div>

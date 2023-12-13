@@ -9,7 +9,6 @@ export default function Explore() {
 
   const fetch = async () => {
     const bucket = await rootPostApi.getAvailableBucket()
-    console.log('explore bucket : ', bucket[0]?.toString())
     if (!bucket[0]) return
     const bucketApi = new Bucket(bucket[0])
     const res = await bucketApi.getLatestFeed(30)

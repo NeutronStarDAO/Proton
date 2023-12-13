@@ -20,20 +20,17 @@ export const Content = React.memo((props: { contents?: PostImmutable[] }) => {
           uniqueUsers.add(value.user.toString());
           return uniqueUsers;
         }, new Set<string>()))).map(value => Principal.fromText(value));
-        // console.log('userPrincipalArray : ', userPrincipalArray.toString());
         if(userPrincipalArray !== undefined && userPrincipalArray?.length > 0) {
           const result = await userApi.batchGetProfile(userPrincipalArray!);
-          // console.log('initUserProfileArray result : ', result);
           setUserProfileArray(result)
           setOnloading(true)
         }
       }
     };
-
     initUserProfileArray()
   }, [contents]);
 
-  if(onLoading === true) {
+  if(onLoading) {
     return <>
       <Layout.Content className={"posts"} style={{
         backgroundColor: "white",

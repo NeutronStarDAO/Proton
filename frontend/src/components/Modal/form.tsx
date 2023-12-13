@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import {
   Button,
   Form,
@@ -6,8 +6,10 @@ import {
   notification,
 } from 'antd';
 import {Profile} from "../../declarations/user/user";
-import { userApi } from '../../actors/user';
-import { LoadingOutlined, CheckOutlined } from '@ant-design/icons';
+import {userApi} from '../../actors/user';
+import {LoadingOutlined, CheckOutlined} from '@ant-design/icons';
+import {updateProfile} from "../../redux";
+import {useAuth} from "../../utils/useAuth";
 
 interface DataNodeType {
   value: string;
@@ -17,36 +19,37 @@ interface DataNodeType {
 
 const formItemLayout = {
   labelCol: {
-    xs: { span: 24 },
-    sm: { span: 8 },
+    xs: {span: 24},
+    sm: {span: 8},
   },
   wrapperCol: {
-    xs: { span: 24 },
-    sm: { span: 16 },
+    xs: {span: 24},
+    sm: {span: 16},
   },
 };
 
 const tailFormItemLayout = {
-    wrapperCol: {
-      xs: {
-        span: 24,
-        offset: 0,
-      },
-      sm: {
-        span: 16,
-        offset: 8,
-      },
+  wrapperCol: {
+    xs: {
+      span: 24,
+      offset: 0,
     },
+    sm: {
+      span: 16,
+      offset: 8,
+    },
+  },
 };
 
 interface ProfileFormProps {
-    userProfile: Profile | undefined;
-    drawCallBack: () => void;
+  userProfile: Profile | undefined;
+  drawCallBack: () => void;
 }
 
 export default function ProfileForm(props: ProfileFormProps) {
   const [form] = Form.useForm();
   const [api, contextHolder] = notification.useNotification();
+  const {principal} = useAuth()
 
   const onFinish = async (values: any) => {
     api.info({
@@ -54,22 +57,27 @@ export default function ProfileForm(props: ProfileFormProps) {
       key: 'updateProfile',
       duration: null,
       description: '',
-      icon: <LoadingOutlined />
+      icon: <LoadingOutlined/>
     })
     await userApi.createProfile({
-      'backImgUrl' : values.backImgUrl === undefined? '' : values.backImgUrl,
-      'name' : values.name === undefined? '' : values.name,
-      'education' : values.education === undefined? '' : values.education,
-      'biography' : values.biography === undefined? '' : values.biography,
-      'company' : values.company === undefined? '' : values.company,
-      'avatarUrl' : values.avatarUrl === undefined? '' : values.avatarUrl,
-      'feedCanister' : [],
+      'backImgUrl': values.backImgUrl === undefined ? '' : values.backImgUrl,
+      'name': values.name === undefined ? '' : values.name,
+      'education': values.education === undefined ? '' : values.education,
+      'biography': values.biography === undefined ? '' : values.biography,
+      'company': values.company === undefined ? '' : values.company,
+      'avatarUrl': values.avatarUrl === undefined ? '' : values.avatarUrl,
+      'feedCanister': [],
     });
+    if (principal) {
+      const res = await userApi.getProfile(principal)
+      if (!res[0]) return
+      updateProfile(res[0])
+    }
     api.success({
       message: 'Update Profile Successful !',
       key: 'updateProfile',
       description: '',
-      icon: <CheckOutlined />
+      icon: <CheckOutlined/>
     });
     props.drawCallBack();
     console.log('Received values of form: ', values);
@@ -89,8 +97,8 @@ export default function ProfileForm(props: ProfileFormProps) {
         avatarUrl: props.userProfile?.avatarUrl,
         feedCanister: props.userProfile?.feedCanister[0]?.toString(),
         biography: props.userProfile?.biography
-    }}
-      style={{ maxWidth: 600 }}
+      }}
+      style={{maxWidth: 600}}
       scrollToFirstError
     >
       {contextHolder}
@@ -104,50 +112,50 @@ export default function ProfileForm(props: ProfileFormProps) {
           },
         ]}
       >
-        <Input />
+        <Input/>
       </Form.Item>
 
       <Form.Item
         name="company"
         label="Company"
       >
-        <Input />
+        <Input/>
       </Form.Item>
 
       <Form.Item
         name="education"
         label="Education"
       >
-        <Input />
+        <Input/>
       </Form.Item>
 
       <Form.Item
         name="avatarUrl"
         label="AvatarUrl"
       >
-        <Input />
+        <Input/>
       </Form.Item>
 
       <Form.Item
         name="backImgUrl"
         label="BackImgUrl"
       >
-        <Input />
+        <Input/>
       </Form.Item>
 
       <Form.Item
         name="feedCanister"
         label="Feed Canister Id"
       >
-        <Input />
+        <Input/>
       </Form.Item>
 
       <Form.Item
         name="biography"
         label="Biography"
-        rules={[{ required: true, message: 'Please input Intro' }]}
+        rules={[{required: true, message: 'Please input Intro'}]}
       >
-        <Input.TextArea showCount maxLength={160} />
+        <Input.TextArea showCount maxLength={160}/>
       </Form.Item>
       <Form.Item {...tailFormItemLayout}>
         <Button type="primary" htmlType="submit">

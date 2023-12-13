@@ -10,20 +10,26 @@ import Settings from './routes/settings';
 import {Home} from "./routes/home";
 import {useAuth} from "./utils/useAuth";
 import Feed from "./actors/feed";
+import {userApi} from "./actors/user";
+import {updateProfile} from "./redux";
 
 function App() {
-  const {userFeedCai} = useAuth()
+  const {userFeedCai, principal} = useAuth()
 
   const fetch = async () => {
     if (!userFeedCai) return
     const feedApi = new Feed(userFeedCai)
     await feedApi.getAllPost()
     await feedApi.getLatestFeed(20)
+    if (!principal) return
+    const res = await userApi.getProfile(principal)
+    if (!res[0]) return
+    updateProfile(res[0])
   }
 
   useEffect(() => {
     fetch()
-  }, [userFeedCai])
+  }, [userFeedCai, principal])
 
   return (
     <div className="App">

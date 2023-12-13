@@ -13,7 +13,8 @@ import {useAuth} from "../utils/useAuth";
 import React, {useEffect, useState} from "react";
 import {PostForm} from "./Modal/postForm";
 import {Profile} from "../declarations/user/user";
-import { userApi } from "../actors/user";
+import {userApi} from "../actors/user";
+import {useProfileStore} from "../redux";
 
 function getItem(
   label: React.ReactNode,
@@ -52,22 +53,7 @@ export default function Sider() {
   const navigate = useNavigate();
   const {isAuth, logIn, principal} = useAuth();
   const [open, setOpen] = useState(false)
-  const [profile, setProfile] = useState<Profile>();
-
-  useEffect(() => {
-    const initUserProfile = async () => {
-      if(principal?._isPrincipal === true) {
-        const _profile = await userApi.getProfile(principal);
-        console.log('side bar init profile : ', _profile);
-        if(_profile.length > 0) {
-          setProfile(_profile[0]);
-        };
-      };
-    };
-
-    initUserProfile();
-
-  }, [principal]);
+  const profile = useProfileStore()
 
   const onClick = (info: MenuInfo) => {
     if (info.key === '1') {
@@ -132,7 +118,7 @@ export default function Sider() {
             <Card.Meta
               avatar={<Avatar
                 size={{xs: 24, sm: 32, md: 40, lg: 64, xl: 80, xxl: 100}}
-                src={ profile?.avatarUrl ? profile.avatarUrl : "https://avatars.githubusercontent.com/u/120618331?s=200&v=4" }
+                src={profile?.avatarUrl ? profile.avatarUrl : "https://avatars.githubusercontent.com/u/120618331?s=200&v=4"}
                 style={{
                   border: '1px solid #D3D540',
                 }}
@@ -143,10 +129,9 @@ export default function Sider() {
               description={
                 <Typography.Text
                   copyable={true}
-                  // style={{width: '100px'}}
                   ellipsis
                 >
-                {principal?.toString()}
+                  {principal?.toString()}
                 </Typography.Text>
               }
             />
