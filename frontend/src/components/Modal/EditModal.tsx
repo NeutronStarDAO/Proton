@@ -36,8 +36,8 @@ const tailFormItemLayout = {
 };
 
 
-export function EditModal(props: { isComment: boolean, onFinish: (values: any) => void, form: FormInstance<any> | undefined }) {
-  const {onFinish, form, isComment} = props
+export function EditModal(props: { onFinish: (values: any) => void, form: FormInstance<any> | undefined }) {
+  const {onFinish, form} = props
 
   return (
     <Form
@@ -48,12 +48,6 @@ export function EditModal(props: { isComment: boolean, onFinish: (values: any) =
       style={{maxWidth: 600}}
       scrollToFirstError
     >
-      {!isComment ? <Form.Item
-        name="title"
-        label="Title"
-      >
-        <Input/>
-      </Form.Item> : <></>}
 
       <Form.Item
         name="content"

@@ -3,7 +3,7 @@ import {
   Form,
   notification
 } from 'antd';
-import { LoadingOutlined, CheckOutlined } from '@ant-design/icons';
+import {LoadingOutlined, CheckOutlined, CloseOutlined} from '@ant-design/icons';
 import {useAuth} from "../../utils/useAuth";
 import Feed from "../../actors/feed";
 import {EditModal} from "./EditModal";
@@ -15,21 +15,30 @@ export function PostForm(props: { setOpen: Function }) {
 
   const onFinish = async (values: { title: string, content: string }) => {
     if (!userFeedCai) return
+    const feedApi = new Feed(userFeedCai)
     api.info({
       message: 'Create Post ing ...',
       key: 'createPost',
       duration: null,
       description: '',
-      icon: <LoadingOutlined />
+      icon: <LoadingOutlined/>
     });
-    const feedApi = new Feed(userFeedCai)
-    await feedApi.createPost(values.title, values.content)
-    api.success({
-      message: 'Create Post Successful !',
-      key: 'createPost',
-      description: '',
-      icon: <CheckOutlined />
-    })
+    try {
+      await feedApi.createPost(values.title, values.content)
+      api.success({
+        message: 'Create Post Successful !',
+        key: 'createPost',
+        description: '',
+        icon: <CheckOutlined/>
+      })
+    } catch (e) {
+      api.error({
+        message: 'Create Post failed !',
+        key: 'createPost',
+        description: '',
+        icon: <CloseOutlined/>
+      })
+    }
     await feedApi.getAllPost()
     form.resetFields()
     props.setOpen(false)
@@ -38,7 +47,7 @@ export function PostForm(props: { setOpen: Function }) {
   return (
     <>
       {contextHolder}
-      <EditModal isComment={false} form={form} onFinish={onFinish}/>
+      <EditModal form={form} onFinish={onFinish}/>
     </>
   );
 };

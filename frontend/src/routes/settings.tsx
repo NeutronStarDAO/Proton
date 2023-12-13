@@ -1,5 +1,4 @@
-import {Layout, Image, Typography, Avatar, Flex, Space, Button} from 'antd';
-import Sider from '../components/sider';
+import {Layout, Flex, Space, Button} from 'antd';
 import {useAuth} from "../utils/useAuth";
 
 export default function Settings() {
@@ -13,7 +12,7 @@ export default function Settings() {
         width: '200px',
         overflowY: 'auto',
         scrollbarWidth: 'thin',
-        borderRight: '1px solid',
+        borderRight: '1px solid rgba(0,0,0,0.2)',
       }}>
         <Flex
           vertical

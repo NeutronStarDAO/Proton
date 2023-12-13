@@ -120,7 +120,7 @@ export default function UserProfile() {
         key: 'follow',
         description: '',
         icon: <CheckOutlined />
-      });   
+      });
     }
   }
 
@@ -132,7 +132,7 @@ export default function UserProfile() {
         width: '200px',
         overflowY: 'auto',
         scrollbarWidth: 'thin',
-        borderRight: '1px solid',
+        borderRight: '1px solid rgba(0,0,0,0.2)',
       }}>
         <Image
           style={{borderRadius: "5px", maxHeight: '100px', maxWidth: '100%'}}
