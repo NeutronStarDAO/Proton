@@ -12,7 +12,7 @@ import {rootFeedApi} from "../actors/rootFeed";
 import Feed from "../actors/feed";
 import {useAllDataStore, useProfileStore} from "../redux";
 import {useAuth} from "../utils/useAuth";
-import { LoadingOutlined, CheckOutlined } from '@ant-design/icons';
+import {LoadingOutlined, CheckOutlined} from '@ant-design/icons';
 
 
 export default function UserProfile() {
@@ -25,6 +25,7 @@ export default function UserProfile() {
   const [following, setFollowing] = useState(0)
   const [followers, setFollowers] = useState(0)
   const [allPosts, setAllPosts] = useState<PostImmutable[]>()
+  const [isFollowed, setIsFollowed] = useState(true)
   const [api, contextHolder] = notification.useNotification();
   const {userid} = useParams()
   const [commentProfiles, setCommentProfiles] = useState<Profile[]>()
@@ -43,6 +44,7 @@ export default function UserProfile() {
     getAllCommentProfiles()
   }, [postItem])
 
+
   const principal = React.useMemo(() => {
     try {
       return Principal.from(userid)
@@ -51,6 +53,14 @@ export default function UserProfile() {
       navigate("/")
     }
   }, [userid])
+
+  useEffect(() => {
+
+    me && principal && userApi.isFollowed(me, principal).then(e => {
+      setIsFollowed(e)
+    })
+  }, [me, principal])
+
 
   const isMe: boolean = React.useMemo(() => {
     if (!me) return false
@@ -112,14 +122,14 @@ export default function UserProfile() {
         key: 'follow',
         duration: null,
         description: '',
-        icon: <LoadingOutlined />
+        icon: <LoadingOutlined/>
       })
       await userApi.follow(principal);
       api.success({
         message: 'Follow Successful !',
         key: 'follow',
         description: '',
-        icon: <CheckOutlined />
+        icon: <CheckOutlined/>
       });
     }
   }
@@ -134,6 +144,7 @@ export default function UserProfile() {
         scrollbarWidth: 'thin',
         borderRight: '1px solid rgba(0,0,0,0.2)',
       }}>
+        {contextHolder}
         <Image
           style={{borderRadius: "5px", maxHeight: '100px', maxWidth: '100%'}}
           src={userProfile?.backImgUrl ? userProfile.backImgUrl : 'https://infura-ipfs.mora.host/ipfs/QmbEN76wm4PExViLVmUbKf4vDfx3XkpnYvm6qr3JKCSPDT'}
@@ -159,7 +170,8 @@ export default function UserProfile() {
             />
             <Typography.Text strong>{userProfile?.name}</Typography.Text>
           </Space>
-          <Button onClick={handleFollow}> {isMe ? "Edit Profile" : "Follow"} </Button>
+          <Button style={{display: !isMe && isFollowed ? "none" : "flex"}}
+                  onClick={handleFollow}> {isMe ? "Edit Profile" : "Follow"} </Button>
           <Modal
             title="Edit Profile Information"
             open={isModalOpen}

@@ -33,12 +33,12 @@ class User {
   }
 
   async batchGetProfile(who: Principal[]): Promise<Profile[]> {
-  // async batchGetProfile(who: Principal[]): Promise<unknown> {
+    // async batchGetProfile(who: Principal[]): Promise<unknown> {
     const actor = await User.getActor();
     try {
       return await actor.batchGetProfile(who) as Profile[]
       // return await actor.batchGetProfile(who)
-    } catch(e) {
+    } catch (e) {
       console.log("batchGetProfile", e)
       throw e
     }
@@ -72,6 +72,16 @@ class User {
       await actor.follow(who)
     } catch (e) {
       console.log("follow", e)
+      throw e
+    }
+  }
+
+  async isFollowed(A: Principal, B: Principal) {//判断 A 是否是 B的粉丝
+    const actor = await User.getActor()
+    try {
+      return await actor.isFollowed(A, B) as boolean
+    } catch (e) {
+      console.log("isFollowed", e)
       throw e
     }
   }
