@@ -20,8 +20,6 @@ export default function Post(props: { content: PostImmutable, setPostItem?: Func
   const [open, setOpen] = useState(false)
   const [data, setData] = useState<any>()
   const {pathname} = useLocation()
-  const [open, setOpen] = useState(false)
-  const [data, setData] = useState<any>()
   const [api, contextHolder] = notification.useNotification();
 
   useEffect(() => {
