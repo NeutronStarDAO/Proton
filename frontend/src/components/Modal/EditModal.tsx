@@ -48,12 +48,6 @@ export function EditModal(props: { isComment: boolean, onFinish: (values: any) =
       style={{maxWidth: 600}}
       scrollToFirstError
     >
-      {!isComment ? <Form.Item
-        name="title"
-        label="Title"
-      >
-        <Input/>
-      </Form.Item> : <></>}
 
       <Form.Item
         name="content"
@@ -65,7 +59,7 @@ export function EditModal(props: { isComment: boolean, onFinish: (values: any) =
           },
         ]}
       >
-        <Input/>
+        <Input.TextArea showCount/>
       </Form.Item>
       <Form.Item {...tailFormItemLayout}>
         <Button type="primary" htmlType="submit">
