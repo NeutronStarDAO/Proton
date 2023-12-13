@@ -23,9 +23,9 @@ module {
       {
         postId = post.postId;
         index = post.index;
+        feedCanister = post.feedCanister;
         user = post.user;
         repost = post.repost;
-        title = post.title;
         content = post.content;
         like = post.like;
         comment = post.comment;

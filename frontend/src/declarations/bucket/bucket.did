@@ -10,11 +10,11 @@ type PostImmutable =
    comment: vec Comment;
    content: text;
    createdAt: Time;
+   feedCanister: principal;
    index: nat;
    like: vec Like;
    postId: PostId;
    repost: vec Repost;
-   title: text;
    user: UserId;
  };
 type PostId = text;

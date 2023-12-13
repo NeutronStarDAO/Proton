@@ -2,6 +2,7 @@ import type { Principal } from '@dfinity/principal';
 import type { ActorMethod } from '@dfinity/agent';
 
 export interface RootPost {
+  'addAvailBucket' : ActorMethod<[Array<Principal>], undefined>,
   'createBucket' : ActorMethod<[], Principal>,
   'getAllAvailableBuckets' : ActorMethod<[], Array<Principal>>,
   'getAllBuckets' : ActorMethod<[], Array<Principal>>,

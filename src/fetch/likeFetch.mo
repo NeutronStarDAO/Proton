@@ -14,7 +14,8 @@ actor class LikeFetch(
     type PostImmutable = Types.PostImmutable;
     type Repost = Types.Repost;
 
-    let notifyMap = TrieMap.TrieMap<Principal, [Text]>(Principal.equal, Principal.hash);
+    stable var notifyMapEntries: [(Principal, [Text])] = [];
+    let notifyMap = TrieMap.fromEntries<Principal, [Text]>(notifyMapEntries.vals(), Principal.equal, Principal.hash);
     
     public shared({caller}) func receiveNotify(post: PostImmutable): async () {
         // 查到这个帖子的主用户的 followers
@@ -59,7 +60,8 @@ actor class LikeFetch(
     };
 // userToFeed
 
-    var userToFeed = TrieMap.TrieMap<Principal, Principal>(Principal.equal, Principal.hash);
+    stable var userToFeedEntries: [(Principal, Principal)] = [];
+    var userToFeed = TrieMap.fromEntries<Principal, Principal>(userToFeedEntries.vals(), Principal.equal, Principal.hash);
 
     public shared({caller}) func initUserToFeed(_userToFeedArray: [(Principal, Principal)]): async Bool {
         userToFeed := TrieMap.fromEntries(
@@ -109,5 +111,15 @@ actor class LikeFetch(
         #seconds(2),
         notify
     );
-    
+
+    system func preupgrade() {
+        notifyMapEntries := Iter.toArray(notifyMap.entries());
+        userToFeedEntries := Iter.toArray(userToFeed.entries());
+    };
+
+    system func postupgrade() {
+        notifyMapEntries := [];
+        userToFeedEntries := [];
+    };
+
 };

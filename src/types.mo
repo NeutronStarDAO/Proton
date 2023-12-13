@@ -10,9 +10,9 @@ module {
 
     public type Post = {
         postId: PostId; // 帖子 ID 
+        feedCanister: Principal;
         index: Nat; // Post Index
         user: UserId; // 发布者
-        title: Text;
         content: Text;
         var repost: [Repost]; //转发者
         var like: [Like];
@@ -22,9 +22,9 @@ module {
 
     public type PostImmutable = {
         postId: PostId; // 帖子 ID 
+        feedCanister: Principal; 
         index: Nat; // Post Index
         user: UserId; // 发布者
-        title: Text;
         content: Text;
         repost: [Repost]; //转发者
         like: [Like];

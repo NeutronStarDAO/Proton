@@ -41,6 +41,15 @@ actor class User() = this {
         graph.addEdge(caller, user);
     };
 
+    // is userA follow userB
+    public query({caller}) func isFollowed(userA: Vertex, userB: Vertex): async Bool {
+        let _followers = graph.getReverseAdjacent(userB);
+        for(_follower in _followers.vals()) {
+            if(_follower == userA) return true;
+        };
+        false
+    };
+    
     public query({caller}) func getFollowingList(user: Vertex): async [Vertex] {
         graph.getForwardAdjacent(user)
     };
@@ -94,7 +103,6 @@ actor class User() = this {
     public query func searchProfile(term: Text): async [Profile] {
         directory.findBy(term)
     };
-
 
     system func preupgrade() {
         vertexListEntries := graph.getVertexListEntries();

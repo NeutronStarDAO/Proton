@@ -13,6 +13,7 @@ type User =
    getProfile: (UserId__1) -> (opt Profile) query;
    getRootFeedCanister: () -> (principal) query;
    init: (principal) -> () oneway;
+   isFollowed: (Vertex, Vertex) -> (bool) query;
    searchProfile: (text) -> (vec Profile) query;
    updateProfile: (NewProfile) -> ();
  };

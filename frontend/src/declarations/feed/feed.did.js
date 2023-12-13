@@ -11,13 +11,13 @@ export const idlFactory = ({ IDL }) => {
   const PostId = IDL.Text;
   const PostImmutable = IDL.Record({
     'repost' : IDL.Vec(Repost),
-    'title' : IDL.Text,
     'content' : IDL.Text,
     'like' : IDL.Vec(Like),
     'createdAt' : Time,
     'user' : UserId,
     'comment' : IDL.Vec(Comment),
     'index' : IDL.Nat,
+    'feedCanister' : IDL.Principal,
     'postId' : PostId,
   });
   const Feed = IDL.Service({

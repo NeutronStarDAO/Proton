@@ -22,7 +22,8 @@ actor class RootFeed(
     type LikeFetchActor = Types.LikeFetchActor;
 
     stable let T_CYCLES = 1_000_000_000_000;
-    let userFeedCanisterMap = TrieMap.TrieMap<Principal, Principal>(Principal.equal, Principal.hash);
+    stable var userFeedCanisterMapEntries: [(Principal, Principal)] = [];
+    let userFeedCanisterMap = TrieMap.fromEntries<Principal, Principal>(userFeedCanisterMapEntries.vals(), Principal.equal, Principal.hash);
     let ic: IC.Service = actor("aaaaa-aa");
 
     // 给用户创建一个用户自己的 Canister
@@ -135,6 +136,15 @@ actor class RootFeed(
         newLikeFetchCanister: Principal
     ): async () {
         likeFetchCanister := newLikeFetchCanister;
+    };
+
+
+    system func preupgrade() {
+        userFeedCanisterMapEntries := Iter.toArray(userFeedCanisterMap.entries());
+    };
+
+    system func postupgrade() {
+        userFeedCanisterMapEntries := [];
     };
 
 }

@@ -9,6 +9,7 @@ import {useAuth} from "../utils/useAuth";
 import Feed from "../actors/feed";
 import React, {useEffect, useState} from "react";
 import {CommentForm} from "./Modal/commentForm";
+import {useNavigate} from "react-router-dom";
 
 export default function Post(props: { content: PostImmutable, setPostItem?: Function, avatar?: string, name?: string }) {
   const {content, setPostItem} = props
@@ -19,6 +20,7 @@ export default function Post(props: { content: PostImmutable, setPostItem?: Func
   useEffect(() => {
     setData(content)
   }, [content])
+  const navigate = useNavigate();
 
   const feedApi = React.useMemo(() => {
     if (!userFeedCai) return undefined
@@ -58,6 +60,7 @@ export default function Post(props: { content: PostImmutable, setPostItem?: Func
       }} onClick={() => setPostItem?.(data)}>
         <Space>
           <Avatar
+            onClick={() => navigate(`/profile/${content.user.toString()}`)}
             size={32}
             src={props.avatar ? props.avatar : "https://avatars.githubusercontent.com/u/120618331?s=200&v=4"}
             style={{

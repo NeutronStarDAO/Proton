@@ -24,9 +24,14 @@ actor class RootFetch(
     stable var commentFetchCanisterIndex: Nat = 0;
     stable var likeFetchCanisterIndex: Nat = 0;
 
-    let postFetchMap = TrieMap.TrieMap<Nat, Principal>(Nat.equal, Hash.hash);    
-    let commentFetchMap = TrieMap.TrieMap<Nat, Principal>(Nat.equal, Hash.hash);    
-    let likeFetchMap = TrieMap.TrieMap<Nat, Principal>(Nat.equal, Hash.hash);    
+    stable var postFetchMapEntries: [(Nat, Principal)] = [];
+    let postFetchMap = TrieMap.fromEntries<Nat, Principal>(postFetchMapEntries.vals(), Nat.equal, Hash.hash);    
+
+    stable var commentFetchMapEntries: [(Nat, Principal)] = [];
+    let commentFetchMap = TrieMap.fromEntries<Nat, Principal>(commentFetchMapEntries.vals(), Nat.equal, Hash.hash);    
+
+    stable var likeFetchMapEntries: [(Nat, Principal)] = [];
+    let likeFetchMap = TrieMap.fromEntries<Nat, Principal>(likeFetchMapEntries.vals(), Nat.equal, Hash.hash);    
 
     public shared({caller}) func init(
         _rootFeedCanister: Principal,
@@ -115,5 +120,16 @@ actor class RootFetch(
     public query func getAllLikeFetchCanister(): async [Principal] {
         Iter.toArray(likeFetchMap.vals())
     };
-    
+
+    system func preupgrade() {
+        postFetchMapEntries := Iter.toArray(postFetchMap.entries());
+        commentFetchMapEntries := Iter.toArray(commentFetchMap.entries());
+        likeFetchMapEntries := Iter.toArray(likeFetchMap.entries());
+    };
+
+    system func postupgrade() {
+        postFetchMapEntries := [];
+        commentFetchMapEntries := [];
+        likeFetchMapEntries := [];
+    };
 };

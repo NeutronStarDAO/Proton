@@ -31,6 +31,7 @@ export interface User {
   'getProfile' : ActorMethod<[UserId__1], [] | [Profile]>,
   'getRootFeedCanister' : ActorMethod<[], Principal>,
   'init' : ActorMethod<[Principal], undefined>,
+  'isFollowed' : ActorMethod<[Vertex, Vertex], boolean>,
   'searchProfile' : ActorMethod<[string], Array<Profile>>,
   'updateProfile' : ActorMethod<[NewProfile], undefined>,
 }

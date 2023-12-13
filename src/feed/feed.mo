@@ -84,7 +84,7 @@ actor class Feed(
 
     type RootPostActor = Types.RootPostActor;
     stable var bucket: ?Principal = null;
-    let rootPostActor: RootPostActor = actor(Principal.toText(rootPostCanister));
+    stable let rootPostActor: RootPostActor = actor(Principal.toText(rootPostCanister));
 
     // 更新当前 feed 去存储的 bucket canister
     public shared func checkAvailableBucket(): async Bool {
@@ -105,8 +105,11 @@ actor class Feed(
     type UserId = Types.UserId;
     type BucketActor = Types.BucketActor;
     type PostFetchActor = Types.PostFetchActor;
+    type Post = Types.Post;
 
-    let postDirectory: Database.PostDirectory = Database.PostDirectory();
+    stable var postIndexEntries: Nat = 0;
+    stable var postMapEntries: [(Nat, Post)] = [];
+    let postDirectory: Database.PostDirectory = Database.PostDirectory(postIndexEntries, postMapEntries);
 
     // 查询用户发了多少帖子（统计总数）
     public query func getPostNumber(): async Nat {
@@ -125,7 +128,7 @@ actor class Feed(
     public shared({caller}) func createPost(title: Text, content: Text): async Text {
         assert(caller == owner and bucket != null);
         let _bucket = Option.unwrap(bucket);
-        let post: PostImmutable = postDirectory.createPost(caller, title, content, Time.now(), _bucket);
+        let post: PostImmutable = postDirectory.createPost(caller, Principal.fromActor(this), content, Time.now(), _bucket);
         
         // 将帖子内容发送给公共区的 Bucket 
         let bucketActor: BucketActor = actor(Principal.toText(_bucket));
@@ -194,7 +197,8 @@ actor class Feed(
     type CommentFetchActor = Types.CommentFetchActor;
     type LikeFetchActor = Types.LikeFetchActor;
 
-    let feedDirectory = Database.FeedDirectory();
+    stable var feedMapEntries: [(Text, PostImmutable)] = [];
+    let feedDirectory = Database.FeedDirectory(feedMapEntries);
 
     public shared({caller}) func receiveFeed(postId: Text): async Bool {
         let (_bucket, _, _) = Utils.checkPostId(postId);
@@ -325,4 +329,14 @@ actor class Feed(
         feedDirectory.getLatestFeed(n)
     };
 
+    system func preupgrade() {
+        postIndexEntries := postDirectory.getPostIndexEntries();
+        postMapEntries := postDirectory.getPostMapEntries();
+        feedMapEntries := feedDirectory.getFeedMapEntries();
+    };
+
+    system func postupgrade() {
+        postMapEntries := [];
+        feedMapEntries := [];
+    };
 }

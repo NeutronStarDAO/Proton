@@ -1,5 +1,6 @@
 export const idlFactory = ({ IDL }) => {
   const RootPost = IDL.Service({
+    'addAvailBucket' : IDL.Func([IDL.Vec(IDL.Principal)], [], []),
     'createBucket' : IDL.Func([], [IDL.Principal], []),
     'getAllAvailableBuckets' : IDL.Func(
         [],

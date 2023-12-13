@@ -22,13 +22,13 @@ export interface LikeFetch {
 export type PostId = string;
 export interface PostImmutable {
   'repost' : Array<Repost>,
-  'title' : string,
   'content' : string,
   'like' : Array<Like>,
   'createdAt' : Time,
   'user' : UserId,
   'comment' : Array<Comment>,
   'index' : bigint,
+  'feedCanister' : Principal,
   'postId' : PostId,
 }
 export interface Repost { 'createdAt' : Time, 'user' : UserId }

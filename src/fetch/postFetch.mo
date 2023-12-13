@@ -9,7 +9,8 @@ import Iter "mo:base/Iter";
 actor class PostFetch() = this {
 
     // 内部维护一个通知表：记录每个用户待通知的帖子 ID 有哪些。
-    let notifyMap = TrieMap.TrieMap<Principal, [Text]>(Principal.equal, Principal.hash);
+    stable var notifyMapEntries: [(Principal, [Text])] = [];
+    let notifyMap = TrieMap.fromEntries<Principal, [Text]>(notifyMapEntries.vals(), Principal.equal, Principal.hash);
 
     // 接收发帖人的通知：帖子 ID 、发帖人、转发人、followers 、Cycles 。
     public shared({caller}) func receiveNotify(to: [Principal], postId: Text): async () {
@@ -38,7 +39,8 @@ actor class PostFetch() = this {
 
 // userToFeed
 
-    var userToFeed = TrieMap.TrieMap<Principal, Principal>(Principal.equal, Principal.hash);
+    stable var userToFeedEntries: [(Principal, Principal)] = [];
+    var userToFeed = TrieMap.fromEntries<Principal, Principal>(userToFeedEntries.vals(), Principal.equal, Principal.hash);
 
     public shared({caller}) func initUserToFeed(_userToFeedArray: [(Principal, Principal)]): async Bool {
         userToFeed := TrieMap.fromEntries(
@@ -91,5 +93,14 @@ actor class PostFetch() = this {
         #seconds(2),
         notify
     );
-    
+
+    system func preupgrade() {
+        notifyMapEntries := Iter.toArray(notifyMap.entries());
+        userToFeedEntries := Iter.toArray(userToFeed.entries());
+    };
+
+    system func postupgrade() {
+        notifyMapEntries := [];
+        userToFeedEntries := [];
+    };
 };

@@ -33,7 +33,8 @@ shared(msg) actor class Bucket(
     stable let installer = msg.caller;
 
     // postId -> PostImmutable
-    let feedMap = TrieMap.TrieMap<Text, PostImmutable>(Text.equal, Text.hash);
+    stable var feedMapEntries: [(Text, PostImmutable)] = [];
+    let feedMap = TrieMap.fromEntries<Text, PostImmutable>(feedMapEntries.vals(), Text.equal, Text.hash);
 
     // 存储帖子
     public shared({caller}) func storeFeed(post: PostImmutable): async Bool {
@@ -90,10 +91,10 @@ shared(msg) actor class Bucket(
             case(?post) {
                 let _newPost = {
                     postId = post.postId;
+                    feedCanister = post.feedCanister;
                     index = post.index;
                     user = post.user;
                     repost = post.repost;
-                    title = post.title;
                     content = post.content;
                     like = post.like;
                     comment = newComment;
@@ -111,10 +112,10 @@ shared(msg) actor class Bucket(
             case(?post) {
                 let _newPost = {
                     postId = post.postId;
+                    feedCanister = post.feedCanister;
                     index = post.index;
                     user = post.user;
                     repost = post.repost;
-                    title = post.title;
                     content = post.content;
                     like = newLike;
                     comment = post.comment;
@@ -132,9 +133,9 @@ shared(msg) actor class Bucket(
             case(?post) {
                 feedMap.put(postId, {
                     postId = post.postId;
+                    feedCanister = post.feedCanister;
                     index = post.index;
                     user = post.user;
-                    title = post.title;
                     content = post.content;
                     repost = newRepost;
                     like = post.like;
@@ -226,4 +227,11 @@ shared(msg) actor class Bucket(
         likeFetchCanister := newLikeFetchCanister;
     };
 
-};
+    system func preupgrade() {
+        feedMapEntries := Iter.toArray(feedMap.entries());
+    };
+
+    system func postupgrade() {
+        feedMapEntries := [];
+    };
+}

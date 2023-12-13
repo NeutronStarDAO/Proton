@@ -1,5 +1,6 @@
 type RootPost = 
  service {
+   addAvailBucket: (vec principal) -> ();
    createBucket: () -> (principal);
    getAllAvailableBuckets: () -> (vec principal) query;
    getAllBuckets: () -> (vec principal) query;

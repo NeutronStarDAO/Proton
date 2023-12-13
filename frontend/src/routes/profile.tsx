@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {Layout, Image, Typography, Avatar, Flex, Space, Button, Modal, message, Spin} from 'antd';
+import {Layout, Image, Typography, Avatar, Flex, Space, Button, Modal, message, notification, Spin} from 'antd';
 import Post from '../components/post';
 import {userApi} from '../actors/user';
 import {Profile} from '../declarations/user/user';
@@ -12,6 +12,8 @@ import {rootFeedApi} from "../actors/rootFeed";
 import Feed from "../actors/feed";
 import {useAllDataStore, useProfileStore} from "../redux";
 import {useAuth} from "../utils/useAuth";
+import { LoadingOutlined, CheckOutlined } from '@ant-design/icons';
+
 
 export default function UserProfile() {
   const {principal: me} = useAuth()
@@ -23,6 +25,7 @@ export default function UserProfile() {
   const [following, setFollowing] = useState(0)
   const [followers, setFollowers] = useState(0)
   const [allPosts, setAllPosts] = useState<PostImmutable[]>()
+  const [api, contextHolder] = notification.useNotification();
   const {userid} = useParams()
   const [commentProfiles, setCommentProfiles] = useState<Profile[]>()
   const [commentLoading, setCommentLoading] = useState(true)
@@ -99,12 +102,25 @@ export default function UserProfile() {
     setIsModalOpen(true);
   };
 
-  const handleClick = async () => {
+  const handleFollow = async () => {
     if (isMe) {
       handleEditProfile()
     } else {
       if (!principal) return
-      userApi.follow(principal).then()
+      api.info({
+        message: 'Follow ing ...',
+        key: 'follow',
+        duration: null,
+        description: '',
+        icon: <LoadingOutlined />
+      })
+      await userApi.follow(principal);
+      api.success({
+        message: 'Follow Successful !',
+        key: 'follow',
+        description: '',
+        icon: <CheckOutlined />
+      });   
     }
   }
 
@@ -143,7 +159,7 @@ export default function UserProfile() {
             />
             <Typography.Text strong>{userProfile?.name}</Typography.Text>
           </Space>
-          <Button onClick={handleClick}> {isMe ? "Edit Profile" : "Follow"} </Button>
+          <Button onClick={handleFollow}> {isMe ? "Edit Profile" : "Follow"} </Button>
           <Modal
             title="Edit Profile Information"
             open={isModalOpen}

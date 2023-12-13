@@ -15,8 +15,11 @@ import Order "mo:base/Order";
 import Utils "../utils";
 
 module {
-
-  public class PostDirectory() {
+  type Post = Types.Post;
+  public class PostDirectory(
+    postIndexEntries: Nat,
+    postMapEntries: [(Nat, Post)]
+  ) {
 
     type Post = Types.Post;
     type PostImmutable = Types.PostImmutable;
@@ -29,20 +32,24 @@ module {
     type Repost = Types.Repost;
     type NewRepost = Types.NewRepost;
 
-    var postIndex: Nat = 0;
-    let postMap = TrieMap.TrieMap<Nat, Post>(Nat.equal, Hash.hash); // postIndex -> Post
+    var postIndex: Nat = postIndexEntries;
+    let postMap = TrieMap.fromEntries<Nat, Post>(postMapEntries.vals(), Nat.equal, Hash.hash); // postIndex -> Post
+
+    public func getPostIndexEntries(): Nat { postIndex };
+
+    public func getPostMapEntries(): [(Nat, Post)] { Iter.toArray(postMap.entries()) };
 
     private func _getPostId(bucket: Principal, user: Principal, index: Nat): Text {
       Principal.toText(bucket) # "#" # Principal.toText(user) # "#" # Nat.toText(index)
     };
 
     // 发帖
-    public func createPost(user: UserId, title: Text, content: Text, time: Time, bucket: Principal): PostImmutable {
+    public func createPost(user: UserId, feedCanister: Principal, content: Text, time: Time, bucket: Principal): PostImmutable {
       let post: Post = {
         postId = _getPostId(bucket, user, postIndex);
+        feedCanister = feedCanister;
         index = postIndex;
         user = user;
-        title = title;
         content = content;
         var repost = [];
         var like = [];
@@ -67,10 +74,10 @@ module {
         case(?post) {
           return ?{
             postId = post.postId;
+            feedCanister = post.feedCanister;
             index = post.index;
             user = post.user;
             repost = post.repost;
-            title = post.title;
             content = post.content;
             like = post.like;
             comment = post.comment;
@@ -151,12 +158,18 @@ module {
     };
 
   };
+  
+  type PostImmutable = Types.PostImmutable;
 
-  public class FeedDirectory() {
+  public class FeedDirectory(
+    feedMapEntries: [(Text, PostImmutable)]
+  ) {
     
     type PostImmutable = Types.PostImmutable;
 
-    let feedMap = TrieMap.TrieMap<Text, PostImmutable>(Text.equal, Text.hash);
+    let feedMap = TrieMap.fromEntries<Text, PostImmutable>(feedMapEntries.vals(), Text.equal, Text.hash);
+
+    public func getFeedMapEntries(): [(Text, PostImmutable)] { Iter.toArray(feedMap.entries()) };
 
     public func storeFeed(post: PostImmutable) {
       feedMap.put(post.postId, post);
