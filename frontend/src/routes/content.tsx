@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from "react";
-import {Layout, Spin, Flex} from "antd";
+import {Layout, Spin, Flex, Result } from "antd";
+import { SmileOutlined } from '@ant-design/icons';
 import Post from "../components/post";
 import {Comments} from "../components/comment";
 import {PostImmutable} from "../declarations/feed/feed";
@@ -39,38 +40,69 @@ export const Content = React.memo((props: { contents?: PostImmutable[] }) => {
     getAllCommentProfiles()
   }, [postItem])
 
-  return <>
-    <Layout.Content className={"posts"} style={{
-      backgroundColor: "white",
-      overflowY: 'auto',
-      scrollbarWidth: 'thin',
-      width: '200px',
-      borderRight: '1px solid rgba(0,0,0,0.2)',
-      padding: "40px 20px"
-    }}>
-      {onLoading && <Flex align="center" justify="center">
-        <Spin size="large"/>
-      </Flex>}
-      {!onLoading && contents && contents.map((v, k) => {
-        return <Post setPostItem={setPostItem} content={v} key={k}
-                     avatar={userProfileArray?.[k] ? userProfileArray[k].avatarUrl : ""}
-                     name={userProfileArray?.[k] ? userProfileArray[k].name : ""}/>
-      })}
-    </Layout.Content>
-    <Layout.Content className={"posts"} style={{
-      backgroundColor: 'white',
-      overflowY: 'auto',
-      scrollbarWidth: 'thin',
-      padding: "40px 20px"
-    }}>
-      {postItem ? !commentLoading ? postItem.comment.map((v, k) => {
-        return <Comments avatar={commentProfiles?.[k] ? commentProfiles [k]?.avatarUrl : ""}
-                         name={commentProfiles?.[k] ? commentProfiles [k]?.name : ""}
-                         content={v} key={k}/>
-      }) : <Flex align="center" justify="center">
-        <Spin size="large"/>
-      </Flex> : <></>}
-    </Layout.Content>
-  </>
+  if(contents !== undefined && contents?.length > 0) {
+    return <>
+      <Layout.Content className={"posts"} style={{
+        backgroundColor: "white",
+        overflowY: 'auto',
+        scrollbarWidth: 'thin',
+        width: '200px',
+        borderRight: '1px solid rgba(0,0,0,0.2)',
+        padding: "40px 20px"
+      }}>
+        {onLoading && <Flex align="center" justify="center">
+          <Spin size="large"/>
+        </Flex>}
+        {!onLoading && contents && contents.map((v, k) => {
+          return <Post setPostItem={setPostItem} content={v} key={k}
+                      avatar={userProfileArray?.[k] ? userProfileArray[k].avatarUrl : ""}
+                      name={userProfileArray?.[k] ? userProfileArray[k].name : ""}/>
+        })}
+      </Layout.Content>
+      <Layout.Content className={"posts"} style={{
+        backgroundColor: 'white',
+        overflowY: 'auto',
+        scrollbarWidth: 'thin',
+        padding: "40px 20px"
+      }}>
+        {postItem ? !commentLoading ? postItem.comment.map((v, k) => {
+          return <Comments avatar={commentProfiles?.[k] ? commentProfiles [k]?.avatarUrl : ""}
+                          name={commentProfiles?.[k] ? commentProfiles [k]?.name : ""}
+                          content={v} key={k}/>
+        }) : <Flex align="center" justify="center">
+          <Spin size="large"/>
+        </Flex> : <></>}
+      </Layout.Content>
+    </>
+  } else {
+    return (
+      <>
+        <Layout.Content className={"posts"} style={{
+          backgroundColor: "white",
+          overflowY: 'auto',
+          scrollbarWidth: 'thin',
+          width: '200px',
+          borderRight: '1px solid rgba(0,0,0,0.2)',
+          padding: "40px 20px",
+        }}>
+          <Result
+            icon={<SmileOutlined />}
+            title="There Is No Feed !"
+            subTitle="Please Follow SomeOne To Get Feed Or Refresh The Website"
+            style={{
+              backgroundColor: 'white'
+            }}
+          />
+        </Layout.Content>
+        <Layout.Content className={"posts"} style={{
+          backgroundColor: 'white',
+          overflowY: 'auto',
+          scrollbarWidth: 'thin',
+          padding: "40px 20px"
+        }}>
 
+        </Layout.Content>
+      </>
+    )
+  }
 })

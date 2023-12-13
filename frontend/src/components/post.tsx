@@ -1,8 +1,11 @@
-import {Avatar, message, Modal, Space, Typography} from "antd";
+import {Avatar, message, Modal, Space, Typography, notification} from "antd";
 import {
   CommentOutlined,
   RedoOutlined,
-  HeartOutlined
+  HeartOutlined,
+  LoadingOutlined,
+  CheckOutlined,
+  CloseOutlined
 } from '@ant-design/icons';
 import {PostImmutable} from "../declarations/feed/feed";
 import {useAuth} from "../utils/useAuth";
@@ -17,6 +20,7 @@ export default function Post(props: { content: PostImmutable, setPostItem?: Func
   const [open, setOpen] = useState(false)
   const [data, setData] = useState<any>()
   const {pathname} = useLocation()
+  const [api, contextHolder] = notification.useNotification();
 
   useEffect(() => {
     setData(content)
@@ -26,7 +30,7 @@ export default function Post(props: { content: PostImmutable, setPostItem?: Func
 
   const feedApi = React.useMemo(() => {
     return new Feed(content.feedCanister)
-  }, [])
+  }, [content])
 
   const tip = () => message.warning("please login first")
 
@@ -45,13 +49,57 @@ export default function Post(props: { content: PostImmutable, setPostItem?: Func
 
   const repost = async () => {
     if (!isAuth) return tip()
+    if (!feedApi) {
+      api.error({
+        message: 'Create Repost Error !',
+        key: 'createRepost',
+        description: 'Please Login !',
+        icon: <CloseOutlined />
+      });
+      return tip();
+    }
+    api.info({
+      message: 'Create Repost ing ...',
+      key: 'createRepost',
+      duration: null,
+      description: '',
+      icon: <LoadingOutlined />
+    });
     await feedApi.createRepost(data.postId)
+    api.success({
+      message: 'Create Repost Successful !',
+      key: 'createRepost',
+      description: '',
+      icon: <CheckOutlined />
+    })
     update().then()
   }
 
   const like = async () => {
     if (!isAuth) return tip()
+    if (!feedApi) {
+      api.error({
+        message: 'Create Like Error !',
+        key: 'createLike',
+        description: 'Please Login !',
+        icon: <CloseOutlined />
+      });
+      return tip()
+    }
+    api.info({
+      message: 'Create Like ing ...',
+      key: 'createLike',
+      duration: null,
+      description: '',
+      icon: <LoadingOutlined />
+    });
     await feedApi.createLike(data.postId)
+    api.success({
+      message: 'Create Like Successful !',
+      key: 'createLike',
+      description: '',
+      icon: <CheckOutlined />
+    })
     update().then()
   }
 
@@ -62,6 +110,7 @@ export default function Post(props: { content: PostImmutable, setPostItem?: Func
       borderRadius: "20px",
       marginBottom: "20px",
     }}>
+      {contextHolder}
       <div style={{
         cursor: "pointer"
       }} onClick={() => setPostItem?.(data)}>

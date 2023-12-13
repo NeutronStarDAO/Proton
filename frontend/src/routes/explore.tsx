@@ -20,35 +20,5 @@ export default function Explore() {
     fetch()
   }, [])
 
-  if(contents.length > 0) {
-    return <Content contents={contents}/>
-  } else {
-    return (
-    <>
-      <Layout.Content className={"posts"} style={{
-        backgroundColor: "white",
-        overflowY: 'auto',
-        scrollbarWidth: 'thin',
-        width: '200px',
-        borderRight: '1px solid rgba(0,0,0,0.2)',
-        padding: "40px 20px",
-      }}>
-        <Result
-          icon={<SmileOutlined />}
-          title="There Is No Feed !"
-          subTitle="Please Refresh The Website"
-          style={{
-            backgroundColor: 'white'
-          }}
-        />
-      </Layout.Content>
-      <Layout.Content className={"posts"} style={{
-        backgroundColor: 'white',
-        overflowY: 'auto',
-        scrollbarWidth: 'thin',
-        padding: "40px 20px"
-      }}>
-      </Layout.Content>
-    </>)
-  }
+  return <Content contents={contents}/>
 }
