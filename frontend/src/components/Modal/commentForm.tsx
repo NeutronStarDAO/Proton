@@ -2,7 +2,6 @@ import React from 'react';
 import {
   Form,notification
 } from 'antd';
-import {useAuth} from "../../utils/useAuth";
 import Feed from "../../actors/feed";
 import {EditModal} from "./EditModal";
 import { LoadingOutlined, CheckOutlined ,CloseOutlined} from '@ant-design/icons';
