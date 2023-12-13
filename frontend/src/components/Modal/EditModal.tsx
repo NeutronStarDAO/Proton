@@ -59,7 +59,7 @@ export function EditModal(props: { onFinish: (values: any) => void, form: FormIn
           },
         ]}
       >
-        <Input/>
+        <Input.TextArea showCount/>
       </Form.Item>
       <Form.Item {...tailFormItemLayout}>
         <Button type="primary" htmlType="submit">

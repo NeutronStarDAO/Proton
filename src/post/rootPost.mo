@@ -58,6 +58,8 @@ actor class RootPost(
         };
     };
 
+    public query func getBucketIndex(): async Nat { bucketIndex };
+
     // let ic: IC.Service = actor("aaaaa-aa");
     // public shared({caller}) func updateSettings(bucketArray: [Principal]): async () {
     //     for(_bucket in bucketArray.vals()) {
