@@ -54,11 +54,15 @@ export default function UserProfile() {
     }
   }, [userid])
 
-  useEffect(() => {
-
-    me && principal && userApi.isFollowed(me, principal).then(e => {
+  const isFollow = async () => {
+    if (me && principal) {
+      const e = await userApi.isFollowed(me, principal)
       setIsFollowed(e)
-    })
+    }
+  }
+
+  useEffect(() => {
+    isFollow()
   }, [me, principal])
 
 
@@ -125,6 +129,7 @@ export default function UserProfile() {
         icon: <LoadingOutlined/>
       })
       await userApi.follow(principal);
+      await isFollow()
       api.success({
         message: 'Follow Successful !',
         key: 'follow',
