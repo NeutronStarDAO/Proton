@@ -22,6 +22,17 @@ Run：
 
 If'n you wanna try out the demo or get to contributin', mosey on over to the project website and have a looksie. Instructions over yonder'll help get ya started.
 
+## Canister Info
+
+- Frontend Canister : [2f64i-aaaaa-aaaan-qiu4q-cai](https://2f64i-aaaaa-aaaan-qiu4q-cai.icp0.io/)
+- User Canister : [j6sa4-jyaaa-aaaan-qgjxq-cai](https://dashboard.internetcomputer.org/canister/j6sa4-jyaaa-aaaan-qgjxq-cai)
+- RootPost Canister : [lyksr-aiaaa-aaaan-qgj2q-cai](https://dashboard.internetcomputer.org/canister/lyksr-aiaaa-aaaan-qgj2q-cai)
+- RootFeed Canister : [lrjzn-waaaa-aaaan-qgj3a-cai](https://dashboard.internetcomputer.org/canister/lrjzn-waaaa-aaaan-qgj3a-cai)
+- RootFetch Canister : [l7luf-nqaaa-aaaan-qgj2a-cai](https://dashboard.internetcomputer.org/canister/l7luf-nqaaa-aaaan-qgj2a-cai)
+- PostFetch Canister : [ldpou-2qaaa-aaaan-qgjya-cai](https://dashboard.internetcomputer.org/canister/ldpou-2qaaa-aaaan-qgjya-cai)
+- CommentFetch Canister : [lnnd4-baaaa-aaaan-qgjza-cai](https://dashboard.internetcomputer.org/canister/lnnd4-baaaa-aaaan-qgjza-cai)
+- LikeFetch Canister : [leoia-xiaaa-aaaan-qgjyq-cai](https://dashboard.internetcomputer.org/canister/leoia-xiaaa-aaaan-qgjyq-cai)
+
 ## More Info
 Wanna learn more about this here project? Visit [the documentation](https://neutronstardao.github.io/constellation.github.io) for details on the architecture, roadmap, and more.
 
