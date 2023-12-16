@@ -62,6 +62,13 @@
             "declarations": {
                 "node_compatibility": true
             }
+        },
+        "frontend": {
+            "frontend": {
+                "entrypoint": "frontend/build/index.html"
+            },
+            "source": ["frontend/build"],
+            "type": "assets"
         }
     },
     "defaults": {

@@ -50,6 +50,8 @@ export default function ProfileForm(props: ProfileFormProps) {
   const [form] = Form.useForm();
   const [api, contextHolder] = notification.useNotification();
   const {principal} = useAuth()
+  console.log(props.userProfile)
+  console.log(props.userProfile?.feedCanister);
 
   const onFinish = async (values: any) => {
     api.info({
@@ -95,7 +97,7 @@ export default function ProfileForm(props: ProfileFormProps) {
         education: props.userProfile?.education,
         backImgUrl: props.userProfile?.backImgUrl,
         avatarUrl: props.userProfile?.avatarUrl,
-        feedCanister: props.userProfile?.feedCanister[0]?.toString(),
+        feedCanister: (props.userProfile?.feedCanister !== undefined && props.userProfile?.feedCanister.length > 0) ? props.userProfile?.feedCanister[0]?.toString() : "",
         biography: props.userProfile?.biography
       }}
       style={{maxWidth: 600}}
