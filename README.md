@@ -33,6 +33,6 @@ If'n you wanna try out the demo or get to contributin', mosey on over to the pro
 - LikeFetch Canister : [leoia-xiaaa-aaaan-qgjyq-cai](https://dashboard.internetcomputer.org/canister/leoia-xiaaa-aaaan-qgjyq-cai)
 
 ## More Info
-Wanna learn more about this here project? Visit [the documentation](https://neutronstardao.github.io/constellation.github.io) for details on the architecture, roadmap, and more.
+Wanna learn more about this here project? Visit [here](https://forum.dfinity.org/t/proton-a-socialfi-dapp-totally-base-on-actor-model/24832) for details on the architecture, roadmap, and more.
 
 We'd be much obliged if y'all would try it out and share feedback. Happy trails!
