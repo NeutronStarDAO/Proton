@@ -39,3 +39,5 @@ If'n you wanna try out the demo or get to contributin', mosey on over to the pro
 Wanna learn more about this here project? Visit [here](https://forum.dfinity.org/t/proton-a-socialfi-dapp-totally-base-on-actor-model/24832) for details on the architecture, roadmap, and more.
 
 We'd be much obliged if y'all would try it out and share feedback. Happy trails!
+
+![2](https://github.com/NeutronStarDAO/Proton/assets/72973293/0092033f-0771-4276-9d28-fee3d5e77706)
