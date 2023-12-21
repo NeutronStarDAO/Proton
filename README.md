@@ -14,6 +14,12 @@ Users can even deploy their own independent Feed canister in code to interact wi
 
 No matter whose data, as long as it's posted to a Feed, it is under the complete control of the Feed canister's owner.
 
+<br>
+<div style="display: flex; justify-content: center; align-items: center; ">
+  <img src="https://github.com/NeutronStarDAO/Proton/assets/72973293/c4d67563-9f12-44a5-9928-6f3704a72db8" style="width: 75%;" />
+</div>
+<br>
+
 ## Getting Started
 Run：
 ```shell
