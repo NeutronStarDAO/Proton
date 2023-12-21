@@ -1,5 +1,8 @@
 # Proton - A SocialFi Dapp
 
+<img src="https://github.com/NeutronStarDAO/Proton/assets/72973293/82b8b9cb-a3b9-4c6d-9cd1-cb536cb451bf" style="width: 70%;" />
+<br>
+
 Howdy Y'all - Here is the code for the Constellation Book "[development dapp](https://neutronstardao.github.io/constellation.github.io)".
 
 We gone and built a socialfi dapp, a dapp like Twitter but with modular data sovereignty based on the Actor model. She's got tutorials and everything to help get ya up to speed.
@@ -13,12 +16,6 @@ Each user has their own independent space, under their complete control.
 Users can even deploy their own independent Feed canister in code to interact with Proton. (This is cumbersome to do, only suitable for programmer users, they can develop advanced custom features for their canister) This allows the community to create custom advanced features.
 
 No matter whose data, as long as it's posted to a Feed, it is under the complete control of the Feed canister's owner.
-
-<br>
-<div style="display: flex; justify-content: center; align-items: center; ">
-  <img src="https://github.com/NeutronStarDAO/Proton/assets/72973293/c4d67563-9f12-44a5-9928-6f3704a72db8" style="width: 75%;" />
-</div>
-<br>
 
 ## Getting Started
 Run：
