@@ -5,7 +5,7 @@
 
 Howdy Y'all - Here is the code for the Constellation Book "[development DApp](https://neutronstardao.github.io/constellation.github.io)".
 
-We gone and built a socialfi DApp, a DApp like Twitter but with modular data sovereignty based on the Actor model. She's got tutorials and everything to help get ya up to speed.
+We gone and built a SocialFi DApp, a DApp like Twitter but with modular data sovereignty based on the Actor model. She's got tutorials and everything to help get ya up to speed.
 
 ## Design Philosophy
 
