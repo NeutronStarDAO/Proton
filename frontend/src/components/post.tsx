@@ -58,20 +58,20 @@ export default function Post(props: { content: PostImmutable, setPostItem?: Func
       });
       return tip();
     }
-    api.info({
-      message: 'Create Repost ing ...',
-      key: 'createRepost',
-      duration: null,
-      description: '',
-      icon: <LoadingOutlined />
-    });
+    // api.info({
+    //   message: 'Create Repost ing ...',
+    //   key: 'createRepost',
+    //   duration: null,
+    //   description: '',
+    //   icon: <LoadingOutlined />
+    // });
     await feedApi.createRepost(data.postId)
-    api.success({
-      message: 'Create Repost Successful !',
-      key: 'createRepost',
-      description: '',
-      icon: <CheckOutlined />
-    })
+    // api.success({
+    //   message: 'Create Repost Successful !',
+    //   key: 'createRepost',
+    //   description: '',
+    //   icon: <CheckOutlined />
+    // })
     update().then()
   }
 
@@ -86,20 +86,20 @@ export default function Post(props: { content: PostImmutable, setPostItem?: Func
       });
       return tip()
     }
-    api.info({
-      message: 'Create Like ing ...',
-      key: 'createLike',
-      duration: null,
-      description: '',
-      icon: <LoadingOutlined />
-    });
+    // api.info({
+    //   message: 'Create Like ing ...',
+    //   key: 'createLike',
+    //   duration: null,
+    //   description: '',
+    //   icon: <LoadingOutlined />
+    // });
     await feedApi.createLike(data.postId)
-    api.success({
-      message: 'Create Like Successful !',
-      key: 'createLike',
-      description: '',
-      icon: <CheckOutlined />
-    })
+    // api.success({
+    //   message: 'Create Like Successful !',
+    //   key: 'createLike',
+    //   description: '',
+    //   icon: <CheckOutlined />
+    // })
     update().then()
   }
 

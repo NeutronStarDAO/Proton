@@ -57,6 +57,7 @@ export default function Sider() {
 
   const onClick = (info: MenuInfo) => {
     if (info.key === '1') {
+      if (!principal) return message.warning("please login first")
       navigate('/');
     } else if (info.key === '2') {
       navigate('/explore');

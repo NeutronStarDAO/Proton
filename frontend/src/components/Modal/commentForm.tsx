@@ -24,6 +24,7 @@ export function CommentForm(props: { postId: string, setOpen: Function, userFeed
       icon: <LoadingOutlined/>
     });
     try {
+      props.setOpen(false)
       await feedApi.createComment(props.postId, values.content)
       if (pathname.includes("profile")) {
         await feedApi.getAllPost()
@@ -49,7 +50,6 @@ export function CommentForm(props: { postId: string, setOpen: Function, userFeed
       })
     }
     form.resetFields()
-    props.setOpen(false)
   };
 
   return (

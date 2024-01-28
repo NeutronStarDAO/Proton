@@ -108,6 +108,7 @@ export default class Feed {
     const actor = await this.getActor()
     try {
       const res = await actor.getLatestFeed(BigInt(n)) as PostImmutable[]
+      console.log(res)
       updateAllData({allFeed: res})
     } catch (e) {
       console.log("getLatestFeed error", e)

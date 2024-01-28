@@ -14,7 +14,7 @@ export interface Props {
   readonly userFeedCai: Principal | undefined
   readonly logOut: Function | undefined;
   readonly logIn: Function | undefined;
-  readonly isAuth: boolean;
+  readonly isAuth: boolean | undefined;
 }
 
 export const useProvideAuth = (api: NotificationInstance, authClient: IIForIdentity): Props => {
@@ -22,7 +22,7 @@ export const useProvideAuth = (api: NotificationInstance, authClient: IIForIdent
   const [isAuthClientReady, setAuthClientReady] = useState(false);
   const [principal, setPrincipal] = useState<Principal | undefined>(undefined);
   const [userFeedCai, setUserFeedCai] = useState<Principal | undefined>()
-  const [authenticated, setAuthenticated] = useState<boolean>(false);
+  const [authenticated, setAuthenticated] = useState<boolean | undefined>(undefined);
   if (!isAuthClientReady) authClient.create().then(() => setAuthClientReady(true));
 
   const init = async () => {
@@ -30,13 +30,11 @@ export const useProvideAuth = (api: NotificationInstance, authClient: IIForIdent
       authClient.getIdentity(),
       authClient.isAuthenticated(),
     ])
-    if (!isAuthenticated) return {message: "not login"}
+    if (!isAuthenticated) return setAuthenticated(false)
     const principal = identity?.getPrincipal() as Principal | undefined;
     setPrincipal(principal);
     _setIdentity(identity as DelegationIdentity | undefined);
-    if (isAuthenticated) {
-      setAuthenticated(true);
-    }
+    setAuthenticated(true);
     setAuthClientReady(true);
   }
   useEffect(() => {
@@ -88,6 +86,7 @@ export const useProvideAuth = (api: NotificationInstance, authClient: IIForIdent
         _setIdentity(_identity);
         setAuthenticated(true);
       } else {
+        setAuthenticated(false)
         return {message: "connect error"};
       }
     } catch (e) {
