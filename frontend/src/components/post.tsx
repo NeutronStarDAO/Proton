@@ -21,6 +21,7 @@ export default function Post(props: { content: PostImmutable, setPostItem?: Func
   const [data, setData] = useState<any>()
   const {pathname} = useLocation()
   const [api, contextHolder] = notification.useNotification();
+  const [isLike, setIsLike] = useState(false)
 
   useEffect(() => {
     setData(content)
@@ -93,6 +94,7 @@ export default function Post(props: { content: PostImmutable, setPostItem?: Func
     //   description: '',
     //   icon: <LoadingOutlined />
     // });
+    setIsLike(true)
     await feedApi.createLike(data.postId)
     // api.success({
     //   message: 'Create Like Successful !',
@@ -157,10 +159,19 @@ export default function Post(props: { content: PostImmutable, setPostItem?: Func
           &nbsp;
           {data?.repost.length}
         </div>
-        <div style={{cursor: "pointer"}} onClick={like}>
-          <HeartOutlined/>&nbsp;
-          {data?.like.length}
-        </div>
+        {
+          isLike ? (
+            <div style={{cursor: "pointer", color: 'red'}} onClick={like}>
+              <HeartOutlined/>&nbsp;
+              {data?.like.length + 1}
+            </div>
+          ) : (
+            <div style={{cursor: "pointer"}} onClick={like}>
+              <HeartOutlined/>&nbsp;
+              {data?.like.length}
+            </div>
+          )
+        }
       </Space>
     </div>
   );
