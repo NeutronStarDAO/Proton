@@ -117,7 +117,7 @@ actor class Feed(
     };
 
     // 根据帖子 ID 查询用户发的某个帖子
-    public query func getPost(postId: Text): async  ?PostImmutable {
+    public query func getPost(postId: Text): async ?PostImmutable {
         postDirectory.getPost(postId)
     };
 
@@ -200,7 +200,17 @@ actor class Feed(
     stable var feedMapEntries: [(Text, PostImmutable)] = [];
     let feedDirectory = Database.FeedDirectory(feedMapEntries);
 
+    // 检查是否是自己发的帖子
+    // 如果是自己发的，就不接收
+    private func _isFeedInPost(postId: Text): Bool {
+        switch(postDirectory.getPost(postId)) {
+            case(null) return false;
+            case(_) return true;
+        }
+    };
+
     public shared({caller}) func receiveFeed(postId: Text): async Bool {
+        if(_isFeedInPost(postId)) { return false; };
         let (_bucket, _, _) = Utils.checkPostId(postId);
         let bucketActor: BucketActor = actor(Principal.toText(_bucket));
         switch((await bucketActor.getPost(postId))) {
@@ -213,7 +223,8 @@ actor class Feed(
     };
 
     public shared({caller}) func batchReceiveFeed(postIdArray: [Text]): async () {
-        for(_postId in postIdArray.vals()) {
+        label l for(_postId in postIdArray.vals()) {
+            if(_isFeedInPost(_postId)) continue l;
             let (_bucket, _, _) = Utils.checkPostId(_postId);
             let bucketActor: BucketActor = actor(Principal.toText(_bucket));
             switch((await bucketActor.getPost(_postId))) {
@@ -226,6 +237,7 @@ actor class Feed(
     };
 
     public shared({caller}) func receiveComment(postId: Text): async Bool {
+        if(_isFeedInPost(postId)) { return false; };
         let (_bucket, _, _) = Utils.checkPostId(postId);
         let bucketActor: BucketActor = actor(Principal.toText(_bucket));
         switch((await bucketActor.getPost(postId))) {
@@ -249,7 +261,8 @@ actor class Feed(
     };
 
     public shared({caller}) func batchReceiveComment(postIdArray: [Text]): async () {
-        for(_postId in postIdArray.vals()) {
+        label l for(_postId in postIdArray.vals()) {
+            if(_isFeedInPost(_postId)) continue l;
             let (_bucket, _, _) = Utils.checkPostId(_postId);
             let bucketActor: BucketActor = actor(Principal.toText(_bucket));
             switch((await bucketActor.getPost(_postId))) {
@@ -272,6 +285,7 @@ actor class Feed(
     };
 
     public shared({caller}) func receiveLike(postId: Text): async Bool {
+        if(_isFeedInPost(postId)) { return false; };
         let (_bucket, _, _) = Utils.checkPostId(postId);
         let bucketActor: BucketActor = actor(Principal.toText(_bucket));
         switch((await bucketActor.getPost(postId))) {
@@ -295,7 +309,8 @@ actor class Feed(
     };
 
     public shared({caller}) func batchReceiveLike(postIdArray: [Text]): async () {
-        for(_postId in postIdArray.vals()) {
+        label l for(_postId in postIdArray.vals()) {
+            if(_isFeedInPost(_postId)) continue l;
             let (_bucket, _, _) = Utils.checkPostId(_postId);
             let bucketActor: BucketActor = actor(Principal.toText(_bucket));
             switch((await bucketActor.getPost(_postId))) {
