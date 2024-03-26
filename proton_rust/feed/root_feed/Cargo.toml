@@ -1,5 +1,5 @@
 [package]
-name = "proton_rust_backend"
+name = "root_feed"
 version = "0.1.0"
 edition = "2021"
 

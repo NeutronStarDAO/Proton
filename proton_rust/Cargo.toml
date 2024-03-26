@@ -1,5 +1,8 @@
 [workspace]
 members = [
-    "src/proton_rust_backend"
+    "src/proton_rust_backend",
+    "feed/feed",
+    "feed/root_feed",
+    "user"
 ]
 resolver = "2"

@@ -1,5 +1,5 @@
 [package]
-name = "proton_rust_backend"
+name = "user"
 version = "0.1.0"
 edition = "2021"
 
@@ -11,3 +11,4 @@ crate-type = ["cdylib"]
 [dependencies]
 candid = "0.10.5"
 ic-cdk = "0.13.1"
+serde = "1.0.197"
