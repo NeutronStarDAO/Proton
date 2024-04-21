@@ -3,7 +3,7 @@
 <img src="https://github.com/NeutronStarDAO/Proton/assets/72973293/82b8b9cb-a3b9-4c6d-9cd1-cb536cb451bf" style="width: 70%;" />
 <br>
 
-Howdy Y'all - Here is the code for the Constellation Book "[Development DApp](https://neutronstardao.github.io/constellation.github.io)".
+Howdy Y'all - Here is the code for the Constellation Book "[Development DApp](https://neutronstardao.github.io/constellation.github.io/9.DevelopingDApp/2.DesigningDApp.html)".
 
 We gone and built a SocialFi DApp, a DApp like Twitter but with modular data sovereignty based on the Actor model. She's got tutorials and everything to help get ya up to speed.
 
