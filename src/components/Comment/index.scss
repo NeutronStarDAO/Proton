@@ -1,0 +1,32 @@
+.comment {
+  width: 55.8rem;
+  padding: 2rem;
+  height: 100%;
+
+  .comment_wrap {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    padding: 3rem 0 1rem 0;
+    flex-direction: column;
+    align-items: center;
+    border: 1px solid #679BF8;
+    gap: 3rem;
+    border-radius: 1rem;
+
+    .title {
+      width: 100%;
+      font-size: 3.7rem;
+      padding-left: 3rem;
+      text-align: start;
+    }
+
+    .comment_list {
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+      align-items: center;
+      overflow-y: scroll;
+    }
+  }
+}

@@ -1,0 +1,81 @@
+.sidebar_wrap {
+  width: 55.8rem;
+  min-height: 100%;
+  display: flex;
+  padding: 3rem ;
+  flex-direction: column;
+  align-items: center;
+  gap: 3rem;
+
+
+  .search_bar {
+    width: 100%;
+    height: 9.5rem;
+    border-radius: 2rem;
+    border: 1px solid #679BF8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem;
+
+    input {
+      background: #F0F4FF;
+      border-radius: 2rem;
+      padding-left: 2rem;
+      margin-left: 2rem;
+      height: 5rem;
+      flex: 1;
+      outline: none;
+      border: none;
+    }
+  }
+
+  .trends {
+    width: 100%;
+    flex:1;
+    display: flex;
+    align-items: start;
+    flex-direction: column;
+    border-radius: 2rem;
+    border: 1px solid #679BF8;
+    padding: 2rem;
+    gap: 1rem;
+
+    span {
+      font-size: 2.5rem;
+    }
+  }
+
+  .popular {
+    border-radius: 2rem;
+    border: 1px solid #679BF8;
+    width: 100%;
+    flex:1;
+    display: flex;
+    flex-direction: column;
+    padding:2rem 1rem;
+    align-items: start;
+    overflow: auto;
+
+    .user {
+      height: 8.25rem;
+      width: 100%;
+      display: flex;
+      cursor: pointer;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 3rem;
+      border-radius: 4rem;
+      padding: 1rem;
+    }
+
+    .user:hover{
+      background: #F0F4FF;
+    }
+
+    img {
+      height: 6.9rem;
+      margin-right: 2rem;
+    }
+  }
+}

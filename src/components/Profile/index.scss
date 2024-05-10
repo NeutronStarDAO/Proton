@@ -1,0 +1,107 @@
+.profile_main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  padding: 3rem 0;
+  overflow: auto;
+  border-right: 1px solid #679BF8;
+  border-left: 1px solid #679BF8;
+  gap: 2rem;
+
+  .title {
+    font-size: 3.7rem;
+    padding-left: 3rem;
+  }
+
+  .background {
+    height: 18.8rem;
+    width: 100%;
+    background: #F0F4FF;
+    margin-bottom: 1rem;
+  }
+
+  .profile_body {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    padding: 0 3rem;
+    gap: 4rem;
+
+    .user_panel {
+      display: flex;
+      width: 100%;
+      flex-direction: column;
+      align-items: start;
+      gap: 1rem;
+
+      .avatar_panel {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        .info {
+          display: flex;
+
+          img {
+            width: 10.9rem;
+            margin-right: 1rem;
+          }
+
+          .name {
+            font-size: 5rem;
+
+          }
+
+          .id {
+            font-size: 2.5rem;
+          }
+        }
+
+        .edit {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: 3.2rem;
+          background: #F0F4FF;
+          font-size: 2.5rem;
+          padding: 0.5em 2.5rem;
+          cursor: pointer;
+        }
+      }
+
+      .des {
+        text-align: start;
+        font-size: 2.5rem;
+        margin-top: 1rem;
+      }
+
+      .aa {
+        display: grid;
+        grid-template-areas: "a b"
+                              "c d"
+      "e f";
+        gap: 1rem;
+        column-gap: 4rem;
+
+        .label {
+          display: flex;
+          align-items: center;
+          gap: 1rem;
+          font-size: 2.3rem;
+
+          .number {
+            font-size: 2.7rem;
+            color: #297EFF;
+            font-weight: bold;
+            margin-right: 1rem;
+          }
+        }
+      }
+
+
+    }
+  }
+}

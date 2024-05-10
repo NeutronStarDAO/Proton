@@ -1,13 +1,47 @@
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+.App, #root,
+html,
+body,
+main {
+    padding: 0;
+    margin: 0;
+    height: 100%;
+    width: 100%;
+    font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
+    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+* {
+    box-sizing: border-box;
+    color: rgba(0, 0, 0, 0.7);
+}
+
+::-webkit-scrollbar {
+    width: 0px; /* 宽度 */
+    height: 6px; /* 高度 */
+}
+
+
+::-webkit-scrollbar-track {
+    border-radius: 3px;
+    background: white;
+    height: 50%;
+}
+
+/* 滚动条滑块 */
+::-webkit-scrollbar-thumb {
+    border-radius: 3px;
+    background: white;
+    height: 2px;
+
+}
+
+:hover::-webkit-scrollbar-thumb {
+    border-radius: 3px;
+    background: rgba(0, 0, 0, 0.12);
+    height: 20px;
 }

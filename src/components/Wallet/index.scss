@@ -1,0 +1,77 @@
+.wallet_main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  padding: 3rem;
+  overflow: auto;
+  border-right: 1px solid #679BF8;
+  border-left: 1px solid #679BF8;
+  gap: 4rem;
+
+  .title {
+    font-size: 3.7rem;
+  }
+
+  .balance {
+    display: flex;
+    flex-direction: column;
+    background: #F0F4FF;
+    padding: 1rem 2rem;
+    border-radius: 2rem;
+    width: 100%;
+    align-items: start;
+    gap: 3rem;
+
+    .token_item {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 2rem;
+      font-size: 2.5rem;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.5);
+
+      img {
+        width: 6.3rem;
+        border-radius: 50%;
+      }
+
+      .receive, .send {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #D7E4FF;
+        border-radius: 5rem;
+        padding: 1.5rem 4rem;
+      }
+
+      .send {
+        background: #E1DEFF;
+      }
+    }
+  }
+
+  .tx_main {
+    display: flex;
+    flex-direction: column;
+    background: #F0F4FF;
+    padding: 2rem;
+    border-radius: 2rem;
+    width: 100%;
+    flex: 1;
+    overflow: scroll;
+    align-items: start;
+    box-sizing: border-box;
+    gap: 3rem;
+
+    .tx_item {
+      text-align: start;
+      width: 100%;
+      display: grid;
+      align-items: center;
+      font-size: 2rem;
+      grid-template-columns:0.4fr 1.5fr 4fr 3fr 2fr;
+    }
+  }
+}

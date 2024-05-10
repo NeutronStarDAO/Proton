@@ -1,0 +1,41 @@
+.setting_main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  padding: 3rem;
+  overflow: auto;
+  border-right: 1px solid #679BF8;
+  border-left: 1px solid #679BF8;
+  gap: 4rem;
+
+  .title {
+    font-size: 3.7rem;
+  }
+
+  .setting_item {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+
+    .setting_title {
+      display: flex;
+      align-items: center;
+      font-size: 2.7rem;
+      gap: 1rem;
+
+    }
+
+    .setting_button {
+      font-size: 2.5rem;
+      display: flex;
+      gap: 2rem;
+
+      span {
+        border: 1px solid #679BF8;
+        border-radius: 2rem;
+        padding: 0.8rem 4rem
+      }
+    }
+  }
+}

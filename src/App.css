@@ -1,5 +1,13 @@
 .App {
   text-align: center;
+  display: flex;
+}
+
+.Main{
+  height: 100%;
+  flex:1;
+  display: flex;
+  padding-right: 3rem;
 }
 
 .App-logo {
