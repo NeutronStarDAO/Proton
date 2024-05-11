@@ -1,15 +1,11 @@
 [package]
-name = "feed"
+name = "types"
 version = "0.1.0"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
-[lib]
-crate-type = ["cdylib"]
-
 [dependencies]
 candid = "0.10.5"
 ic-cdk = "0.13.1"
 serde = "1.0.198"
-types = { path = "../../libraries/types" }

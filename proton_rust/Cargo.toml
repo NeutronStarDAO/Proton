@@ -3,6 +3,9 @@ members = [
     "src/proton_rust_backend",
     "feed/feed",
     "feed/root_feed",
-    "user"
+    "user",
+    "bucket/bucket",
+    "bucket/root_bucket",
+    "libraries/types"
 ]
 resolver = "2"

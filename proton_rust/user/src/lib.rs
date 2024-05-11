@@ -1,7 +1,5 @@
-use std::cell::{Cell, RefCell};
-use std::clone;
+use std::cell::RefCell;
 use std::collections::HashMap;
-use std::hash::Hash;
 use candid::{CandidType, Principal, Deserialize};
 
 struct UserDigraph {
@@ -24,7 +22,6 @@ struct Profile {
 struct ProfileDatabase {
     map: HashMap<Principal, Profile>
 }
-
 
 impl UserDigraph {
 
@@ -97,6 +94,19 @@ impl ProfileDatabase {
         self.map.insert(user, profile);
     }
 
+    fn batch_get_profile(&self, user_ids: Vec<Principal>) -> Vec<Profile> {
+        let mut ans: Vec<Profile> = vec![];
+        for user in user_ids {
+            match self.map.get(&user) {
+                Some(val) => {
+                    ans.push(val.clone())
+                },
+                None => {}
+            }
+        }
+        ans
+    }
+
     fn find_profile(&self, user: Principal) -> Option<&Profile> {
         self.map.get(&user)
     }
@@ -108,7 +118,8 @@ impl ProfileDatabase {
 }
 
 thread_local! {
-    static USER_DIGRAPH: RefCell<UserDigraph> = RefCell::new(UserDigraph::new());   
+    static USER_DIGRAPH: RefCell<UserDigraph> = RefCell::new(UserDigraph::new()); 
+    static USER_PROFILES: RefCell<ProfileDatabase> = RefCell::new(ProfileDatabase::new());
 }
 
 #[ic_cdk::update]
@@ -162,5 +173,30 @@ fn get_follower_number(user: Principal) -> u128 {
 
 #[ic_cdk::update]
 fn create_profile(profile: Profile) {
-
+    USER_PROFILES.with(|profiles| {
+        profiles.borrow_mut().create_profile(
+            ic_cdk::caller(), 
+            profile
+        )
+    })
 }
+
+#[ic_cdk::update]
+fn update_profile(profile: Profile) {
+    USER_PROFILES.with(|profiles| {
+        profiles.borrow_mut().update_profile(
+            ic_cdk::caller(), 
+            profile
+        )
+    })
+}
+
+#[ic_cdk::update]
+fn batch_get_profile(user_ids: Vec<Principal>) -> Vec<Profile> {
+    USER_PROFILES.with(|profiles| {
+        profiles.borrow().batch_get_profile(user_ids)
+    })
+}
+
+// Enable Candid export
+ic_cdk::export_candid!();

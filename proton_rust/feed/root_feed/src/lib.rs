@@ -3,11 +3,10 @@ use std::collections::HashMap;
 use candid::{Principal};
 use ic_cdk::api::management_canister::main::{CreateCanisterArgument, CanisterIdRecord};
 
-const T_CYCLES: u64 = 1_000_000_000_000;
+const T_CYCLES: u128 = 1_000_000_000_000;
 
 thread_local! {
     static USER_FEED_CANISTER_MAP: RefCell<HashMap<Principal, Principal>> = RefCell::new(HashMap::new());
-    
 }
 
 #[ic_cdk::update]
@@ -15,11 +14,16 @@ async fn create_feed_canister() -> Option<Principal> {
     let caller = ic_cdk::caller();
     assert!(is_user_have_feed_canister(&caller));
 
-    let result= ic_cdk::api::management_canister::main::create_canister(CreateCanisterArgument{
-        settings: None
-    }, 4 * T_CYCLES as u128).await.unwrap();
+    let result
+        = ic_cdk::api::management_canister::main::create_canister(
+            CreateCanisterArgument {
+                settings: None
+            },
+            4 * T_CYCLES
+        ).await.unwrap();
+    let new_feed_canister_id = result.0.canister_id;
 
-    Some(result.0.canister_id)
+    Some(new_feed_canister_id)
 }
 
 #[ic_cdk::query]

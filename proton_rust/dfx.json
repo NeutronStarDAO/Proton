@@ -4,6 +4,11 @@
       "candid": "src/proton_rust_backend/proton_rust_backend.did",
       "package": "proton_rust_backend",
       "type": "rust"
+    },
+    "user": {
+      "candid": "user/user.did",
+      "package": "user",
+      "type": "rust"
     }
   },
   "defaults": {

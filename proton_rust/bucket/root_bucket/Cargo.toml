@@ -1,5 +1,5 @@
 [package]
-name = "feed"
+name = "root_bucket"
 version = "0.1.0"
 edition = "2021"
 
@@ -12,4 +12,4 @@ crate-type = ["cdylib"]
 candid = "0.10.5"
 ic-cdk = "0.13.1"
 serde = "1.0.198"
-types = { path = "../../libraries/types" }
+# types = { path = "../../libraries/types" }
