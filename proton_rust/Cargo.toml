@@ -6,6 +6,10 @@ members = [
     "user",
     "bucket/bucket",
     "bucket/root_bucket",
-    "libraries/types"
+    "libraries/types",
+    "fetch/comment_fetch",
+    "fetch/like_fetch",
+    "fetch/post_fetch",
+    "fetch/root_fetch"
 ]
 resolver = "2"

@@ -107,8 +107,8 @@ impl ProfileDatabase {
         ans
     }
 
-    fn find_profile(&self, user: Principal) -> Option<&Profile> {
-        self.map.get(&user)
+    fn find_profile(&self, user: Principal) -> Option<Profile> {
+        self.map.get(&user).cloned()
     }
 
     fn get_profile_entries(&self) -> Vec<(Principal, Profile)>{
@@ -191,7 +191,14 @@ fn update_profile(profile: Profile) {
     })
 }
 
-#[ic_cdk::update]
+#[ic_cdk::query]
+fn get_profile(user: Principal) -> Option<Profile> {
+    USER_PROFILES.with(|profiles| {
+        profiles.borrow().find_profile(user)
+    })
+}
+
+#[ic_cdk::query]
 fn batch_get_profile(user_ids: Vec<Principal>) -> Vec<Profile> {
     USER_PROFILES.with(|profiles| {
         profiles.borrow().batch_get_profile(user_ids)

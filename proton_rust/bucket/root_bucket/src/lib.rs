@@ -32,7 +32,8 @@ async fn init() {
                     compute_allocation: None,
                     memory_allocation: None,
                     freezing_threshold: None,
-                    reserved_cycles_limit: None
+                    reserved_cycles_limit: None,
+                    wasm_memory_limit: None
                 })
             }, 
             4 * T_CYCLES
@@ -149,7 +150,8 @@ async fn _create_bucket() -> Principal {
                 compute_allocation: None,
                 memory_allocation: None,
                 freezing_threshold: None,
-                reserved_cycles_limit: None
+                reserved_cycles_limit: None,
+                wasm_memory_limit: None
             })
         }, 
         4 * T_CYCLES
