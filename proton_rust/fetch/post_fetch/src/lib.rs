@@ -38,10 +38,10 @@ fn get_notify_map_entries() -> Vec<(Principal, Vec<String>)> {
     })
 }
 
-fn notify() {
-    NOTIFY_MAP.with(|map| {
-        for (feed_canister, post_id_array) in map.borrow().iter() {
-            
-        }
-    })
-}
+// fn notify() {
+//     NOTIFY_MAP.with(|map| {
+//         for (feed_canister, post_id_array) in map.borrow().iter() {
+//             let notify_result = ic_cdk::call::<>(id, method, args)
+//         }
+//     })
+// }
