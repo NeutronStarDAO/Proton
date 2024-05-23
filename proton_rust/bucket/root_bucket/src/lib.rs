@@ -1,26 +1,23 @@
 use candid::{Principal, CandidType, Deserialize};
+use std::borrow::Borrow;
 use std::collections::HashMap;
 use std::cell::{RefCell, Cell};
 use ic_cdk::api::management_canister::main::{
     create_canister, CreateCanisterArgument, CanisterSettings,
     install_code, InstallCodeArgument, CanisterInstallMode
 };
+use ic_cdk::api::management_canister::main::{CanisterStatusResponse, CanisterIdRecord};
 
 const T_CYCLES: u128 = 1_000_000_000_000;
-
-// pub const WASM: &[u8] =
-//     include_bytes!("../../target/wasm32-unknown-unknown/release/data_partition.wasm");
-
-pub const BUCKET_WASM: &[u8] = &[];
 
 thread_local! {
     static BUCKET_INDEX: Cell<u64> = Cell::new(0);
     static BUCKET_MAP: RefCell<HashMap<u64, Principal>> = RefCell::new(HashMap::new());
     static AVAILABLE_BUCKET_MAP: RefCell<HashMap<u64, Principal>> = RefCell::new(HashMap::new());
     static UNAVAILABLE_BUCKET_MAP: RefCell<HashMap<u64, Principal>> = RefCell::new(HashMap::new());
+    static BUCKET_WASM: RefCell<Vec<u8>> = RefCell::new(Vec::new());
+    static BUCKET_WASM_BUFFER: RefCell<Vec<u8>> = RefCell::new(Vec::new());
 }
-
-
 
 #[ic_cdk::update]
 async fn init() {
@@ -43,7 +40,7 @@ async fn init() {
         install_code(InstallCodeArgument {
             mode: CanisterInstallMode::Install,
             canister_id: canister_id,
-            wasm_module: BUCKET_WASM.to_vec(),
+            wasm_module: BUCKET_WASM.with(|wasm| wasm.borrow().clone()),
             arg: vec![]
         }).await.unwrap();
 
@@ -61,6 +58,26 @@ async fn init() {
         });
         BUCKET_INDEX.set(BUCKET_INDEX.get() + 1);
     }
+}
+
+#[ic_cdk::update]
+fn update_bucket_wasm(wasm_chunk: Vec<u8>, index: u64) -> bool {
+    if index == 0 {
+        BUCKET_WASM_BUFFER.set(wasm_chunk);
+        true
+    } else if index == 1 {
+        let mut new_wasm = BUCKET_WASM_BUFFER.with(|wasm_buffer| wasm_buffer.borrow().clone());
+        new_wasm.extend(wasm_chunk);
+        BUCKET_WASM.set(new_wasm);
+        true
+    } else {
+        false
+    }
+}
+
+#[ic_cdk::query]
+fn get_bucket_wasm() -> Vec<u8> {
+    BUCKET_WASM.with(|wasm| wasm.borrow().clone())
 }
 
 #[ic_cdk::update]
@@ -142,6 +159,13 @@ fn get_all_unavailable_bucket() -> Vec<Principal> {
     })
 }
 
+#[ic_cdk::update]
+async fn status() -> CanisterStatusResponse {
+    ic_cdk::api::management_canister::main::canister_status(CanisterIdRecord {
+        canister_id: ic_cdk::api::id()
+    }).await.unwrap().0
+}
+
 async fn _create_bucket() -> Principal {
     let canister_record = create_canister(
         CreateCanisterArgument {
@@ -161,7 +185,7 @@ async fn _create_bucket() -> Principal {
     install_code(InstallCodeArgument {
         mode: CanisterInstallMode::Install,
         canister_id: canister_id,
-        wasm_module: BUCKET_WASM.to_vec(),
+        wasm_module: BUCKET_WASM.with(|wasm| wasm.borrow().clone()),
         arg: vec![]
     }).await.unwrap();
 

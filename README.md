@@ -47,6 +47,8 @@ We'd be much obliged if y'all would try it out and share feedback. Happy trails!
 
 ## Extract Candid
 ```shell
+cargo build --release --target wasm32-unknown-unknown
+
 candid-extractor target/wasm32-unknown-unknown/release/bucket.wasm > bucket/bucket/bucket.did
 
 candid-extractor target/wasm32-unknown-unknown/release/root_bucket.wasm > bucket/root_bucket/root_bucket.did

@@ -9,7 +9,6 @@ type CanisterStatusResponse = record {
   reserved_cycles : nat;
 };
 type CanisterStatusType = variant { stopped; stopping; running };
-type Comment = record { content : text; user : principal; created_at : nat64 };
 type DefiniteCanisterSettings = record {
   freezing_threshold : nat;
   controllers : vec principal;
@@ -18,19 +17,17 @@ type DefiniteCanisterSettings = record {
   memory_allocation : nat;
   compute_allocation : nat;
 };
-type InitArg = record { user_actor : principal };
-type Like = record { user : principal; created_at : nat64 };
-type Post = record {
-  repost : vec Like;
-  post_id : text;
-  photo_url : vec text;
-  content : text;
-  like : vec Like;
-  user : principal;
-  created_at : nat64;
-  comment : vec Comment;
-  feed_canister : principal;
-  index : nat;
+type HttpRequest = record {
+  url : text;
+  method : text;
+  body : blob;
+  headers : vec record { text; text };
+};
+type HttpResponse = record {
+  body : blob;
+  headers : vec record { text; text };
+  streaming_strategy : opt StreamingStrategy;
+  status_code : nat16;
 };
 type QueryStats = record {
   response_payload_bytes_total : nat;
@@ -38,9 +35,22 @@ type QueryStats = record {
   num_calls_total : nat;
   request_payload_bytes_total : nat;
 };
-service : (InitArg) -> {
-  get_notify_map_entries : () -> (vec record { principal; vec text }) query;
-  receive_notify : (Post) -> ();
-  receive_repost_user_notify : (vec principal, text) -> ();
+type StreamingStrategy = variant {
+  Callback : record {
+    token : Token;
+    callback : func (Token) -> (HttpResponse) query;
+  };
+};
+type Token = record {
+  key : text;
+  sha256 : opt blob;
+  index : nat;
+  content_encoding : text;
+};
+service : {
+  get_photo : (nat64) -> (opt blob) query;
+  get_photo_number : () -> (nat64) query;
+  http_request : (HttpRequest) -> (HttpResponse) query;
   status : () -> (CanisterStatusResponse);
+  upload_photo : (blob) -> (text);
 }

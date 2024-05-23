@@ -3,6 +3,7 @@ use std::collections::HashMap;
 use std::vec;
 use candid::{CandidType, Principal, Deserialize};
 use ic_cdk_timers::TimerId;
+use ic_cdk::api::management_canister::main::{CanisterStatusResponse, CanisterIdRecord};
 
 thread_local! {
     // user_feed_canister -> post_id_array
@@ -36,6 +37,13 @@ fn get_notify_map_entries() -> Vec<(Principal, Vec<String>)> {
         };
         result
     })
+}
+
+#[ic_cdk::update]
+async fn status() -> CanisterStatusResponse {
+    ic_cdk::api::management_canister::main::canister_status(CanisterIdRecord {
+        canister_id: ic_cdk::api::id()
+    }).await.unwrap().0
 }
 
 // fn notify() {

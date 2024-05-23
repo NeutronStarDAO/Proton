@@ -2,42 +2,52 @@
   "canisters": {
     "bucket": {
       "candid": "bucket/bucket/bucket.did",
-      "package": "bucket/bucket",
+      "package": "bucket",
       "type": "rust"
     },
     "root_bucket": {
       "candid": "bucket/root_bucket/root_bucket.did",
-      "package": "bucket/root_bucket",
+      "package": "root_bucket",
       "type": "rust"
     },
     "feed": {
       "candid": "feed/feed/feed.did",
-      "package": "feed/feed",
+      "package": "feed",
+      "type": "rust"
+    },
+    "root_feed": {
+      "candid": "feed/root_feed/root_feed.did",
+      "package": "root_feed",
       "type": "rust"
     },
     "comment_fetch": {
       "candid": "fetch/comment_fetch/comment_fetch.did",
-      "package": "fetch/comment_fetch",
+      "package": "comment_fetch",
       "type": "rust"
     },
     "like_fetch": {
       "candid": "fetch/like_fetch/like_fetch.did",
-      "package": "fetch/like_fetch",
+      "package": "like_fetch",
       "type": "rust"
     },
     "post_fetch": {
       "candid": "fetch/post_fetch/post_fetch.did",
-      "package": "fetch/post_fetch",
+      "package": "post_fetch",
       "type": "rust"
     },
     "root_fetch": {
       "candid": "fetch/root_fetch/root_fetch.did",
-      "package": "fetch/root_fetch",
+      "package": "root_fetch",
       "type": "rust"
     },
     "user": {
       "candid": "user/user.did",
       "package": "user",
+      "type": "rust"
+    },
+    "photo_storage": {
+      "candid": "storage/photo_storage/photo_storage.did",
+      "package": "photo_storage",
       "type": "rust"
     }
   },

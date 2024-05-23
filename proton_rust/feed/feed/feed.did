@@ -1,4 +1,23 @@
+type CanisterStatusResponse = record {
+  status : CanisterStatusType;
+  memory_size : nat;
+  cycles : nat;
+  settings : DefiniteCanisterSettings;
+  query_stats : QueryStats;
+  idle_cycles_burned_per_day : nat;
+  module_hash : opt blob;
+  reserved_cycles : nat;
+};
+type CanisterStatusType = variant { stopped; stopping; running };
 type Comment = record { content : text; user : principal; created_at : nat64 };
+type DefiniteCanisterSettings = record {
+  freezing_threshold : nat;
+  controllers : vec principal;
+  reserved_cycles_limit : nat;
+  wasm_memory_limit : nat;
+  memory_allocation : nat;
+  compute_allocation : nat;
+};
 type InitArg = record {
   owner : principal;
   like_fetch_actor : principal;
@@ -10,6 +29,7 @@ type Like = record { user : principal; created_at : nat64 };
 type Post = record {
   repost : vec Like;
   post_id : text;
+  photo_url : vec text;
   content : text;
   like : vec Like;
   user : principal;
@@ -18,14 +38,20 @@ type Post = record {
   feed_canister : principal;
   index : nat;
 };
+type QueryStats = record {
+  response_payload_bytes_total : nat;
+  num_instructions_total : nat;
+  num_calls_total : nat;
+  request_payload_bytes_total : nat;
+};
 service : (InitArg) -> {
   batch_receive_comment : (vec text) -> ();
   batch_receive_feed : (vec text) -> ();
   batch_receive_like : (vec text) -> ();
   check_available_bucket : () -> (bool);
-  creaet_post : (text) -> (text);
   create_comment : (text, text) -> (bool);
   create_like : (text) -> (bool);
+  create_post : (text, vec text) -> (text);
   create_repost : (text) -> (bool);
   get_all_post : () -> (vec Post) query;
   get_bucket : () -> (opt principal) query;
@@ -38,5 +64,6 @@ service : (InitArg) -> {
   receive_comment : (text) -> (bool);
   receive_feed : (text) -> (bool);
   receive_like : (text) -> (bool);
+  status : () -> (CanisterStatusResponse);
   update_owner : (principal) -> ();
 }

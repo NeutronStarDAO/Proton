@@ -1,12 +1,17 @@
 [package]
-name = "types"
+name = "test"
 version = "0.1.0"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+ic-agent = "0.35.0"
 candid = "0.10.8"
+tokio = { version = "1.37.0", features = ["full"] }
 ic-cdk = "0.14.0"
 serde = "1.0.202"
 serde_bytes = "0.11.14"
+hex = "0.4.3"
+lazy_static = "1.4"
+dotenv = "0.15.0"

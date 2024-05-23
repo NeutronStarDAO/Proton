@@ -1,8 +1,28 @@
+type CanisterStatusResponse = record {
+  status : CanisterStatusType;
+  memory_size : nat;
+  cycles : nat;
+  settings : DefiniteCanisterSettings;
+  query_stats : QueryStats;
+  idle_cycles_burned_per_day : nat;
+  module_hash : opt blob;
+  reserved_cycles : nat;
+};
+type CanisterStatusType = variant { stopped; stopping; running };
 type Comment = record { content : text; user : principal; created_at : nat64 };
+type DefiniteCanisterSettings = record {
+  freezing_threshold : nat;
+  controllers : vec principal;
+  reserved_cycles_limit : nat;
+  wasm_memory_limit : nat;
+  memory_allocation : nat;
+  compute_allocation : nat;
+};
 type Like = record { user : principal; created_at : nat64 };
 type Post = record {
   repost : vec Like;
   post_id : text;
+  photo_url : vec text;
   content : text;
   like : vec Like;
   user : principal;
@@ -11,12 +31,19 @@ type Post = record {
   feed_canister : principal;
   index : nat;
 };
+type QueryStats = record {
+  response_payload_bytes_total : nat;
+  num_instructions_total : nat;
+  num_calls_total : nat;
+  request_payload_bytes_total : nat;
+};
 service : {
   batch_store_feed : (vec Post) -> ();
   get_latest_feed : (nat) -> (vec Post) query;
   get_post : (text) -> (opt Post) query;
   get_post_number : () -> (nat) query;
   get_posts : (vec text) -> (vec Post) query;
+  status : () -> (CanisterStatusResponse);
   store_feed : (Post) -> (bool);
   update_post_comment : (text, vec Comment) -> (bool);
   update_post_like : (text, vec Like) -> (bool);

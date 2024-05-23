@@ -2,7 +2,7 @@ use std::cell::RefCell;
 use std::collections::HashMap;
 use candid::{CandidType, Principal, Deserialize};
 use types::Post;
-
+use ic_cdk::api::management_canister::main::{CanisterStatusResponse, CanisterIdRecord};
 #[derive(CandidType, Deserialize, Debug)]
 struct InitArg {
     user_actor: Principal,
@@ -54,6 +54,13 @@ fn get_notify_map_entries() -> Vec<(Principal, Vec<String>)> {
     });
 
     result
+}
+
+#[ic_cdk::update]
+async fn status() -> CanisterStatusResponse {
+    ic_cdk::api::management_canister::main::canister_status(CanisterIdRecord {
+        canister_id: ic_cdk::api::id()
+    }).await.unwrap().0
 }
 
 fn store_notify(to: Vec<Principal>, post_id: String) {

@@ -10,5 +10,7 @@ members = [
     "fetch/root_fetch",
     "libraries/types",
     "user",
+    "storage/photo_storage",
+    "test"
 ]
 resolver = "2"

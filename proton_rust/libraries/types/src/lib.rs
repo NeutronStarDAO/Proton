@@ -1,4 +1,6 @@
+mod http;
 use candid::{Principal, CandidType, Deserialize};
+pub use http::*;
 
 #[derive(CandidType, Deserialize, Debug, Clone)]
 pub struct Repost {
@@ -26,6 +28,7 @@ pub struct Post {
     pub index: u128, // Post Index
     pub user: Principal, // 发布者
     pub content: String,
+    pub photo_url: Vec<String>, // photo url array
     pub repost: Vec<Repost>, //转发者
     pub like: Vec<Like>,
     pub comment: Vec<Comment>,

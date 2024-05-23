@@ -1,3 +1,22 @@
+type CanisterStatusResponse = record {
+  status : CanisterStatusType;
+  memory_size : nat;
+  cycles : nat;
+  settings : DefiniteCanisterSettings;
+  query_stats : QueryStats;
+  idle_cycles_burned_per_day : nat;
+  module_hash : opt blob;
+  reserved_cycles : nat;
+};
+type CanisterStatusType = variant { stopped; stopping; running };
+type DefiniteCanisterSettings = record {
+  freezing_threshold : nat;
+  controllers : vec principal;
+  reserved_cycles_limit : nat;
+  wasm_memory_limit : nat;
+  memory_allocation : nat;
+  compute_allocation : nat;
+};
 type Profile = record {
   id : principal;
   avatar_url : text;
@@ -7,6 +26,12 @@ type Profile = record {
   company : text;
   feed_canister : opt principal;
   back_img_url : text;
+};
+type QueryStats = record {
+  response_payload_bytes_total : nat;
+  num_instructions_total : nat;
+  num_calls_total : nat;
+  request_payload_bytes_total : nat;
 };
 service : {
   batch_get_profile : (vec principal) -> (vec Profile) query;
@@ -18,5 +43,6 @@ service : {
   get_following_number : (principal) -> (nat) query;
   get_profile : (principal) -> (opt Profile) query;
   is_followed : (principal, principal) -> (bool) query;
+  status : () -> (CanisterStatusResponse);
   update_profile : (Profile) -> ();
 }

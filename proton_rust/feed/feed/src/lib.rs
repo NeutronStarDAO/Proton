@@ -2,11 +2,12 @@ use candid::{Principal, CandidType, Deserialize};
 use std::{borrow::Borrow, collections::HashMap};
 use std::cell::RefCell;
 use types::{Comment, Like, NewComment, NewLike, NewRepost, Post, Repost};
-
+use ic_cdk::api::management_canister::main::{CanisterStatusResponse, CanisterIdRecord};
 #[derive(CandidType, Deserialize, Debug, Clone)]
 pub struct CreatePostArgs {
     feed_canister: Principal,
     content: String,
+    photo_url: Vec<String>,
     time: u64,
     bucket: Principal
 }
@@ -71,6 +72,7 @@ impl PostDatabase {
             index: post_index,
             user: user,
             content: args.content,
+            photo_url: args.photo_url,
             repost: Vec::new(),
             like: Vec::new(),
             comment: Vec::new(),
@@ -285,7 +287,7 @@ fn get_all_post() -> Vec<Post> {
 }
 
 #[ic_cdk::update(guard = "is_owner")]
-async fn creaet_post(content: String) -> String {
+async fn create_post(content: String, photo_url: Vec<String>) -> String {
     let mut bucket_id = get_bucket();
     if let None = bucket_id {
         check_available_bucket().await;
@@ -301,6 +303,7 @@ async fn creaet_post(content: String) -> String {
             CreatePostArgs {
                 feed_canister: ic_cdk::api::id(),
                 content: content,
+                photo_url: photo_url,
                 time: ic_cdk::api::time(),
                 bucket: BUCKET.with(|id| id.borrow().clone())   
             }
@@ -591,6 +594,13 @@ fn get_latest_feed(n: u64) -> Vec<Post> {
     FEED_DATABASE.with(|database| {
         database.borrow().get_latest_feed(n)
     })
+}
+
+#[ic_cdk::update]
+async fn status() -> CanisterStatusResponse {
+    ic_cdk::api::management_canister::main::canister_status(CanisterIdRecord {
+        canister_id: ic_cdk::api::id()
+    }).await.unwrap().0
 }
 
 fn is_feed_in_post(post_id: &String) -> bool {

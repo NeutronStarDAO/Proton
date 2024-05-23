@@ -1,7 +1,7 @@
 use candid::{Principal, CandidType, Deserialize};
 use std::collections::HashMap;
 use std::cell::RefCell;
-
+use ic_cdk::api::management_canister::main::{CanisterStatusResponse, CanisterIdRecord};
 use types::{Post, NewRepost, NewComment, NewLike};
 
 
@@ -48,6 +48,13 @@ fn update_post_like(post_id: String, new_like: NewLike) -> bool {
             true
         }
     }
+}
+
+#[ic_cdk::update]
+async fn status() -> CanisterStatusResponse {
+    ic_cdk::api::management_canister::main::canister_status(CanisterIdRecord {
+        canister_id: ic_cdk::api::id()
+    }).await.unwrap().0
 }
 
 #[ic_cdk::query]
@@ -133,6 +140,7 @@ fn _update_post_repost(post_id: String, new_repost: NewRepost) -> bool {
                         index: old_post.index,
                         user: old_post.user,
                         content: old_post.content.clone(),
+                        photo_url: old_post.photo_url.clone(),
                         repost: new_repost,
                         like: old_post.like.clone(),
                         comment: old_post.comment.clone(),
@@ -156,6 +164,7 @@ fn _update_post_comment(post_id: String, new_comment: NewComment) -> Option<Post
                     index: old_post.index,
                     user: old_post.user,
                     content: old_post.content.clone(),
+                    photo_url: old_post.photo_url.clone(),
                     repost: old_post.repost.clone(),
                     like: old_post.like.clone(),
                     comment: new_comment,
@@ -179,6 +188,7 @@ fn _update_post_like(post_id: String, new_like: NewLike) -> Option<Post> {
                     index: old_post.index,
                     user: old_post.user,
                     content: old_post.content.clone(),
+                    photo_url: old_post.photo_url.clone(),
                     repost: old_post.repost.clone(),
                     like: new_like,
                     comment: old_post.comment.clone(),

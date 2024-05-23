@@ -5,6 +5,7 @@ use ic_cdk::api::management_canister::main::{
     create_canister, CreateCanisterArgument, CanisterSettings,
     install_code, InstallCodeArgument, CanisterInstallMode
 };
+use ic_cdk::api::management_canister::main::{CanisterStatusResponse, CanisterIdRecord};
 
 const T_CYCLES: u128 = 1_000_000_000_000;
 
@@ -142,6 +143,13 @@ fn get_all_like_fetch_canister() -> Vec<Principal> {
     LIKE_FETCH_MAP.with(|map| {
         map.borrow().values().cloned().collect()
     })
+}
+
+#[ic_cdk::update]
+async fn status() -> CanisterStatusResponse {
+    ic_cdk::api::management_canister::main::canister_status(CanisterIdRecord {
+        canister_id: ic_cdk::api::id()
+    }).await.unwrap().0
 }
 
 ic_cdk::export_candid!();

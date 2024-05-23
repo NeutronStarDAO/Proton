@@ -1,6 +1,7 @@
 use std::cell::RefCell;
 use std::collections::HashMap;
 use candid::{CandidType, Principal, Deserialize};
+use ic_cdk::api::management_canister::main::{CanisterStatusResponse, CanisterIdRecord};
 
 struct UserDigraph {
     vertex_list: Vec<Principal>,
@@ -203,6 +204,13 @@ fn batch_get_profile(user_ids: Vec<Principal>) -> Vec<Profile> {
     USER_PROFILES.with(|profiles| {
         profiles.borrow().batch_get_profile(user_ids)
     })
+}
+
+#[ic_cdk::update]
+async fn status() -> CanisterStatusResponse {
+    ic_cdk::api::management_canister::main::canister_status(CanisterIdRecord {
+        canister_id: ic_cdk::api::id()
+    }).await.unwrap().0
 }
 
 // Enable Candid export
