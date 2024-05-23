@@ -1,5 +1,4 @@
 use candid::{Principal, CandidType, Deserialize};
-use std::collections::HashMap;
 
 #[derive(CandidType, Deserialize, Debug, Clone)]
 pub struct Repost {

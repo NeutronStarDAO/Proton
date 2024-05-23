@@ -1,15 +1,14 @@
 [workspace]
 members = [
-    "src/proton_rust_backend",
-    "feed/feed",
-    "feed/root_feed",
-    "user",
     "bucket/bucket",
     "bucket/root_bucket",
-    "libraries/types",
+    "feed/feed",
+    "feed/root_feed",
     "fetch/comment_fetch",
     "fetch/like_fetch",
     "fetch/post_fetch",
-    "fetch/root_fetch"
+    "fetch/root_fetch",
+    "libraries/types",
+    "user",
 ]
 resolver = "2"

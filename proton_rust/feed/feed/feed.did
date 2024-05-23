@@ -1,0 +1,42 @@
+type Comment = record { content : text; user : principal; created_at : nat64 };
+type InitArg = record {
+  owner : principal;
+  like_fetch_actor : principal;
+  root_bucket : principal;
+  user_actor : principal;
+  comment_fetch_actor : principal;
+};
+type Like = record { user : principal; created_at : nat64 };
+type Post = record {
+  repost : vec Like;
+  post_id : text;
+  content : text;
+  like : vec Like;
+  user : principal;
+  created_at : nat64;
+  comment : vec Comment;
+  feed_canister : principal;
+  index : nat;
+};
+service : (InitArg) -> {
+  batch_receive_comment : (vec text) -> ();
+  batch_receive_feed : (vec text) -> ();
+  batch_receive_like : (vec text) -> ();
+  check_available_bucket : () -> (bool);
+  creaet_post : (text) -> (text);
+  create_comment : (text, text) -> (bool);
+  create_like : (text) -> (bool);
+  create_repost : (text) -> (bool);
+  get_all_post : () -> (vec Post) query;
+  get_bucket : () -> (opt principal) query;
+  get_feed : (text) -> (opt Post) query;
+  get_feed_number : () -> (nat64) query;
+  get_latest_feed : (nat64) -> (vec Post) query;
+  get_owner : () -> (principal) query;
+  get_post : (text) -> (opt Post) query;
+  get_post_number : () -> (nat) query;
+  receive_comment : (text) -> (bool);
+  receive_feed : (text) -> (bool);
+  receive_like : (text) -> (bool);
+  update_owner : (principal) -> ();
+}

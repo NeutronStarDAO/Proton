@@ -621,3 +621,4 @@ fn is_repost_user(post: Post, user: Principal) -> bool {
     false
 }
 
+ic_cdk::export_candid!();

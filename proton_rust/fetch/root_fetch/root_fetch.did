@@ -1,0 +1,8 @@
+service : {
+  create_comment_fetch_canister : () -> (principal);
+  create_like_fetch_canister : () -> (principal);
+  create_post_fetch_canister : () -> (principal);
+  get_all_comment_fetch_canister : () -> (vec principal) query;
+  get_all_like_fetch_canister : () -> (vec principal) query;
+  get_all_post_fetch_canister : () -> (vec principal) query;
+}

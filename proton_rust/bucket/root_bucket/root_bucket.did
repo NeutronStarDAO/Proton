@@ -1,0 +1,11 @@
+service : {
+  add_available_bucket : (vec principal) -> ();
+  create_bucket : () -> (principal);
+  get_all_available_bucket : () -> (vec principal) query;
+  get_all_bucket : () -> (vec principal) query;
+  get_all_unavailable_bucket : () -> (vec principal) query;
+  get_availeable_bucket : () -> (opt principal) query;
+  get_bucket_index : () -> (nat64) query;
+  init : () -> ();
+  re_create_bucket : () -> ();
+}

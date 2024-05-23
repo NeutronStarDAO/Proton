@@ -144,3 +144,4 @@ fn get_all_like_fetch_canister() -> Vec<Principal> {
     })
 }
 
+ic_cdk::export_candid!();

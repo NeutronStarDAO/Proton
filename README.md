@@ -42,3 +42,26 @@ Wanna learn more about this here project? Visit [here](https://forum.dfinity.org
 We'd be much obliged if y'all would try it out and share feedback. Happy trails!
 
 ![2](https://github.com/NeutronStarDAO/Proton/assets/72973293/0092033f-0771-4276-9d28-fee3d5e77706)
+
+# Develop
+
+## Extract Candid
+```shell
+candid-extractor target/wasm32-unknown-unknown/release/bucket.wasm > bucket/bucket/bucket.did
+
+candid-extractor target/wasm32-unknown-unknown/release/root_bucket.wasm > bucket/root_bucket/root_bucket.did
+
+candid-extractor target/wasm32-unknown-unknown/release/feed.wasm > feed/feed/feed.did
+
+candid-extractor target/wasm32-unknown-unknown/release/root_feed.wasm > feed/root_feed/root_feed.did
+
+candid-extractor target/wasm32-unknown-unknown/release/comment_fetch.wasm > fetch/comment_fetch/comment_fetch.did
+
+candid-extractor target/wasm32-unknown-unknown/release/like_fetch.wasm > fetch/like_fetch/like_fetch.did
+
+candid-extractor target/wasm32-unknown-unknown/release/post_fetch.wasm > fetch/post_fetch/post_fetch.did
+
+candid-extractor target/wasm32-unknown-unknown/release/root_fetch.wasm > fetch/root_fetch/root_fetch.did
+
+candid-extractor target/wasm32-unknown-unknown/release/user.wasm > user/user.did
+```

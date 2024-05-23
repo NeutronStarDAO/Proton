@@ -192,3 +192,5 @@ fn _update_post_like(post_id: String, new_like: NewLike) -> Option<Post> {
 }
 
 // async fn check_bucket_memory() 
+
+ic_cdk::export_candid!();

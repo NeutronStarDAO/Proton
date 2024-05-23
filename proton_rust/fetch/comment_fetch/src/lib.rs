@@ -72,3 +72,5 @@ fn store_notify(to: Vec<Principal>, post_id: String) {
         })
     }
 }
+
+ic_cdk::export_candid!();

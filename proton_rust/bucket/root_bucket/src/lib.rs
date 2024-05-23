@@ -181,3 +181,5 @@ async fn _create_bucket() -> Principal {
 
     canister_id
 }
+
+ic_cdk::export_candid!();

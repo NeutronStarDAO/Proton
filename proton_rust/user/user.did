@@ -8,15 +8,15 @@ type Profile = record {
   feed_canister : opt principal;
   back_img_url : text;
 };
-
 service : {
-  batch_get_profile : (vec principal) -> (vec Profile);
+  batch_get_profile : (vec principal) -> (vec Profile) query;
   create_profile : (Profile) -> ();
   follow : (principal) -> ();
   get_follower_number : (principal) -> (nat) query;
   get_followers_list : (principal) -> (vec principal) query;
   get_following_list : (principal) -> (vec principal) query;
   get_following_number : (principal) -> (nat) query;
+  get_profile : (principal) -> (opt Profile) query;
   is_followed : (principal, principal) -> (bool) query;
   update_profile : (Profile) -> ();
 }

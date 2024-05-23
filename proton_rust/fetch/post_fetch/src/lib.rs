@@ -45,3 +45,5 @@ fn get_notify_map_entries() -> Vec<(Principal, Vec<String>)> {
 //         }
 //     })
 // }
+
+ic_cdk::export_candid!();

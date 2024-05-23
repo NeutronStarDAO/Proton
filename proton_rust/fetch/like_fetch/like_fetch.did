@@ -1,0 +1,19 @@
+type Comment = record { content : text; user : principal; created_at : nat64 };
+type InitArg = record { user_actor : principal };
+type Like = record { user : principal; created_at : nat64 };
+type Post = record {
+  repost : vec Like;
+  post_id : text;
+  content : text;
+  like : vec Like;
+  user : principal;
+  created_at : nat64;
+  comment : vec Comment;
+  feed_canister : principal;
+  index : nat;
+};
+service : (InitArg) -> {
+  get_notify_map_entries : () -> (vec record { principal; vec text }) query;
+  receive_notify : (Post) -> ();
+  receive_repost_user_notify : (vec principal, text) -> ();
+}

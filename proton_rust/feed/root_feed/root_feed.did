@@ -1,0 +1,8 @@
+service : {
+  create_feed_canister : () -> (opt principal);
+  get_all_user_feed_canister : () -> (
+      vec record { principal; principal },
+    ) query;
+  get_total_user_feed_canister_number : () -> (nat) query;
+  get_user_feed_canister : (principal) -> (opt principal) query;
+}

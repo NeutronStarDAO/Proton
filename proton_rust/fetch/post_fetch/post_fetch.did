@@ -1,0 +1,4 @@
+service : {
+  get_notify_map_entries : () -> (vec record { principal; vec text }) query;
+  receive_notify : (vec principal, text) -> ();
+}

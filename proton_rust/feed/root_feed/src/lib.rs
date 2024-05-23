@@ -55,3 +55,5 @@ fn is_user_have_feed_canister(user: &Principal) -> bool {
         map.borrow().get(user).is_some()
     })
 }
+
+ic_cdk::export_candid!();
