@@ -10,12 +10,12 @@ thread_local! {
 }
 
 #[ic_cdk::update]
-fn upload_photo(photo: Vec<u8>) -> String {
+fn upload_photo(photo: Vec<u8>) -> u64 {
     PHOTO_MAP.with(|map| {
         map.borrow_mut().insert(PHOTO_INDEX.get(), photo)
     });
     PHOTO_INDEX.set(PHOTO_INDEX.get() + 1);
-    format!("https://{}.raw.icp0.io/{}", ic_cdk::api::id().to_text(), PHOTO_INDEX.get() - 1)
+    PHOTO_INDEX.get() - 1
 }
 
 #[ic_cdk::query]

@@ -17,13 +17,19 @@ type DefiniteCanisterSettings = record {
   memory_allocation : nat;
   compute_allocation : nat;
 };
+type InitArg = record {
+  like_fetch_actor : principal;
+  root_bucket : principal;
+  user_actor : principal;
+  comment_fetch_actor : principal;
+};
 type QueryStats = record {
   response_payload_bytes_total : nat;
   num_instructions_total : nat;
   num_calls_total : nat;
   request_payload_bytes_total : nat;
 };
-service : {
+service : (InitArg) -> {
   create_feed_canister : () -> (opt principal);
   get_all_user_feed_canister : () -> (
       vec record { principal; principal },

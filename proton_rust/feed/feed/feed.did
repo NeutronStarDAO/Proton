@@ -18,7 +18,7 @@ type DefiniteCanisterSettings = record {
   memory_allocation : nat;
   compute_allocation : nat;
 };
-type InitArg = record {
+type FeedInitArg = record {
   owner : principal;
   like_fetch_actor : principal;
   root_bucket : principal;
@@ -44,7 +44,7 @@ type QueryStats = record {
   num_calls_total : nat;
   request_payload_bytes_total : nat;
 };
-service : (InitArg) -> {
+service : (FeedInitArg) -> {
   batch_receive_comment : (vec text) -> ();
   batch_receive_feed : (vec text) -> ();
   batch_receive_like : (vec text) -> ();

@@ -1,13 +1,8 @@
 use std::cell::RefCell;
 use std::collections::HashMap;
 use candid::{CandidType, Principal, Deserialize};
-use types::Post;
+use types::{Post, FetchInitArg as InitArg};
 use ic_cdk::api::management_canister::main::{CanisterStatusResponse, CanisterIdRecord};
-
-#[derive(CandidType, Deserialize, Debug)]
-struct InitArg {
-    user_actor: Principal,
-}
 
 thread_local! {
     static NOTIFY_MAP: RefCell<HashMap<Principal, Vec<String>>> = RefCell::new(HashMap::new());

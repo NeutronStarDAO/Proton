@@ -52,5 +52,5 @@ service : {
   get_photo_number : () -> (nat64) query;
   http_request : (HttpRequest) -> (HttpResponse) query;
   status : () -> (CanisterStatusResponse);
-  upload_photo : (blob) -> (text);
+  upload_photo : (blob) -> (nat64);
 }

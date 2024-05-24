@@ -1,8 +1,9 @@
 use candid::{Principal, CandidType, Deserialize};
 use std::{borrow::Borrow, collections::HashMap};
 use std::cell::RefCell;
-use types::{Comment, Like, NewComment, NewLike, NewRepost, Post, Repost};
+use types::{Comment, Like, NewComment, NewLike, NewRepost, Post, Repost, FeedInitArg as InitArg};
 use ic_cdk::api::management_canister::main::{CanisterStatusResponse, CanisterIdRecord};
+
 #[derive(CandidType, Deserialize, Debug, Clone)]
 pub struct CreatePostArgs {
     feed_canister: Principal,
@@ -33,15 +34,6 @@ pub struct PostDatabase {
 #[derive(CandidType, Deserialize, Debug, Clone)]
 pub struct  FeedDatabase {
     feed_map: HashMap<String, Post>
-}
-
-#[derive(CandidType, Deserialize, Debug)]
-struct InitArg {
-    root_bucket: Principal,
-    user_actor: Principal,
-    comment_fetch_actor: Principal,
-    like_fetch_actor: Principal,
-    owner: Principal
 }
 
 impl PostDatabase {
@@ -134,8 +126,6 @@ impl PostDatabase {
         }
         None
     }
-
-
 
     fn get_post_number(&self) -> u128 { self.post_map.len() as u128}
 

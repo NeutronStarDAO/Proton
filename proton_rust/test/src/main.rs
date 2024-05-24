@@ -3,6 +3,8 @@ mod root_bucket;
 mod root_feed;
 mod deploy;
 mod feed;
+mod photo_storage;
+mod test;
 use candid::{Principal, Encode, Decode};
 use lazy_static::lazy_static;
 use dotenv::dotenv;
@@ -21,6 +23,7 @@ lazy_static! {
     pub static ref ROOT_FEED_CANISTER: Principal = Principal::from_text(env::var("CANISTER_ID_ROOT_FEED").unwrap()).unwrap();
     pub static ref ROOT_FETCH_CANISTER: Principal = Principal::from_text(env::var("CANISTER_ID_ROOT_FETCH").unwrap()).unwrap();
     pub static ref USER_CANISTER: Principal = Principal::from_text(env::var("CANISTER_ID_USER").unwrap()).unwrap(); 
+    pub static ref PHOTO_STORAGE_CANISTER: Principal = Principal::from_text(env::var("CANISTER_ID_PHOTO_STORAGE").unwrap()).unwrap();
 }
 
 // pub async fn call_canister() {
@@ -46,5 +49,8 @@ async fn main() {
     dotenv().ok();
 
     // deploy and init
-    deploy::deploy().await;
+    // deploy::deploy().await;
+
+    // test 
+    test::test().await;
 }

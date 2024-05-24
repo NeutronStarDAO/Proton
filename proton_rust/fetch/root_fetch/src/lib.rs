@@ -1,11 +1,12 @@
 use std::cell::{RefCell, Cell};
 use std::collections::HashMap;
-use candid::{CandidType, Principal, Deserialize};
+use candid::{CandidType, Deserialize, Encode, Principal};
 use ic_cdk::api::management_canister::main::{
     create_canister, CreateCanisterArgument, CanisterSettings,
     install_code, InstallCodeArgument, CanisterInstallMode
 };
 use ic_cdk::api::management_canister::main::{CanisterStatusResponse, CanisterIdRecord};
+use types::FetchInitArg;
 
 const T_CYCLES: u128 = 1_000_000_000_000;
 
@@ -19,6 +20,12 @@ thread_local! {
     static POST_FETCH_WASM: RefCell<Vec<u8>> = RefCell::new(vec![]);
     static COMMENT_FETCH_WASM: RefCell<Vec<u8>> = RefCell::new(vec![]);
     static LIKE_FETCH_WASM: RefCell<Vec<u8>> = RefCell::new(vec![]);
+    static USER_ACTOR: RefCell<Principal> = RefCell::new(Principal::anonymous());
+}
+
+#[ic_cdk::init]
+fn init_function(arg: FetchInitArg) {
+    USER_ACTOR.set(arg.user_actor);
 }
 
 #[ic_cdk::update]
@@ -55,7 +62,6 @@ async fn create_post_fetch_canister() -> Principal {
     canister_id
 }
 
-
 #[ic_cdk::update]
 async fn create_comment_fetch_canister() -> Principal {
     let canister_id = create_canister(
@@ -72,11 +78,14 @@ async fn create_comment_fetch_canister() -> Principal {
         4 * T_CYCLES
     ).await.unwrap().0.canister_id;
 
+    let init_arg = FetchInitArg {
+        user_actor: USER_ACTOR.with(|user_actor| user_actor.borrow().clone())
+    };
     let install_result = install_code(InstallCodeArgument {
         mode: CanisterInstallMode::Install,
         canister_id: canister_id,
         wasm_module: COMMENT_FETCH_WASM.with(|wasm| wasm.borrow().clone()),
-        arg: vec![],
+        arg: Encode!(&init_arg).unwrap()
     }).await.unwrap();
 
     COMMENT_FETCH_MAP.with(|map| {
@@ -106,11 +115,14 @@ async fn create_like_fetch_canister() -> Principal {
         4 * T_CYCLES
     ).await.unwrap().0.canister_id;
 
+    let init_arg = FetchInitArg {
+        user_actor: USER_ACTOR.with(|user_actor| user_actor.borrow().clone())
+    };
     let install_result = install_code(InstallCodeArgument {
         mode: CanisterInstallMode::Install,
         canister_id: canister_id,
         wasm_module: LIKE_FETCH_WASM.with(|wasm| wasm.borrow().clone()),
-        arg: vec![],
+        arg: Encode!(&init_arg).unwrap()
     }).await.unwrap();
 
     LIKE_FETCH_MAP.with(|map| {

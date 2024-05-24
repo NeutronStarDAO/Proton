@@ -35,6 +35,20 @@ pub struct Post {
     pub created_at: u64 // 发布时间
 }
 
+#[derive(CandidType, Deserialize, Debug)]
+pub struct FeedInitArg {
+    pub root_bucket: Principal,
+    pub user_actor: Principal,
+    pub comment_fetch_actor: Principal,
+    pub like_fetch_actor: Principal,
+    pub owner: Principal
+}
+
+#[derive(CandidType, Deserialize, Debug)]
+pub struct FetchInitArg {
+    pub user_actor: Principal,
+}
+
 pub type NewRepost = Vec<Repost>;
 pub type NewComment = Vec<Comment>;
 pub type NewLike = Vec<Like>;

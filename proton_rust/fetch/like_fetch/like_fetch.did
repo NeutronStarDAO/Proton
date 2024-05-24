@@ -18,7 +18,7 @@ type DefiniteCanisterSettings = record {
   memory_allocation : nat;
   compute_allocation : nat;
 };
-type InitArg = record { user_actor : principal };
+type FetchInitArg = record { user_actor : principal };
 type Like = record { user : principal; created_at : nat64 };
 type Post = record {
   repost : vec Like;
@@ -38,7 +38,7 @@ type QueryStats = record {
   num_calls_total : nat;
   request_payload_bytes_total : nat;
 };
-service : (InitArg) -> {
+service : (FetchInitArg) -> {
   get_notify_map_entries : () -> (vec record { principal; vec text }) query;
   receive_notify : (Post) -> ();
   receive_repost_user_notify : (vec principal, text) -> ();

@@ -1,9 +1,18 @@
-use std::cell::{Cell, RefCell};
+use std::cell::{Cell, Ref, RefCell};
 use std::collections::HashMap;
-use candid::{Principal};
+use candid::{Principal, Encode, CandidType, Deserialize};
 use ic_cdk::api::management_canister::main::{
     create_canister, install_code, CanisterIdRecord, CanisterInstallMode, CanisterSettings, CanisterStatusResponse, CreateCanisterArgument, InstallCodeArgument
 };
+use types::FeedInitArg;
+
+#[derive(CandidType, Deserialize, Debug)]
+pub struct InitArg {
+    pub root_bucket: Principal,
+    pub user_actor: Principal,
+    pub comment_fetch_actor: Principal,
+    pub like_fetch_actor: Principal,
+}
 
 const T_CYCLES: u128 = 1_000_000_000_000;
 
@@ -11,6 +20,18 @@ thread_local! {
     static USER_FEED_CANISTER_MAP: RefCell<HashMap<Principal, Principal>> = RefCell::new(HashMap::new());
     static FEED_WASM: RefCell<Vec<u8>> = RefCell::new(Vec::new());
     static FEED_WASM_BUFFER: RefCell<Vec<u8>> = RefCell::new(Vec::new());
+    static ROOT_BUCKET: RefCell<Principal> = RefCell::new(Principal::anonymous());
+    static USER_ACTOR: RefCell<Principal> = RefCell::new(Principal::anonymous());
+    static COMMMENT_FETCH_ACTOR: RefCell<Principal> = RefCell::new(Principal::anonymous());
+    static LIKE_FETCH_ACTOR: RefCell<Principal> = RefCell::new(Principal::anonymous());
+}
+
+#[ic_cdk::init]
+fn init_function(arg: InitArg) {
+    ROOT_BUCKET.set(arg.root_bucket);
+    USER_ACTOR.set(arg.user_actor);
+    COMMMENT_FETCH_ACTOR.set(arg.comment_fetch_actor);
+    LIKE_FETCH_ACTOR.set(arg.like_fetch_actor);
 }
 
 #[ic_cdk::update]
@@ -33,11 +54,18 @@ async fn create_feed_canister() -> Option<Principal> {
     ).await.unwrap();
     let canister_id = canister_record.0.canister_id;
 
+    let feed_init_arg = FeedInitArg {
+        root_bucket: ROOT_BUCKET.with(|root_bucket| root_bucket.borrow().clone()),
+        user_actor: USER_ACTOR.with(|user_actor| user_actor.borrow().clone()),
+        comment_fetch_actor: COMMMENT_FETCH_ACTOR.with(|comment_fetch_actor| comment_fetch_actor.borrow().clone()),
+        like_fetch_actor: LIKE_FETCH_ACTOR.with(|like_fetch_actor| like_fetch_actor.borrow().clone()),
+        owner: ic_cdk::api::caller()
+    };
     install_code(InstallCodeArgument {
         mode: CanisterInstallMode::Install,
         canister_id: canister_id,
         wasm_module: FEED_WASM.with(|wasm| wasm.borrow().clone()),
-        arg: vec![]
+        arg: Encode!(&feed_init_arg).unwrap()
     }).await.unwrap();
 
     USER_FEED_CANISTER_MAP.with(|map| {
