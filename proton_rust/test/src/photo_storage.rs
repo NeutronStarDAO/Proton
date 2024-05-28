@@ -2,6 +2,7 @@ use ic_agent::Agent;
 use crate::PHOTO_STORAGE_CANISTER;
 use candid::{Encode, Decode};
 
+// http://avqkn-guaaa-aaaaa-qaaea-cai.localhost:4943/0
 pub async fn upload_photo(
     agent: Agent,
     photo: Vec<u8>

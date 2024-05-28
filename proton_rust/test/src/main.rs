@@ -4,6 +4,7 @@ mod root_feed;
 mod deploy;
 mod feed;
 mod photo_storage;
+mod user;
 mod test;
 use candid::{Principal, Encode, Decode};
 use lazy_static::lazy_static;
@@ -48,8 +49,14 @@ lazy_static! {
 async fn main() {
     dotenv().ok();
 
+    println!("Principal A : {:?}\n", utils::build_agent(USERA_PEM).get_principal().unwrap().to_text());
+    println!("Principal B : {:?}\n", utils::build_agent(USERB_PEM).get_principal().unwrap().to_text());
+    println!("Principal C : {:?}\n", utils::build_agent(USERC_PEM).get_principal().unwrap().to_text());
+    println!("Principal D : {:?}\n", utils::build_agent(USERD_PEM).get_principal().unwrap().to_text());
+    println!("Principal E : {:?}\n", utils::build_agent(USERE_PEM).get_principal().unwrap().to_text());
+
     // deploy and init
-    // deploy::deploy().await;
+    deploy::deploy().await;
 
     // test 
     test::test().await;

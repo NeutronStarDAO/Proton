@@ -113,25 +113,31 @@ fn get_latest_feed(n: u128) -> Vec<Post> {
 }
 
 fn _store_feed(post: Post) -> bool {
-    FEED_MAP.with(|map| {
+    let is_have_post = FEED_MAP.with(|map| {
         match map.borrow().get(&post.post_id) {
-            None => {
-                map.borrow_mut().insert(post.post_id.clone(), post);
-                true
-            },
-            Some(_) => {
-                // Debug.print("This post has been stored");
-                false
-            }
+            None => false,
+            Some(_) => true 
         }
-    })
+    });
+    if is_have_post == false {
+        FEED_MAP.with(|map| {
+            map.borrow_mut().insert(post.post_id.clone(), post);
+        });
+        true
+    } else {
+        // Debug.print("This post has been stored");
+        false
+    }
 }
 
 fn _update_post_repost(post_id: String, new_repost: NewRepost) -> bool {
-    FEED_MAP.with(|map| {
-        match map.borrow().get(&post_id) {
-            None => false,
-            Some(old_post) => {
+    let old_post = FEED_MAP.with(|map| {
+        map.borrow().get(&post_id).cloned()
+    });
+    match old_post {
+        None => false,
+        Some(old_post) => {
+            FEED_MAP.with(|map| {
                 map.borrow_mut().insert(
                     post_id, 
                     Post {
@@ -147,58 +153,64 @@ fn _update_post_repost(post_id: String, new_repost: NewRepost) -> bool {
                         created_at: old_post.created_at
                     }
                 );
-                true
-            }
+            });
+            true
         }
-    })
+    }
 }
 
 fn _update_post_comment(post_id: String, new_comment: NewComment) -> Option<Post> {
-    FEED_MAP.with(|map| {
-        match map.borrow().get(&post_id) {
-            None => None,
-            Some(old_post) => {
-                let new_post = Post {
-                    post_id: old_post.post_id.clone(),
-                    feed_canister: old_post.feed_canister,
-                    index: old_post.index,
-                    user: old_post.user,
-                    content: old_post.content.clone(),
-                    photo_url: old_post.photo_url.clone(),
-                    repost: old_post.repost.clone(),
-                    like: old_post.like.clone(),
-                    comment: new_comment,
-                    created_at: old_post.created_at
-                };
+    let old_post = FEED_MAP.with(|map| {
+        map.borrow().get(&post_id).cloned()
+    });
+    match old_post {
+        None => None,
+        Some(old_post) => {
+            let new_post = Post {
+                post_id: old_post.post_id.clone(),
+                feed_canister: old_post.feed_canister,
+                index: old_post.index,
+                user: old_post.user,
+                content: old_post.content.clone(),
+                photo_url: old_post.photo_url.clone(),
+                repost: old_post.repost.clone(),
+                like: old_post.like.clone(),
+                comment: new_comment,
+                created_at: old_post.created_at
+            };
+            FEED_MAP.with(|map| {
                 map.borrow_mut().insert(post_id, new_post.clone());
-                Some(new_post)
-            }
+            });
+            Some(new_post)
         }
-    })
+    }
 }
 
 fn _update_post_like(post_id: String, new_like: NewLike) -> Option<Post> {
-    FEED_MAP.with(|map| {
-        match map.borrow().get(&post_id) {
-            None => None,
-            Some(old_post) => {
-                let new_post = Post {
-                    post_id: old_post.post_id.clone(),
-                    feed_canister: old_post.feed_canister,
-                    index: old_post.index,
-                    user: old_post.user,
-                    content: old_post.content.clone(),
-                    photo_url: old_post.photo_url.clone(),
-                    repost: old_post.repost.clone(),
-                    like: new_like,
-                    comment: old_post.comment.clone(),
-                    created_at: old_post.created_at
-                };
+    let old_post = FEED_MAP.with(|map| {
+        map.borrow().get(&post_id).cloned()
+    });
+    match old_post {
+        None => None,
+        Some(old_post) => {
+            let new_post = Post {
+                post_id: old_post.post_id.clone(),
+                feed_canister: old_post.feed_canister,
+                index: old_post.index,
+                user: old_post.user,
+                content: old_post.content.clone(),
+                photo_url: old_post.photo_url.clone(),
+                repost: old_post.repost.clone(),
+                like: new_like,
+                comment: old_post.comment.clone(),
+                created_at: old_post.created_at
+            };
+            FEED_MAP.with(|map| {
                 map.borrow_mut().insert(post_id, new_post.clone());
-                Some(new_post)
-            }
+            });
+            Some(new_post)
         }
-    })
+    }
 }
 
 // async fn check_bucket_memory() 

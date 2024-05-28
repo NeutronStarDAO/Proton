@@ -32,3 +32,20 @@ pub async fn update_feed_wasm(
         .await.unwrap();
     Decode!(&response_blob, bool).unwrap()
 }
+
+pub async fn get_user_feed_canister(
+    agent: Agent,
+    user: Principal
+) -> Option<Principal> {
+    let response_blob = agent
+        .query(
+            &ROOT_FEED_CANISTER, 
+            "get_user_feed_canister"
+        )
+        .with_arg(Encode!(&user).unwrap())
+        .call()
+        .await.unwrap();
+
+    Decode!(&response_blob, Option<Principal>).unwrap()
+}
+

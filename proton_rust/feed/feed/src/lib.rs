@@ -78,8 +78,8 @@ impl PostDatabase {
         post
     }
 
-    fn create_repost(&mut self, post_id: String) -> Option<(Principal, NewRepost)> {
-        let (bucket, user, post_index) = check_post_id(&post_id);
+    fn create_repost(&mut self, user: Principal, post_id: String) -> Option<(Principal, NewRepost)> {
+        let (bucket, _, post_index) = check_post_id(&post_id);
         let value = self.post_map.get_mut(&post_index).unwrap();
         let mut is_already_repost = false;
         for i in value.repost.iter() {
@@ -98,7 +98,7 @@ impl PostDatabase {
     }
 
     fn create_comment(&mut self, coment_user: Principal, args: CreateCommentArgs) -> Option<(Principal, NewComment)> {
-        let (bucket, user, index) = check_post_id(&args.post_id);
+        let (bucket, _, index) = check_post_id(&args.post_id);
         if let Some(post) = self.post_map.get_mut(&index) {
             post.comment.push(Comment {
                 user: coment_user,
@@ -295,18 +295,19 @@ async fn create_post(content: String, photo_url: Vec<String>) -> String {
                 content: content,
                 photo_url: photo_url,
                 time: ic_cdk::api::time(),
-                bucket: BUCKET.with(|id| id.borrow().clone())   
+                bucket: bucket_id.unwrap().clone()
             }
         )
     });
 
     // 将帖子内容发送给公共区的 Bucket 
     let call_bucket_result = ic_cdk::call::<(Post, ), (bool, )>(
-        BUCKET.with(|bucket| bucket.borrow().clone()),
+        bucket_id.unwrap().clone(),
         "store_feed", 
         (post.clone(), )
     ).await.unwrap().0;
-    assert!(call_bucket_result);
+    
+    // assert!(call_bucket_result);
 
     // 通知 PostFetch 
     post.post_id
@@ -316,7 +317,7 @@ async fn create_post(content: String, photo_url: Vec<String>) -> String {
 #[ic_cdk::update]
 async fn create_repost(post_id: String) -> bool {
     match POST_DATABASE.with(|database| {
-        database.borrow_mut().create_repost(post_id.clone())
+        database.borrow_mut().create_repost(ic_cdk::caller(), post_id.clone())
     }) {
         None => false,
         Some((bucket, new_repost)) => {

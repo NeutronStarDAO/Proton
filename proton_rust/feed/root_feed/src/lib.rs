@@ -37,7 +37,7 @@ fn init_function(arg: InitArg) {
 #[ic_cdk::update]
 async fn create_feed_canister() -> Option<Principal> {
     let caller = ic_cdk::caller();
-    assert!(is_user_have_feed_canister(&caller));
+    assert!(is_user_have_feed_canister(&caller) != true);
 
     let canister_record = create_canister(
         CreateCanisterArgument {

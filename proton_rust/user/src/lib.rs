@@ -131,6 +131,7 @@ fn follow(user: Principal) {
     })
 }
 
+// is user_a follow user_b
 #[ic_cdk::query]
 fn is_followed(user_a: Principal, user_b: Principal) -> bool {
     USER_DIGRAPH.with(|graph| {

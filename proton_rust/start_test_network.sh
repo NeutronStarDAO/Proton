@@ -31,28 +31,27 @@ dfx deploy root_feed --argument "(
 )"
 root_feed=$(dfx canister id root_feed)
 
-echo "增发 cycles"
+echo "增发 cycles\n"
 wallet=$(dfx identity get-wallet)
 dfx ledger fabricate-cycles --t 2000 --canister $wallet
 dfx wallet balance
 
-echo "给 photo_storage canister 充值 100T cycles"
-dfx wallet send $root_bucket 10000000000000
-echo "查询 root_bucket canister 状态"
+echo "给 root_bucket canister 充值 100T cycles\n"
+dfx wallet send $root_bucket 100000000000000
+echo "查询 root_bucket canister 状态\n"
 dfx canister status $root_bucket
 
-echo "给 root_feed canister 充值 100T cycles"
+echo "给 root_feed canister 充值 100T cycles\n"
 dfx wallet send $root_feed 100000000000000
-echo "查询 root_feed canister 状态"
+echo "查询 root_feed canister 状态\n"
 dfx canister status $root_feed
 
-
-echo "给 root_fetch canister 充值 100T cycles"
+echo "给 root_fetch canister 充值 100T cycles\n"
 dfx wallet send $root_fetch 100000000000000
-echo "查询 root_fetch canister 状态"
+echo "查询 root_fetch canister 状态\n"
 dfx canister status $root_fetch
 
-echo "给 photo_storage canister 充值 10T cycles"
+echo "给 photo_storage canister 充值 10T cycles\n"
 dfx wallet send $photo_storage 10000000000000
-echo "查询 photo_storage canister 状态"
+echo "查询 photo_storage canister 状态\n"
 dfx canister status $photo_storage
