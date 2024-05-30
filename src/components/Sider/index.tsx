@@ -47,7 +47,7 @@ const Logo = () => {
   </div>
 }
 
-const UserInfo = () => {
+export const UserInfo = () => {
   const navigate = useNavigate();
 
   return <div className={"user_info"}>

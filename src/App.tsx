@@ -11,12 +11,14 @@ import {Comment} from "./components/Comment";
 import {Modal} from "./components/Modal";
 import {Login} from "./components/Modal/Login";
 import {Receive} from "./components/Modal/Receive";
+import {PostModal} from "./components/Modal/Post";
 
 function App() {
   const [open, setOpen] = useState(true)
 
   return (
     <div className={"App"}>
+      <PostModal open={true} setOpen={()=>{}}/>
       <Side/>
       {/*<Receive open={open} setOpen={setOpen}/>*/}
       <Routes>
