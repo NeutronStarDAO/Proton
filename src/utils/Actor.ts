@@ -25,6 +25,7 @@ import {authClient} from "./IIForIdentity";
 
   public async createActor(idlFactory: any, canisterId: string | any) {
     const agent = await this.getAgent();
+    await agent.fetchRootKey()
     return Actor.createActor(idlFactory, {
       agent,
       canisterId,
@@ -33,6 +34,7 @@ import {authClient} from "./IIForIdentity";
 
   public async noIdentityActor(IdlFactory: any, canisterId: string) {
     const agent = await this.getNoIdentityAgent();
+    await agent.fetchRootKey()
     return Actor.createActor(IdlFactory, {
       agent,
       canisterId,

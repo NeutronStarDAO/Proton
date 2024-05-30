@@ -5,6 +5,9 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import {fontResize} from "./utils/fontResize";
 import {BrowserRouter} from "react-router-dom";
+import {ProvideAuth} from "./utils/useAuth";
+import {Provider} from "react-redux";
+import store from "./redux/store";
 
 fontResize()
 const root = ReactDOM.createRoot(
@@ -13,7 +16,11 @@ const root = ReactDOM.createRoot(
 root.render(
   <React.StrictMode>
     <BrowserRouter>
-      <App />
+      <ProvideAuth>
+        <Provider store={store}>
+          <App />
+        </Provider>
+      </ProvideAuth>
     </BrowserRouter>
   </React.StrictMode>
 );

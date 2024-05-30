@@ -2,7 +2,7 @@ import {getActor} from "../utils/Actor";
 import {idlFactory} from "../declarations/root_feed/root_feed.did.js"
 import {Principal} from "@dfinity/principal";
 
-const rootFeedCai = "lrjzn-waaaa-aaaan-qgj3a-cai"
+const rootFeedCai = "asrmz-lmaaa-aaaaa-qaaeq-cai"
 
 class rootFeed {
 
@@ -13,7 +13,7 @@ class rootFeed {
   async createFeedCanister(): Promise<Principal> {
     const actor = await rootFeed.getActor()
     try {
-      const res = await actor.createFeedCanister() as [] | [Principal]
+      const res = await actor.create_feed_canister() as [] | [Principal]
       console.log("create res", res)
       if (res[0]) return res[0]
       throw new Error("create error")
@@ -26,7 +26,7 @@ class rootFeed {
   async getUserFeedCanister(principal: Principal): Promise<Principal | undefined> {
     const actor = await rootFeed.getActor()
     try {
-      const res = await actor.getUserFeedCanister(principal) as [] | [Principal]
+      const res = await actor.get_user_feed_canister(principal) as [] | [Principal]
       return res[0]
     } catch (e) {
       console.log("get userCai error", e)

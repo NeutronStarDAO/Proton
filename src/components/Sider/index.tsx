@@ -2,11 +2,13 @@ import React from 'react';
 import "./index.scss"
 import Icon, {Name} from "../../Icons/Icon";
 import {useLocation, useNavigate} from "react-router-dom";
+import {useAuth} from "../../utils/useAuth";
 
 const menu = ["Home", "Explore", "Wallet", "Settings"]
 export const Side = () => {
   const navigate = useNavigate();
   const location = useLocation()
+  const {logIn, isAuth} = useAuth()
 
   return <div className={"side_wrap"}>
     <div style={{width: "100%", display: "flex", flexDirection: "column", alignItems: "center"}}>
@@ -26,11 +28,13 @@ export const Side = () => {
         <div className={"post_button"} style={{justifyContent: "center", padding: "0"}}>Post</div>
       </div>
     </div>
+    {
+      isAuth ? <UserInfo/>
+        : <div className="side_bottom" onClick={() => logIn?.()}>
+          👋 Hi, login
+        </div>
 
-    {/*<div className="side_bottom">*/}
-    {/*  👋 Hi, login*/}
-    {/*</div>*/}
-    <UserInfo/>
+    }
   </div>
 }
 

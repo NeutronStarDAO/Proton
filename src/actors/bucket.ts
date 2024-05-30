@@ -19,7 +19,7 @@ export default class Bucket {
   async getLatestFeed(n: number) {
     const actor = await this.getActor()
     try {
-      return await actor.getLatestFeed(BigInt(n)) as Post[]
+      return await actor.get_latest_feed(BigInt(n)) as Post[]
     } catch (e) {
       console.log("getLatestFeed", e)
       throw e

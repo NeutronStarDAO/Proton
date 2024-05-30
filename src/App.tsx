@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import './App.css';
 import {Side} from "./components/Sider";
 import {Sidebar} from "./components/Sidebar";
@@ -14,10 +14,11 @@ import {Receive} from "./components/Modal/Receive";
 
 function App() {
   const [open, setOpen] = useState(true)
+
   return (
     <div className={"App"}>
       <Side/>
-      <Receive open={open} setOpen={setOpen}/>
+      {/*<Receive open={open} setOpen={setOpen}/>*/}
       <Routes>
         <Route path="/" element={<Main/>}/>
         <Route path="home" element={<Main/>}/>
