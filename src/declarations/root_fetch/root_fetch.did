@@ -1,0 +1,35 @@
+type CanisterStatusResponse = record {
+  status : CanisterStatusType;
+  memory_size : nat;
+  cycles : nat;
+  settings : DefiniteCanisterSettings;
+  query_stats : QueryStats;
+  idle_cycles_burned_per_day : nat;
+  module_hash : opt blob;
+  reserved_cycles : nat;
+};
+type CanisterStatusType = variant { stopped; stopping; running };
+type DefiniteCanisterSettings = record {
+  freezing_threshold : nat;
+  controllers : vec principal;
+  reserved_cycles_limit : nat;
+  wasm_memory_limit : nat;
+  memory_allocation : nat;
+  compute_allocation : nat;
+};
+type FetchInitArg = record { user_actor : principal };
+type QueryStats = record {
+  response_payload_bytes_total : nat;
+  num_instructions_total : nat;
+  num_calls_total : nat;
+  request_payload_bytes_total : nat;
+};
+service : (FetchInitArg) -> {
+  create_comment_fetch_canister : () -> (principal);
+  create_like_fetch_canister : () -> (principal);
+  create_post_fetch_canister : () -> (principal);
+  get_all_comment_fetch_canister : () -> (vec principal) query;
+  get_all_like_fetch_canister : () -> (vec principal) query;
+  get_all_post_fetch_canister : () -> (vec principal) query;
+  status : () -> (CanisterStatusResponse);
+}
