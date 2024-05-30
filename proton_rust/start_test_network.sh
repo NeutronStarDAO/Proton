@@ -55,3 +55,5 @@ echo "给 photo_storage canister 充值 10T cycles\n"
 dfx wallet send $photo_storage 10000000000000
 echo "查询 photo_storage canister 状态\n"
 dfx canister status $photo_storage
+
+dfx deploy internet_identity

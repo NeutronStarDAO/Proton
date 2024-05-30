@@ -47,6 +47,7 @@ pub struct FeedInitArg {
 #[derive(CandidType, Deserialize, Debug)]
 pub struct FetchInitArg {
     pub user_actor: Principal,
+    // pub root_feed: Principal
 }
 
 pub type NewRepost = Vec<Repost>;

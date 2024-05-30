@@ -21,11 +21,17 @@ thread_local! {
     static COMMENT_FETCH_WASM: RefCell<Vec<u8>> = RefCell::new(vec![]);
     static LIKE_FETCH_WASM: RefCell<Vec<u8>> = RefCell::new(vec![]);
     static USER_ACTOR: RefCell<Principal> = RefCell::new(Principal::anonymous());
+    static ROOT_FEED_ACTOR: RefCell<Principal> = RefCell::new(Principal::anonymous());
 }
 
 #[ic_cdk::init]
-fn init_function(arg: FetchInitArg) {
-    USER_ACTOR.set(arg.user_actor);
+// fn init_function(arg: FetchInitArg) {
+//     USER_ACTOR.set(arg.user_actor);
+//     // ROOT_FEED_ACTOR.set(arg.root_feed);
+// }
+fn init_function() {
+    // USER_ACTOR.set(arg.user_actor);
+    // ROOT_FEED_ACTOR.set(arg.root_feed);
 }
 
 #[ic_cdk::update]
@@ -79,7 +85,8 @@ async fn create_comment_fetch_canister() -> Principal {
     ).await.unwrap().0.canister_id;
 
     let init_arg = FetchInitArg {
-        user_actor: USER_ACTOR.with(|user_actor| user_actor.borrow().clone())
+        user_actor: USER_ACTOR.with(|user_actor| user_actor.borrow().clone()),
+        // root_feed: ROOT_FEED_ACTOR.with(|root_feed| root_feed.borrow().clone())
     };
     let install_result = install_code(InstallCodeArgument {
         mode: CanisterInstallMode::Install,
@@ -116,7 +123,8 @@ async fn create_like_fetch_canister() -> Principal {
     ).await.unwrap().0.canister_id;
 
     let init_arg = FetchInitArg {
-        user_actor: USER_ACTOR.with(|user_actor| user_actor.borrow().clone())
+        user_actor: USER_ACTOR.with(|user_actor| user_actor.borrow().clone()),
+        // root_feed: ROOT_FEED_ACTOR.with(|root_feed| root_feed.borrow().clone())
     };
     let install_result = install_code(InstallCodeArgument {
         mode: CanisterInstallMode::Install,

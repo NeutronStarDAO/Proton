@@ -23,7 +23,7 @@ type QueryStats = record {
   num_calls_total : nat;
   request_payload_bytes_total : nat;
 };
-service : {
+service : () -> {
   get_notify_map_entries : () -> (vec record { principal; vec text }) query;
   receive_notify : (vec principal, text) -> ();
   status : () -> (CanisterStatusResponse);

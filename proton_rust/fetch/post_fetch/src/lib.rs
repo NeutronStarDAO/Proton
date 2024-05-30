@@ -1,13 +1,45 @@
-use std::cell::{RefCell, Cell};
+use std::cell::{Cell, Ref, RefCell};
 use std::collections::HashMap;
 use std::vec;
-use candid::{CandidType, Principal, Deserialize};
+use candid::{CandidType, Deserialize, Encode, Principal};
 use ic_cdk_timers::TimerId;
 use ic_cdk::api::management_canister::main::{CanisterStatusResponse, CanisterIdRecord};
+use std::time::Duration;
 
 thread_local! {
     // user_feed_canister -> post_id_array
     static NOTIFY_MAP: RefCell<HashMap<Principal, Vec<String>>> = RefCell::new(HashMap::new());
+    static TIMER_ID: RefCell<TimerId> = RefCell::new(TimerId::default());
+    static ROOT_FEED_ACTOR: RefCell<Principal> = RefCell::new(Principal::anonymous());
+}
+
+#[derive(CandidType, Deserialize, Debug, Clone)]
+pub struct InitArg {
+    root_feed: Principal
+}
+
+#[ic_cdk::init]
+// fn init(arg: InitArg) {
+//     // Init
+//     ROOT_FEED_ACTOR.set(arg.root_feed);
+
+//     // start timer
+//     let timer_id = ic_cdk_timers::set_timer_interval(
+//         Duration::from_secs(30), 
+//         || ic_cdk::spawn(notify())
+//     );
+//     TIMER_ID.set(timer_id);
+// }
+fn init() {
+    // Init
+    // ROOT_FEED_ACTOR.set(arg.root_feed);
+
+    // start timer
+    let timer_id = ic_cdk_timers::set_timer_interval(
+        Duration::from_secs(30), 
+        || ic_cdk::spawn(notify())
+    );
+    TIMER_ID.set(timer_id);
 }
 
 #[ic_cdk::update]
@@ -46,12 +78,35 @@ async fn status() -> CanisterStatusResponse {
     }).await.unwrap().0
 }
 
-// fn notify() {
-//     NOTIFY_MAP.with(|map| {
-//         for (feed_canister, post_id_array) in map.borrow().iter() {
-//             let notify_result = ic_cdk::call::<>(id, method, args)
-//         }
-//     })
-// }
+async fn notify() {
+    let entries: Vec<(Principal, Vec<String>)> = NOTIFY_MAP.with(|map| {
+        let mut entries: Vec<(Principal, Vec<String>)> = Vec::new();
+        for (user, post_id_array) in map.borrow().iter() {
+            entries.push((user.clone(), post_id_array.clone()));
+        };
+        entries
+    });
+
+    for (user, post_id_array) in entries {
+        // 查询 user -> feed_canister
+        let user_feed_canister = ic_cdk::call::<(Principal, ), (Option<Principal>, )>(
+            ROOT_FEED_ACTOR.with(|actor| actor.borrow().clone()), 
+            "get_user_feed_canister", 
+            (user.clone(), )
+        ).await.unwrap().0.unwrap();
+        
+        // notify
+        let notify_result = ic_cdk::call::<(Vec<String>, ), ()>(
+            user_feed_canister, 
+            "batch_receive_feed", 
+            (post_id_array, )
+        ).await.unwrap();
+        
+        // delete
+        NOTIFY_MAP.with(|map| {
+            map.borrow_mut().remove(&user)
+        });
+    }
+}
 
 ic_cdk::export_candid!();
