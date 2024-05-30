@@ -1,4 +1,4 @@
-export type Name = "Home" | "Explore" | "link" |
+export type Name = "Home" | "Explore" | "link" | "right" |
   "Wallet" | "Settings" | "edit" | "location" | "email" | "calendar"
   | "search" | "like" | "comment" | "repost" | "user" | "tx" | "receive" | "theme" | "account"
 
@@ -15,6 +15,12 @@ interface Props {
 
 const Icon = ({name, bg, color, width, height, spin, className}: Props) => {
   switch (name) {
+    case "right":
+      return <svg width="3.9rem" height="3rem" viewBox="0 0 39 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M1.82839 15.0252L36.8682 15.0252M36.8682 15.0252L23.7281 28.165M36.8682 15.0252L23.7281 1.88538"
+              stroke="#1F1F1F" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+
     case "calendar":
       return <svg width="2.8rem" height="3rem" viewBox="0 0 28 30" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path

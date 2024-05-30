@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import './App.css';
 import {Side} from "./components/Sider";
 import {Sidebar} from "./components/Sidebar";
@@ -8,11 +8,16 @@ import {Settings} from "./components/Setting";
 import {Routes, Route} from "react-router-dom";
 import {Profile} from "./components/Profile";
 import {Comment} from "./components/Comment";
+import {Modal} from "./components/Modal";
+import {Login} from "./components/Modal/Login";
+import {Receive} from "./components/Modal/Receive";
 
 function App() {
+  const [open, setOpen] = useState(true)
   return (
     <div className={"App"}>
       <Side/>
+      <Receive open={open} setOpen={setOpen}/>
       <Routes>
         <Route path="/" element={<Main/>}/>
         <Route path="home" element={<Main/>}/>

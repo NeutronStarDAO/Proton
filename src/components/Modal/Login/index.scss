@@ -1,0 +1,42 @@
+.login_modal {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+
+  .title {
+    font-size: 5rem;
+  }
+
+  .avatar_wrap {
+    display: flex;
+    width: 100%;
+    gap: 3rem;
+
+    .avatar {
+      width: 11rem;
+      height: 11rem;
+      border-radius: 50%;
+      background: rgba(0, 0, 0, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .background {
+      flex: 1;
+      background: rgba(0, 0, 0, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    img {
+      width: 4.4rem;
+    }
+  }
+
+
+}
+
