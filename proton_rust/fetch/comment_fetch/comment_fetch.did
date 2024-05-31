@@ -18,7 +18,7 @@ type DefiniteCanisterSettings = record {
   memory_allocation : nat;
   compute_allocation : nat;
 };
-type FetchInitArg = record { user_actor : principal };
+type FetchInitArg = record { root_feed : principal; user_actor : principal };
 type Like = record { user : principal; created_at : nat64 };
 type Post = record {
   repost : vec Like;

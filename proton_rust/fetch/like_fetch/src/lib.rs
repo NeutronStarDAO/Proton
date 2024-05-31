@@ -16,7 +16,7 @@ thread_local! {
 #[ic_cdk::init]
 fn init_function(arg: InitArg) {
     USER_ACTOR.set(arg.user_actor);
-    // ROOT_FEED_ACTOR.set(arg.root_feed);
+    ROOT_FEED_ACTOR.set(arg.root_feed);
 
     // start timer
     let timer_id = ic_cdk_timers::set_timer_interval(
@@ -108,7 +108,7 @@ async fn notify() {
         // notify
         let notify_result = ic_cdk::call::<(Vec<String>, ), ()>(
             user_feed_canister, 
-            "batch_receive_feed", 
+            "batch_receive_like", 
             (post_id_array, )
         ).await.unwrap();
         

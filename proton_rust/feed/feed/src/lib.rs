@@ -52,8 +52,7 @@ impl PostDatabase {
     }
 
     fn get_post_id(bucket: Principal, user: Principal, index: u128) -> String {
-        bucket.to_text() + "#" + &user.to_text() + "#" + &index.to_string()
-        
+        bucket.to_text() + "#" + &user.to_text() + "#" + &index.to_string()   
     }
     
     fn create_post(&mut self, user: Principal, args: CreatePostArgs) -> Post {
@@ -198,6 +197,7 @@ thread_local! {
     static BUCKET: RefCell<Principal> = RefCell::new(Principal::anonymous());
     static ROOT_BUCKET: RefCell<Principal> = RefCell::new(Principal::anonymous());
     static USER_ACTOR: RefCell<Principal> = RefCell::new(Principal::anonymous());
+    static POST_FETCH_ACTOR: RefCell<Principal> = RefCell::new(Principal::anonymous());
     static COMMENT_FETCH_ACTOR: RefCell<Principal> = RefCell::new(Principal::anonymous());
     static LIKE_FETCH_ACTOR: RefCell<Principal> = RefCell::new(Principal::anonymous());
     static OWNER: RefCell<Principal> = RefCell::new(Principal::anonymous());
@@ -207,6 +207,7 @@ thread_local! {
 fn init_function(arg: InitArg) {
     ROOT_BUCKET.set(arg.root_bucket);
     USER_ACTOR.set(arg.user_actor);
+    POST_FETCH_ACTOR.set(arg.post_fetch_actor);
     COMMENT_FETCH_ACTOR.set(arg.comment_fetch_actor);
     LIKE_FETCH_ACTOR.set(arg.like_fetch_actor);
     OWNER.set(arg.owner);
@@ -278,6 +279,7 @@ fn get_all_post() -> Vec<Post> {
 
 #[ic_cdk::update(guard = "is_owner")]
 async fn create_post(content: String, photo_url: Vec<String>) -> String {
+    // get available bucket
     let mut bucket_id = get_bucket();
     if let None = bucket_id {
         check_available_bucket().await;
@@ -286,7 +288,6 @@ async fn create_post(content: String, photo_url: Vec<String>) -> String {
     };
 
     // 存储post
-
     let post = POST_DATABASE.with(|database| {
         database.borrow_mut().create_post(
             ic_cdk::api::caller(),
@@ -306,26 +307,43 @@ async fn create_post(content: String, photo_url: Vec<String>) -> String {
         "store_feed", 
         (post.clone(), )
     ).await.unwrap().0;
-    
-    // assert!(call_bucket_result);
+    assert!(call_bucket_result);
 
     // 通知 PostFetch 
+      // 查询用户的粉丝
+    let followers = ic_cdk::call::<(Principal, ), (Vec<Principal>, )>(
+        USER_ACTOR.with(|user| user.borrow().clone()), 
+        "get_followers_list", 
+        (ic_cdk::caller(), )
+    ).await.unwrap().0;
+
+      // post_fetch receive
+    if followers.len() > 0 {
+        let norify_result = ic_cdk::call::<(Vec<Principal>, String, ), ()>(
+            POST_FETCH_ACTOR.with(|post_fetch| post_fetch.borrow().clone()), 
+            "receive_notify", 
+            (followers, post.post_id.clone(), )
+        ).await.unwrap();
+    };
+
     post.post_id
 
 }
 
 #[ic_cdk::update]
 async fn create_repost(post_id: String) -> bool {
-    match POST_DATABASE.with(|database| {
+    let create_repost_result = POST_DATABASE.with(|database| {
         database.borrow_mut().create_repost(ic_cdk::caller(), post_id.clone())
-    }) {
+    });
+    
+    match create_repost_result{
         None => false,
         Some((bucket, new_repost)) => {
             // 通知 bucket 更新转发信息
             let call_bucket_result = ic_cdk::call::<(String, NewRepost, ), (bool, )>(
                 bucket, 
                 "update_post_repost", 
-                (post_id, new_repost, )
+                (post_id.clone(), new_repost, )
             ).await.unwrap().0;
             assert!(call_bucket_result);
 
@@ -335,8 +353,26 @@ async fn create_repost(post_id: String) -> bool {
                 "get_followers_list", 
                 (ic_cdk::api::caller(), )
             ).await.unwrap().0;
+            // 从转发者的粉丝中剔除发帖者本身
+            let mut true_notify_followers: Vec<Principal> = Vec::new();
+            let post_creator = POST_DATABASE.with(|database| {
+                let post = database.borrow().get_post(&post_id).unwrap();
+                post.user.clone()
+            });
+            for user in repost_user_followers {
+                if user == post_creator {
+                    continue;
+                };
+                true_notify_followers.push(user);
+            };
 
             // 通知 PostFetch
+            let notify_result = ic_cdk::call::<(Vec<Principal>, String, ), ()>(
+                POST_FETCH_ACTOR.with(|post_fetch| post_fetch.borrow().clone()), 
+                "receive_notify", 
+                (true_notify_followers, post_id.clone(), )
+            ).await.unwrap();
+
             true
         }
     }
@@ -382,6 +418,8 @@ async fn create_like(post_id: String) -> bool {
                 (post_id, new_like, )
             ).await.unwrap().0;
             assert!(call_bucket_result);
+
+            // 通知 LikeFetch
             true
         }
     }

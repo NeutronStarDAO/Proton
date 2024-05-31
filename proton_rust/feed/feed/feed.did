@@ -19,6 +19,7 @@ type DefiniteCanisterSettings = record {
   compute_allocation : nat;
 };
 type FeedInitArg = record {
+  post_fetch_actor : principal;
   owner : principal;
   like_fetch_actor : principal;
   root_bucket : principal;

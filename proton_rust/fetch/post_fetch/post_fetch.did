@@ -17,13 +17,14 @@ type DefiniteCanisterSettings = record {
   memory_allocation : nat;
   compute_allocation : nat;
 };
+type InitArg = record { root_feed : principal };
 type QueryStats = record {
   response_payload_bytes_total : nat;
   num_instructions_total : nat;
   num_calls_total : nat;
   request_payload_bytes_total : nat;
 };
-service : () -> {
+service : (InitArg) -> {
   get_notify_map_entries : () -> (vec record { principal; vec text }) query;
   receive_notify : (vec principal, text) -> ();
   status : () -> (CanisterStatusResponse);

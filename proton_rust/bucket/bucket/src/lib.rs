@@ -4,9 +4,20 @@ use std::cell::RefCell;
 use ic_cdk::api::management_canister::main::{CanisterStatusResponse, CanisterIdRecord};
 use types::{Post, NewRepost, NewComment, NewLike};
 
-
 thread_local! {
     static FEED_MAP: RefCell<HashMap<String, Post>> = RefCell::new(HashMap::new());
+
+    static COMMENT_FETCH_ACTOR: RefCell<Principal> = RefCell::new(Principal::anonymous());
+    static LIKE_FETCH_ACTOR: RefCell<Principal> = RefCell::new(Principal::anonymous());
+}
+
+#[ic_cdk::init]
+fn init(
+    comment_fetch: Principal,
+    like_fetch: Principal
+) {
+    COMMENT_FETCH_ACTOR.set(comment_fetch);
+    LIKE_FETCH_ACTOR.set(like_fetch)
 }
 
 #[ic_cdk::update]
@@ -29,22 +40,32 @@ fn update_post_repost(post_id: String, new_repost: NewRepost) -> bool {
 }
 
 #[ic_cdk::update]
-fn update_post_comment(post_id: String, new_comment: NewComment) -> bool {
+async fn update_post_comment(post_id: String, new_comment: NewComment) -> bool {
     match _update_post_comment(post_id, new_comment) {
         None => false,
         Some(new_post) => {
             // 通知 commentFetch
+            let call_comment_fetch_result = ic_cdk::call::<(Post, ), ()>(
+                COMMENT_FETCH_ACTOR.with(|comment_fetch| comment_fetch.borrow().clone()), 
+                "receive_notify", 
+                (new_post, )
+            ).await.unwrap();
             true
         }
     }
 }
 
 #[ic_cdk::update]
-fn update_post_like(post_id: String, new_like: NewLike) -> bool {
+async fn update_post_like(post_id: String, new_like: NewLike) -> bool {
     match _update_post_like(post_id, new_like) {
         None => false,
         Some(new_post) => {
             // 通知 likeFetch
+            let call_like_fetch_result = ic_cdk::call::<(Post, ), ()>(
+                LIKE_FETCH_ACTOR.with(|like_fetch| like_fetch.borrow().clone()), 
+                "receive_notify", 
+                (new_post, )
+            ).await.unwrap();
             true
         }
     }

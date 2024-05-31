@@ -1,4 +1,4 @@
-use candid::{Principal, CandidType, Deserialize};
+use candid::{CandidType, Deserialize, Encode, Principal};
 use std::borrow::Borrow;
 use std::collections::HashMap;
 use std::cell::{RefCell, Cell};
@@ -15,8 +15,21 @@ thread_local! {
     static BUCKET_MAP: RefCell<HashMap<u64, Principal>> = RefCell::new(HashMap::new());
     static AVAILABLE_BUCKET_MAP: RefCell<HashMap<u64, Principal>> = RefCell::new(HashMap::new());
     static UNAVAILABLE_BUCKET_MAP: RefCell<HashMap<u64, Principal>> = RefCell::new(HashMap::new());
+
     static BUCKET_WASM: RefCell<Vec<u8>> = RefCell::new(Vec::new());
     static BUCKET_WASM_BUFFER: RefCell<Vec<u8>> = RefCell::new(Vec::new());
+
+    static COMMENT_FETCH_ACTOR: RefCell<Principal> = RefCell::new(Principal::anonymous());
+    static LIKE_FETCH_ACTOR: RefCell<Principal> = RefCell::new(Principal::anonymous());
+}
+
+#[ic_cdk::update]
+fn init_fetch_actor(
+    comment_fetch: Principal,
+    like_fetch: Principal
+) {
+    COMMENT_FETCH_ACTOR.set(comment_fetch);
+    LIKE_FETCH_ACTOR.set(like_fetch)
 }
 
 #[ic_cdk::update]
@@ -41,7 +54,10 @@ async fn init() {
             mode: CanisterInstallMode::Install,
             canister_id: canister_id,
             wasm_module: BUCKET_WASM.with(|wasm| wasm.borrow().clone()),
-            arg: vec![]
+            arg: Encode!(
+                &COMMENT_FETCH_ACTOR.with(|comment_fetch| comment_fetch.borrow().clone()),
+                &LIKE_FETCH_ACTOR.with(|like_fetch| like_fetch.borrow().clone())
+            ).unwrap()
         }).await.unwrap();
 
         BUCKET_MAP.with(|map| {

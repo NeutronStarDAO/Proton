@@ -37,7 +37,7 @@ type QueryStats = record {
   num_calls_total : nat;
   request_payload_bytes_total : nat;
 };
-service : {
+service : (principal, principal) -> {
   batch_store_feed : (vec Post) -> ();
   get_latest_feed : (nat) -> (vec Post) query;
   get_post : (text) -> (opt Post) query;

@@ -122,6 +122,18 @@ pub async fn test_repost() {
     assert!(repost_result);
 }
 
+pub async fn test_post_fetch() {
+
+}
+
+pub async fn test_comment_fetch() {
+
+}
+
+pub async fn test_like_fetch() {
+
+}
+
 pub async fn test() {
     println!("test_upload_photo : \n");
     test_upload_photo().await;

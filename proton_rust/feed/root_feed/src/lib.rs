@@ -10,8 +10,6 @@ use types::FeedInitArg;
 pub struct InitArg {
     pub root_bucket: Principal,
     pub user_actor: Principal,
-    pub comment_fetch_actor: Principal,
-    pub like_fetch_actor: Principal,
 }
 
 const T_CYCLES: u128 = 1_000_000_000_000;
@@ -22,6 +20,7 @@ thread_local! {
     static FEED_WASM_BUFFER: RefCell<Vec<u8>> = RefCell::new(Vec::new());
     static ROOT_BUCKET: RefCell<Principal> = RefCell::new(Principal::anonymous());
     static USER_ACTOR: RefCell<Principal> = RefCell::new(Principal::anonymous());
+    static POST_FETCH_ACTOR: RefCell<Principal> = RefCell::new(Principal::anonymous());
     static COMMMENT_FETCH_ACTOR: RefCell<Principal> = RefCell::new(Principal::anonymous());
     static LIKE_FETCH_ACTOR: RefCell<Principal> = RefCell::new(Principal::anonymous());
 }
@@ -30,8 +29,17 @@ thread_local! {
 fn init_function(arg: InitArg) {
     ROOT_BUCKET.set(arg.root_bucket);
     USER_ACTOR.set(arg.user_actor);
-    COMMMENT_FETCH_ACTOR.set(arg.comment_fetch_actor);
-    LIKE_FETCH_ACTOR.set(arg.like_fetch_actor);
+}
+
+#[ic_cdk::update]
+fn init_fetch_actor(
+    post_fetch: Principal,
+    comment_fetch: Principal,
+    like_fetch: Principal
+) {
+    POST_FETCH_ACTOR.set(post_fetch);
+    COMMMENT_FETCH_ACTOR.set(comment_fetch);
+    LIKE_FETCH_ACTOR.set(like_fetch);
 }
 
 #[ic_cdk::update]
@@ -57,6 +65,7 @@ async fn create_feed_canister() -> Option<Principal> {
     let feed_init_arg = FeedInitArg {
         root_bucket: ROOT_BUCKET.with(|root_bucket| root_bucket.borrow().clone()),
         user_actor: USER_ACTOR.with(|user_actor| user_actor.borrow().clone()),
+        post_fetch_actor: POST_FETCH_ACTOR.with(|post_fetch| post_fetch.borrow().clone()),
         comment_fetch_actor: COMMMENT_FETCH_ACTOR.with(|comment_fetch_actor| comment_fetch_actor.borrow().clone()),
         like_fetch_actor: LIKE_FETCH_ACTOR.with(|like_fetch_actor| like_fetch_actor.borrow().clone()),
         owner: ic_cdk::api::caller()

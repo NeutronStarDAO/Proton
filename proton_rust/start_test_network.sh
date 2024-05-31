@@ -1,35 +1,48 @@
 ./regenerate_candid.sh
 
-dfx deploy root_bucket
-root_bucket=$(dfx canister id root_bucket)
-
 dfx deploy user
 user=$(dfx canister id user)
 
-dfx deploy root_fetch --argument "(record { user_actor = principal \"$user\"})"
+dfx deploy root_bucket 
+root_bucket=$(dfx canister id root_bucket)
+
+dfx deploy root_feed --argument "(
+    record {
+      root_bucket = principal \"$root_bucket\";
+      user_actor = principal \"$user\";
+    },
+)"
+root_feed=$(dfx canister id root_feed)
+
+dfx deploy root_fetch --argument "(
+  record {
+    root_feed = principal \"$root_feed\";
+    user_actor = principal \"$user\"
+  }
+)"
 root_fetch=$(dfx canister id root_fetch)
 
-dfx deploy comment_fetch --argument "(record { user_actor = principal \"$user\"})"
+dfx deploy post_fetch --argument "(record {root_feed = principal \"$root_feed\"})";
+post_fetch=$(dfx canister id post_fetch)
+
+dfx deploy comment_fetch --argument "(
+  record {
+    root_feed = principal \"$root_feed\";
+    user_actor = principal \"$user\"
+  }
+)"
 comment_fetch=$(dfx canister id comment_fetch)
 
-dfx deploy like_fetch --argument "(record { user_actor = principal \"$user\"})"
+dfx deploy like_fetch --argument "(
+  record {
+    root_feed = principal \"$root_feed\";
+    user_actor = principal \"$user\"
+  }
+)"
 like_fetch=$(dfx canister id like_fetch)
-
-dfx deploy post_fetch
-post_fetch=$(dfx canister id post_fetch)
 
 dfx deploy photo_storage
 photo_storage=$(dfx canister id photo_storage)
-
-dfx deploy root_feed --argument "( 
-    record {
-    like_fetch_actor = principal \"$like_fetch\";
-    root_bucket = principal \"$root_bucket\";
-    user_actor = principal \"$user\";
-    comment_fetch_actor = principal \"$comment_fetch\";
-  },
-)"
-root_feed=$(dfx canister id root_feed)
 
 echo "增发 cycles\n"
 wallet=$(dfx identity get-wallet)

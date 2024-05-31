@@ -33,6 +33,7 @@ service : {
   get_bucket_index : () -> (nat64) query;
   get_bucket_wasm : () -> (blob) query;
   init : () -> ();
+  init_fetch_actor : (principal, principal) -> ();
   re_create_bucket : () -> ();
   status : () -> (CanisterStatusResponse);
   update_bucket_wasm : (blob, nat64) -> (bool);

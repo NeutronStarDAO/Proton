@@ -6,6 +6,7 @@ mod feed;
 mod photo_storage;
 mod user;
 mod test;
+mod root_fetch;
 use candid::{Principal, Encode, Decode};
 use lazy_static::lazy_static;
 use dotenv::dotenv;
@@ -20,17 +21,20 @@ pub const USERD_PEM: &str = "test/identity/4.pem";
 pub const USERE_PEM: &str = "test/identity/5.pem";
 
 lazy_static! {
-    // pub static ref ROOT_BUCKET_CANISTER: Principal = Principal::from_text(env::var("CANISTER_ID_ROOT_BUCKET").unwrap()).unwrap();
-    // pub static ref ROOT_FEED_CANISTER: Principal = Principal::from_text(env::var("CANISTER_ID_ROOT_FEED").unwrap()).unwrap();
-    // pub static ref ROOT_FETCH_CANISTER: Principal = Principal::from_text(env::var("CANISTER_ID_ROOT_FETCH").unwrap()).unwrap();
-    // pub static ref USER_CANISTER: Principal = Principal::from_text(env::var("CANISTER_ID_USER").unwrap()).unwrap(); 
-    // pub static ref PHOTO_STORAGE_CANISTER: Principal = Principal::from_text(env::var("CANISTER_ID_PHOTO_STORAGE").unwrap()).unwrap();
+    pub static ref ROOT_BUCKET_CANISTER: Principal = Principal::from_text(env::var("CANISTER_ID_ROOT_BUCKET").unwrap()).unwrap();
+    pub static ref ROOT_FEED_CANISTER: Principal = Principal::from_text(env::var("CANISTER_ID_ROOT_FEED").unwrap()).unwrap();
+    pub static ref ROOT_FETCH_CANISTER: Principal = Principal::from_text(env::var("CANISTER_ID_ROOT_FETCH").unwrap()).unwrap();
+    pub static ref POST_FETCH_CANISTER: Principal = Principal::from_text(env::var("CANISTER_ID_POST_FETCH").unwrap()).unwrap();
+    pub static ref LIKE_FETCH_CANISTER: Principal = Principal::from_text(env::var("CANISTER_ID_LIKE_FETCH").unwrap()).unwrap();
+    pub static ref COMMENT_FETCH_CANISTER: Principal = Principal::from_text(env::var("CANISTER_ID_COMMENT_FETCH").unwrap()).unwrap();
+    pub static ref USER_CANISTER: Principal = Principal::from_text(env::var("CANISTER_ID_USER").unwrap()).unwrap(); 
+    pub static ref PHOTO_STORAGE_CANISTER: Principal = Principal::from_text(env::var("CANISTER_ID_PHOTO_STORAGE").unwrap()).unwrap();
 
-    pub static ref ROOT_BUCKET_CANISTER: Principal = Principal::from_text("bkyz2-fmaaa-aaaaa-qaaaq-cai").unwrap();
-    pub static ref ROOT_FEED_CANISTER: Principal = Principal::from_text("asrmz-lmaaa-aaaaa-qaaeq-cai").unwrap();
-    pub static ref ROOT_FETCH_CANISTER: Principal = Principal::from_text("br5f7-7uaaa-aaaaa-qaaca-cai").unwrap();
-    pub static ref USER_CANISTER: Principal = Principal::from_text("be2us-64aaa-aaaaa-qaabq-cai").unwrap(); 
-    pub static ref PHOTO_STORAGE_CANISTER: Principal = Principal::from_text("avqkn-guaaa-aaaaa-qaaea-cai").unwrap();
+    // pub static ref ROOT_BUCKET_CANISTER: Principal = Principal::from_text("bkyz2-fmaaa-aaaaa-qaaaq-cai").unwrap();
+    // pub static ref ROOT_FEED_CANISTER: Principal = Principal::from_text("asrmz-lmaaa-aaaaa-qaaeq-cai").unwrap();
+    // pub static ref ROOT_FETCH_CANISTER: Principal = Principal::from_text("br5f7-7uaaa-aaaaa-qaaca-cai").unwrap();
+    // pub static ref USER_CANISTER: Principal = Principal::from_text("be2us-64aaa-aaaaa-qaabq-cai").unwrap(); 
+    // pub static ref PHOTO_STORAGE_CANISTER: Principal = Principal::from_text("avqkn-guaaa-aaaaa-qaaea-cai").unwrap();
 }
 
 // pub async fn call_canister() {

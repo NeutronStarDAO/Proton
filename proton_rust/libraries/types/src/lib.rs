@@ -39,6 +39,7 @@ pub struct Post {
 pub struct FeedInitArg {
     pub root_bucket: Principal,
     pub user_actor: Principal,
+    pub post_fetch_actor: Principal,
     pub comment_fetch_actor: Principal,
     pub like_fetch_actor: Principal,
     pub owner: Principal
@@ -47,7 +48,7 @@ pub struct FeedInitArg {
 #[derive(CandidType, Deserialize, Debug)]
 pub struct FetchInitArg {
     pub user_actor: Principal,
-    // pub root_feed: Principal
+    pub root_feed: Principal
 }
 
 pub type NewRepost = Vec<Repost>;

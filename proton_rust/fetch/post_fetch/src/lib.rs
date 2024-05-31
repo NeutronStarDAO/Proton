@@ -19,20 +19,9 @@ pub struct InitArg {
 }
 
 #[ic_cdk::init]
-// fn init(arg: InitArg) {
-//     // Init
-//     ROOT_FEED_ACTOR.set(arg.root_feed);
-
-//     // start timer
-//     let timer_id = ic_cdk_timers::set_timer_interval(
-//         Duration::from_secs(30), 
-//         || ic_cdk::spawn(notify())
-//     );
-//     TIMER_ID.set(timer_id);
-// }
-fn init() {
+fn init(arg: InitArg) {
     // Init
-    // ROOT_FEED_ACTOR.set(arg.root_feed);
+    ROOT_FEED_ACTOR.set(arg.root_feed);
 
     // start timer
     let timer_id = ic_cdk_timers::set_timer_interval(
@@ -41,6 +30,7 @@ fn init() {
     );
     TIMER_ID.set(timer_id);
 }
+
 
 #[ic_cdk::update]
 fn receive_notify(to: Vec<Principal>, post_id: String) {
