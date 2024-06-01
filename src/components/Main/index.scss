@@ -47,12 +47,16 @@
     .img_list {
       display: flex;
       flex-wrap: wrap;
+      justify-content: space-between;
       gap: 1.5rem;
 
       img {
-        height: 20rem;
+        width: 49%;
         border-radius: 2rem;
       }
+    }
+    .img_list img:only-child{
+      width: 100%;
     }
   }
 

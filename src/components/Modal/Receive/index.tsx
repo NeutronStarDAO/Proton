@@ -3,7 +3,7 @@ import "./index.scss"
 import React from "react"
 import {Modal} from "../index";
 import Icon from "../../../Icons/Icon";
-import {Done} from "../Login";
+import {Done} from "../Profile";
 
 export const Receive = ({open, setOpen}: { open: boolean, setOpen: Function }) => {
   return <Modal setOpen={setOpen} open={open} component={<div className={"receive_modal"}>

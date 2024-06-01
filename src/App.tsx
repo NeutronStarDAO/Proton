@@ -9,7 +9,6 @@ import {Routes, Route} from "react-router-dom";
 import {Profile} from "./components/Profile";
 import {Comment} from "./components/Comment";
 import {Modal} from "./components/Modal";
-import {Login} from "./components/Modal/Login";
 import {Receive} from "./components/Modal/Receive";
 import {PostModal} from "./components/Modal/Post";
 

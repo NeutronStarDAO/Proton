@@ -47,7 +47,7 @@ export default class Feed {
     const actor = await this.getNoIdentityActor()
     try {
       const res = await actor.get_all_post() as Post[]
-      // updateAllData({allPost: res})
+      updateAllData({allPost: res})
       return res
     } catch (e) {
       console.log("getAllPost", e)
@@ -109,7 +109,7 @@ export default class Feed {
     const actor = await this.getActor()
     try {
       const res = await actor.get_latest_feed(BigInt(n)) as Post[]
-      // updateAllData({allFeed: res})
+      updateAllData({allFeed: res})
       return res
     } catch (e) {
       console.log("getLatestFeed error", e)

@@ -3,7 +3,7 @@ import "./index.scss"
 import React from "react"
 import {Modal} from "../index";
 
-export const Login = ({open, setOpen}: { open: boolean, setOpen: Function }) => {
+export const ProfileModal = ({open, setOpen}: { open: boolean, setOpen: Function }) => {
 
   return <Modal setOpen={setOpen} open={open} component={<div className={"login_modal"}>
     <div className={"title"}>Welcome to Proton!</div>

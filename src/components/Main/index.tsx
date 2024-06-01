@@ -9,12 +9,15 @@ import {useAuth} from "../../utils/useAuth";
 import Feed from "../../actors/feed";
 import {rootPostApi} from "../../actors/root_bucket";
 import Bucket from "../../actors/bucket";
+import {useAllDataStore} from "../../redux";
 
 export const Main = () => {
   const location = useLocation()
   const navigate = useNavigate()
   const [data, setData] = useState<postType[]>()
+  // const [exploreData, setExploreData] = useState<postType[]>()
   const {userFeedCai, isAuth} = useAuth()
+  const {allPost, allFeed} = useAllDataStore()
 
   const change = () => {
     if (isAuth === false)
@@ -25,20 +28,23 @@ export const Main = () => {
     if (location.pathname === "/explore") return "Explore"
     return "Home"
   }, [location])
+
   useEffect(() => {
     !isAuth && change()
   }, [isAuth, Title])
+
+
   const getHomeData = async () => {
     if (!userFeedCai) return 0
     const feedApi = new Feed(userFeedCai)
     const res = await Promise.all([feedApi.getAllPost(), feedApi.getLatestFeed(20)])
-    console.log((res))
     setData([...res[0], ...res[1]])
   }
 
   const getExploreData = async () => {
-    const bucket = await rootPostApi.getAvailableBucket()
-    if (!bucket[0]) return setData([])
+    const bucket = await rootPostApi.getAllAvailableBucket()
+    if (bucket.length === 0) return setData([])
+    console.log(bucket)
     const bucketApi = new Bucket(bucket[0])
     const res = await bucketApi.getLatestFeed(30)
     console.log(res)
@@ -53,6 +59,16 @@ export const Main = () => {
       getExploreData()
     }
   }, [Title, userFeedCai])
+
+  // if (Title === "Explore") {
+  //   return <div className={"main_wrap scroll_main"}>
+  //     <div className={"title"}>{Title}</div>
+  //     {exploreData ? exploreData.length === 0 ? <Empty style={{width: "100%"}}/>
+  //       : exploreData.map((v, k) => {
+  //         return <Post post={v}/>
+  //       }) : <Spin spinning={true} style={{width: "100%"}}/>}
+  //   </div>
+  // }
 
   return <div className={"main_wrap scroll_main"}>
     <div className={"title"}>{Title}</div>
