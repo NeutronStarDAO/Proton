@@ -18,6 +18,15 @@ class rootPost {
       throw e
     }
   }
+
+  async getAllAvailableBucket() {
+    const actor = await rootPost.getActor()
+    try {
+      return await actor.get_all_available_bucket() as Principal[]
+    } catch (e) {
+      throw e
+    }
+  }
 }
 
 export const rootPostApi = new rootPost()
