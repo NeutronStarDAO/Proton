@@ -11,9 +11,9 @@ export const Profile = () => {
       <div className={"background"}></div>
       <div className={"profile_body"}>
         <UserPanel/>
-        <Post/>
-        <Post/>
-        <Post/>
+        {/*<Post/>*/}
+        {/*<Post/>*/}
+        {/*<Post/>*/}
       </div>
     </div>
 

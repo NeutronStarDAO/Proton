@@ -37,7 +37,7 @@ export class IIForIdentity {
           this.isAuthClientReady = await this.authClient?.isAuthenticated();
           resolve(this.identity);
         },
-        identityProvider:"http://a3shf-5eaaa-aaaaa-qaafa-cai.43.128.242.149:4943/",
+        identityProvider:"http://a3shf-5eaaa-aaaaa-qaafa-cai.localhost:4943",
         onError: (err) => {
           reject(err);
         },

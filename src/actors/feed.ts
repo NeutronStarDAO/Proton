@@ -21,12 +21,12 @@ export default class Feed {
     return await getActor.noIdentityActor(idlFactory, this.canisterId.toString());
   }
 
-  async createPost(title: string, content: string) {
+  async createPost(content: string, p_urls: string[]) {
     const actor = await this.getActor()
     try {
       const checkAvailableBucket = await this.checkAvailableBucket()
       if (!checkAvailableBucket) throw new Error("have no available bucket")
-      return await actor.createPost(title ? title : "", content) as string
+      return await actor.create_post(content, p_urls) as string
     } catch (e) {
       console.log("post error", e)
       throw e
@@ -36,7 +36,7 @@ export default class Feed {
   async checkAvailableBucket(): Promise<boolean> {
     const actor = await this.getActor()
     try {
-      return await actor.checkAvailableBucket() as boolean
+      return await actor.check_available_bucket() as boolean
     } catch (e) {
       console.log("checkAvailableBucket", e)
       throw e
@@ -46,8 +46,9 @@ export default class Feed {
   async getAllPost() {
     const actor = await this.getNoIdentityActor()
     try {
-      const res = await actor.getAllPost() as Post[]
-      updateAllData({allPost: res})
+      const res = await actor.get_all_post() as Post[]
+      // updateAllData({allPost: res})
+      return res
     } catch (e) {
       console.log("getAllPost", e)
       throw e
@@ -97,7 +98,7 @@ export default class Feed {
   async getPost(postId: string) {
     const actor = await this.getActor()
     try {
-      return await actor.getPost(postId) as [] | [Post]
+      return await actor.get_post(postId) as [] | [Post]
     } catch (e) {
       console.log("getPost", e)
       throw e
@@ -107,8 +108,9 @@ export default class Feed {
   async getLatestFeed(n: number) {
     const actor = await this.getActor()
     try {
-      const res = await actor.getLatestFeed(BigInt(n)) as Post[]
-      updateAllData({allFeed: res})
+      const res = await actor.get_latest_feed(BigInt(n)) as Post[]
+      // updateAllData({allFeed: res})
+      return res
     } catch (e) {
       console.log("getLatestFeed error", e)
       throw e

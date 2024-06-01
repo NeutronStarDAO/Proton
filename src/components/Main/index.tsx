@@ -1,23 +1,70 @@
 import "./index.scss"
 
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import Icon from "../../Icons/Icon";
-import {useLocation} from "react-router-dom";
+import {useLocation, useNavigate} from "react-router-dom";
+import {Post as postType} from "../../declarations/feed/feed";
+import {Spin, Empty} from "antd";
+import {useAuth} from "../../utils/useAuth";
+import Feed from "../../actors/feed";
+import {rootPostApi} from "../../actors/root_bucket";
+import Bucket from "../../actors/bucket";
 
 export const Main = () => {
   const location = useLocation()
+  const navigate = useNavigate()
+  const [data, setData] = useState<postType[]>()
+  const {userFeedCai, isAuth} = useAuth()
+
+  const change = () => {
+    if (isAuth === false)
+      navigate("/explore")
+  }
+
   const Title = React.useMemo(() => {
     if (location.pathname === "/explore") return "Explore"
     return "Home"
   }, [location])
+  useEffect(() => {
+    !isAuth && change()
+  }, [isAuth, Title])
+  const getHomeData = async () => {
+    if (!userFeedCai) return 0
+    const feedApi = new Feed(userFeedCai)
+    const res = await Promise.all([feedApi.getAllPost(), feedApi.getLatestFeed(20)])
+    console.log((res))
+    setData([...res[0], ...res[1]])
+  }
+
+  const getExploreData = async () => {
+    const bucket = await rootPostApi.getAvailableBucket()
+    if (!bucket[0]) return setData([])
+    const bucketApi = new Bucket(bucket[0])
+    const res = await bucketApi.getLatestFeed(30)
+    console.log(res)
+    setData(res)
+  }
+
+  useEffect(() => {
+    setData(undefined)
+    if (Title == "Home") {
+      getHomeData()
+    } else {
+      getExploreData()
+    }
+  }, [Title, userFeedCai])
+
   return <div className={"main_wrap scroll_main"}>
     <div className={"title"}>{Title}</div>
-    <Post/>
-    <Post/>
+    {data ? data.length === 0 ? <Empty style={{width: "100%"}}/>
+      : data.map((v, k) => {
+        return <Post post={v}/>
+      }) : <Spin spinning={true} style={{width: "100%"}}/>}
   </div>
 }
 
-export const Post = () => {
+export const Post = ({post}: { post: postType }) => {
+
   return <div className={"post_main"}>
     <div className={"author"}>
       <img className={"avatar"} src="img_3.png" alt=""/>
@@ -27,28 +74,25 @@ export const Post = () => {
       </div>
     </div>
     <div className={"tweet"}>
-      We can build a protocol together to enable data exchange beyond individual app platforms (Web2 apps), allowing any
-      user to interact with others through their own canisters. Everyone maintains sovereignty over their own data and
-      can freely engage with others. I believe that in the Web2 era, killer apps were king. But in Web3, protocols reign
-      supreme.
+      {post.content}
       <div className={"img_list"}>
-        <img src="img_4.png" alt=""/>
-        <img src="img_4.png" alt=""/>
-        <img src="img_4.png" alt=""/>
+        {post.photo_url.map((v, k) => {
+          return <img key={k} src={v} alt=""/>
+        })}
       </div>
     </div>
     <div className={"post_bottom"}>
       <span>
       <Icon name={"like"}/>
-        119
+        {post.like.length}
       </span>
       <span>
       <Icon name={"comment"}/>
-        15
+        {post.comment.length}
       </span>
       <span>
       <Icon name={"repost"}/>
-        36
+        {post.repost.length}
       </span>
     </div>
   </div>

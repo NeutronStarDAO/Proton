@@ -1,7 +1,7 @@
 import {getActor} from "../utils/Actor";
 import {idlFactory} from "../declarations/photo_storage/photo_storage.did.js";
 
-const photo_storage_cid = ""
+const photo_storage_cid = "asrmz-lmaaa-aaaaa-qaaeq-cai"
 
 class storage {
 
@@ -29,11 +29,22 @@ class storage {
   }
 
   upload_photo(files: File[]) {
-    return new Promise(async (resolve, reject) => {
+    return new Promise<string[]>(async (resolve, reject) => {
       try {
+        const actor = await storage.getActor()
+        const allPromises: Promise<any>[] = []
         for (let i = 0; i < files.length; i++) {
-          const data = await storage.FileRead(files[i])
+          const data = (await storage.FileRead(files[i]))
+          allPromises.push(actor.upload_photo(data))
         }
+
+        const res = (await Promise.all(allPromises)) as bigint[]
+        console.log(res)
+        const urls = res.map((v) => {
+          return `http://${photo_storage_cid}.localhost:4943/${Number(v)}`
+        })
+        console.log(urls)
+        return resolve(urls)
       } catch (e) {
         reject(e)
       }

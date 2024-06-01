@@ -6,24 +6,42 @@ import Picker from '@emoji-mart/react'
 import Icon from "../../../Icons/Icon";
 import {FileRejection, useDropzone} from "react-dropzone";
 import {aApi} from "../../../actors/photo_storage";
+import {useAuth} from "../../../utils/useAuth";
+import Feed from "../../../actors/feed";
 
 
 export const PostModal = ({open, setOpen}: { open: boolean, setOpen: Function }) => {
   const [isVisible, setIsVisible] = useState(false)
   const [text, setText] = useState("")
+  const [files, setFiles] = useState<File[]>([])
+  const {userFeedCai} = useAuth()
 
-  return <Modal open={open} component={<div className={"post_modal"}>
+  const send = async () => {
+    if (!userFeedCai) return 0
+    console.log(text)
+    console.log(files)
+    const urls = await aApi.upload_photo(files)
+    const feedApi = new Feed(userFeedCai)
+    const res = await feedApi.createPost(text, urls)
+    console.log("id", res)
+    setOpen(false)
+  }
+
+  return <Modal setOpen={setOpen} open={open} component={<div className={"post_modal"}>
     <div className={"post_head"}>
-      <img src="img_5.png" alt=""/>
-      <div style={{display: "flex", alignItems: "start", flexDirection: "column", justifyContent: "center"}}>
-        <div className={"name"}>Nash</div>
-        <div className={"id"}>@nash.icp</div>
+      <div style={{display: "flex", alignItems: "center"}}>
+        <img src="img_5.png" alt=""/>
+        <div style={{display: "flex", alignItems: "start", flexDirection: "column", justifyContent: "center"}}>
+          <div className={"name"}>Nash</div>
+          <div className={"id"}>@nash.icp</div>
+        </div>
       </div>
+      <div style={{cursor: "pointer"}} onClick={() => setOpen(false)}>❌</div>
     </div>
     <textarea value={text} onChange={(e) => setText(e.target.value)} placeholder={"What’s happening?"} name="" id=""
               cols={30} rows={10}/>
     <div className={"post_foot"}>
-      <SelectPhoto/>
+      <SelectPhoto setFiles={setFiles}/>
       <div className={"smile"} onClick={() => setIsVisible(!isVisible)}>
         <Icon name={"smile"}/>
       </div>
@@ -35,22 +53,21 @@ export const PostModal = ({open, setOpen}: { open: boolean, setOpen: Function })
     </div>
 
     <div className={"button_wrap"}>
-      <div className={"button"}>Send</div>
+      <div className={"button"} onClick={send}>Send</div>
     </div>
 
   </div>}/>
 }
 
 const maxSize = 2 * 1024 * 1024//2MB
-const SelectPhoto = () => {
-
+const SelectPhoto = ({setFiles}: { setFiles: Function }) => {
 
   const onDrop = React.useCallback((files: File[]) => {
     const new_files: File[] = []
     files.forEach((v, k) => {
       if (v.size < maxSize) new_files.push(v)
     })
-    aApi.upload_photo(new_files)
+    setFiles(new_files)
   }, [])
 
   const {getRootProps, getInputProps} = useDropzone({

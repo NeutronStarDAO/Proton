@@ -18,7 +18,7 @@ function App() {
 
   return (
     <div className={"App"}>
-      <PostModal open={true} setOpen={()=>{}}/>
+      {/*<PostModal open={true} setOpen={()=>{}}/>*/}
       <Side/>
       {/*<Receive open={open} setOpen={setOpen}/>*/}
       <Routes>

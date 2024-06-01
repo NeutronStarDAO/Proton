@@ -6,7 +6,7 @@ import Icon from "../../../Icons/Icon";
 import {Done} from "../Login";
 
 export const Receive = ({open, setOpen}: { open: boolean, setOpen: Function }) => {
-  return <Modal open={open} component={<div className={"receive_modal"}>
+  return <Modal setOpen={setOpen} open={open} component={<div className={"receive_modal"}>
     <div className={"title"}>
       <Icon name={"right"}/>
       Receive

@@ -9,9 +9,9 @@ export const Comment = () => {
       <div className={"title"}>Comment</div>
       <div className={"comment_list"}>
         <div style={{width: "100%", height: "1px", background: "#679BF8"}}/>
-        <Post/>
-        <Post/>
-        <Post/>
+        {/*<Post/>*/}
+        {/*<Post/>*/}
+        {/*<Post/>*/}
       </div>
     </div>
   </div>

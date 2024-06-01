@@ -5,7 +5,7 @@ import {Modal} from "../index";
 
 export const Login = ({open, setOpen}: { open: boolean, setOpen: Function }) => {
 
-  return <Modal open={open} component={<div className={"login_modal"}>
+  return <Modal setOpen={setOpen} open={open} component={<div className={"login_modal"}>
     <div className={"title"}>Welcome to Proton!</div>
     <div className={"avatar_wrap"}>
       <div className={"avatar"}>

@@ -2,7 +2,7 @@ import {getActor} from "../utils/Actor";
 import {idlFactory} from "../declarations/root_feed/root_feed.did.js"
 import {Principal} from "@dfinity/principal";
 
-const rootFeedCai = "asrmz-lmaaa-aaaaa-qaaeq-cai"
+const rootFeedCai = "br5f7-7uaaa-aaaaa-qaaca-cai"
 
 class rootFeed {
 
