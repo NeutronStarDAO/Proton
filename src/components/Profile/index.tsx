@@ -8,20 +8,24 @@ import {Profile as profile_type} from "../../declarations/user/user";
 import {useAuth} from "../../utils/useAuth";
 import {userApi} from "../../actors/user";
 import {shortenString} from "../Sider";
+import {useParams} from "react-router-dom";
+import {Principal} from "@dfinity/principal";
 
 export const Profile = () => {
-
-  const {principal} = useAuth()
+  const {id}: { id?: string } = useParams()
   const [profile, setProfile] = useState<profile_type>()
-  // const [posts,setPosts] = useState()
 
   useEffect(() => {
-    if (principal) {
-      userApi.getProfile(principal).then(e => {
+
+  }, [])
+
+  useEffect(() => {
+    if (id) {
+      userApi.getProfile(Principal.from(id)).then(e => {
         setProfile(e)
       })
     }
-  }, [principal])
+  }, [id])
 
   return <div className={"profile_main"}>
     <div className={"title"}>Profile</div>
@@ -48,7 +52,7 @@ const UserPanel = ({profile}: { profile?: profile_type }) => {
   return <div className={"user_panel"}>
     <div className={"avatar_panel"}>
       <div className={"info"}>
-        <img  src={profile ? profile.avatar_url : "img_5.png"} alt=""/>
+        <img src={profile ? profile.avatar_url : "img_5.png"} alt=""/>
         <div style={{display: "flex", alignItems: "start", flexDirection: "column", justifyContent: "center"}}>
           <div className={"name"}>{profile?.name}</div>
           <div className={"id"}>{shortenString(profile ? profile.id.toString() : "", 16)}</div>

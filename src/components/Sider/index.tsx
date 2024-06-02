@@ -70,13 +70,13 @@ export const UserInfo = () => {
         <div className={"id"}>{shortenString(principal ? principal.toString().slice(2) : "", 10)}</div>
       </div>
     </div>
-    <div onClick={() => navigate("/profile")} className={"icon"}>
+    <div onClick={() => navigate(`/profile/${principal?.toString()}`)} className={"icon"}>
       <Icon name={"user"}/>
       Profile
     </div>
   </div>
 }
 
-export const shortenString = (str: string, maxLength: number) => str.length > maxLength ? `${str.slice(0, Math.ceil((maxLength - 3) / 2))}...${str.slice(-Math.floor((maxLength - 3) / 2))}` : str;
+export const shortenString = (str: string, maxLength: number) => str.length > maxLength ? `${str.slice(0, 3)}...${str.slice(-(maxLength-3))}` : str;
 
 

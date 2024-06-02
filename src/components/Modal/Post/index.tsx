@@ -16,15 +16,21 @@ export const PostModal = ({open, setOpen}: { open: boolean, setOpen: Function })
   const [files, setFiles] = useState<File[]>([])
   const {userFeedCai} = useAuth()
 
+  const updateData = async () => {
+    if (!userFeedCai) return 0
+    const feedApi = new Feed(userFeedCai)
+    await Promise.all([feedApi.getAllPost(), feedApi.getLatestFeed(20)])
+  }
+
   const send = async () => {
     if (!userFeedCai) return 0
     console.log(text)
     console.log(files)
     const urls = await aApi.upload_photo(files)
     const feedApi = new Feed(userFeedCai)
-    const res = await feedApi.createPost(text, urls)
-    console.log("id", res)
+    await feedApi.createPost(text, urls)
     setOpen(false)
+    updateData()
   }
 
   return <Modal setOpen={setOpen} open={open} component={<div className={"post_modal"}>

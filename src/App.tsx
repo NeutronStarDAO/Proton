@@ -34,7 +34,7 @@ function App() {
         <Route path="explore" element={<Main/>}/>
         <Route path="wallet" element={<Wallet/>}/>
         <Route path="settings" element={<Settings/>}/>
-        <Route path="profile" element={<Profile/>}/>
+        <Route path="profile/:id" element={<Profile/>}/>
         {/*<Route path="*" element={<ErrorPage/>}/>*/}
       </Routes>
       {/*<Sidebar/>*/}

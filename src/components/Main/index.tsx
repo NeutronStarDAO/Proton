@@ -10,14 +10,21 @@ import Feed from "../../actors/feed";
 import {rootPostApi} from "../../actors/root_bucket";
 import Bucket from "../../actors/bucket";
 import {useAllDataStore} from "../../redux";
+import {userApi} from "../../actors/user";
+import {Profile} from "../../declarations/user/user";
+import {shortenString} from "../Sider";
 
 export const Main = () => {
   const location = useLocation()
   const navigate = useNavigate()
   const [data, setData] = useState<postType[]>()
-  // const [exploreData, setExploreData] = useState<postType[]>()
   const {userFeedCai, isAuth} = useAuth()
   const {allPost, allFeed} = useAllDataStore()
+
+  const HomeData = React.useMemo(() => {
+    if (!allFeed || !allPost) return undefined
+    return [...allFeed, ...allPost]
+  }, [allFeed, allPost])
 
   const change = () => {
     if (isAuth === false)
@@ -37,8 +44,7 @@ export const Main = () => {
   const getHomeData = async () => {
     if (!userFeedCai) return 0
     const feedApi = new Feed(userFeedCai)
-    const res = await Promise.all([feedApi.getAllPost(), feedApi.getLatestFeed(20)])
-    setData([...res[0], ...res[1]])
+    await Promise.all([feedApi.getAllPost(), feedApi.getLatestFeed(20)])
   }
 
   const getExploreData = async () => {
@@ -52,7 +58,6 @@ export const Main = () => {
   }
 
   useEffect(() => {
-    setData(undefined)
     if (Title == "Home") {
       getHomeData()
     } else {
@@ -60,33 +65,47 @@ export const Main = () => {
     }
   }, [Title, userFeedCai])
 
-  // if (Title === "Explore") {
-  //   return <div className={"main_wrap scroll_main"}>
-  //     <div className={"title"}>{Title}</div>
-  //     {exploreData ? exploreData.length === 0 ? <Empty style={{width: "100%"}}/>
-  //       : exploreData.map((v, k) => {
-  //         return <Post post={v}/>
-  //       }) : <Spin spinning={true} style={{width: "100%"}}/>}
-  //   </div>
-  // }
+  if (Title === "Explore") {
+    return <div className={"main_wrap scroll_main"}>
+      <div className={"title"}>{Title}</div>
+      {data ? data.length === 0 ? <Empty style={{width: "100%"}}/>
+        : data.map((v, k) => {
+          return <Post post={v}/>
+        }) : <Spin spinning={true} style={{width: "100%"}}/>}
+    </div>
+  }
 
   return <div className={"main_wrap scroll_main"}>
     <div className={"title"}>{Title}</div>
-    {data ? data.length === 0 ? <Empty style={{width: "100%"}}/>
-      : data.map((v, k) => {
+    {HomeData ? HomeData.length === 0 ? <Empty style={{width: "100%"}}/>
+      : HomeData.map((v, k) => {
         return <Post post={v}/>
       }) : <Spin spinning={true} style={{width: "100%"}}/>}
   </div>
 }
 
 export const Post = ({post}: { post: postType }) => {
+  const [profile, setProfile] = useState<Profile>()
+  const principal = post.user
+
+  const getProfile = async () => {
+    const res = await userApi.getProfile(principal)
+    setProfile(res)
+  }
+  useEffect(() => {
+    getProfile()
+  }, [principal])
 
   return <div className={"post_main"}>
     <div className={"author"}>
-      <img className={"avatar"} src="img_3.png" alt=""/>
+      <img style={{borderRadius: "50%"}} className={"avatar"}
+           src={profile?.avatar_url ? profile.avatar_url : "img_3.png"} alt=""/>
       <div style={{display: "flex", flexDirection: "column", alignItems: "start", justifyContent: "center"}}>
-        <div style={{fontSize: "2rem"}}>Nash</div>
-        <div style={{fontSize: "2rem", color: "rgba(0,0,0,0.5)"}}>@nash_icp • Feb 15, 2024</div>
+        <div style={{fontSize: "2rem"}}>{profile?.name}</div>
+        <div style={{
+          fontSize: "2rem",
+          color: "rgba(0,0,0,0.5)"
+        }}>{profile ? shortenString(profile.id.toString(), 10) : ""}</div>
       </div>
     </div>
     <div className={"tweet"}>
