@@ -59,22 +59,22 @@ export const PostModal = ({open, setOpen}: { open: boolean, setOpen: Function })
   </div>}/>
 }
 
-const maxSize = 2 * 1024 * 1024//2MB
+export const maxSize = 2 * 1024 * 1024//2MB
 const SelectPhoto = ({setFiles}: { setFiles: Function }) => {
 
   const onDrop = React.useCallback((files: File[]) => {
-    const new_files: File[] = []
-    files.forEach((v, k) => {
-      if (v.size < maxSize) new_files.push(v)
-    })
-    setFiles(new_files)
+    // const new_files: File[] = []
+    // files.forEach((v, k) => {
+    //   if (v.size < maxSize) new_files.push(v)
+    // })
+    setFiles(files)
   }, [])
 
   const {getRootProps, getInputProps} = useDropzone({
     onDrop, multiple: true, accept: {
       'image/jpeg': [],
       'image/png': []
-    }
+    }, maxSize
   })
 
   return <div style={{height: "2.9rem"}}>

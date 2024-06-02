@@ -1,25 +1,33 @@
 import React, {useEffect, useState} from 'react';
 import './App.css';
 import {Side} from "./components/Sider";
-import {Sidebar} from "./components/Sidebar";
 import {Main} from "./components/Main";
 import {Wallet} from "./components/Wallet";
 import {Settings} from "./components/Setting";
 import {Routes, Route} from "react-router-dom";
 import {Profile} from "./components/Profile";
 import {Comment} from "./components/Comment";
-import {Modal} from "./components/Modal";
-import {Receive} from "./components/Modal/Receive";
-import {PostModal} from "./components/Modal/Post";
+import {useAuth} from "./utils/useAuth";
+import {userApi} from "./actors/user";
+import {updateProfile} from "./redux";
 
 function App() {
-  const [open, setOpen] = useState(true)
+
+  const {principal} = useAuth()
+
+  useEffect(() => {
+    if (principal) {
+      userApi.getProfile(principal).then(e => {
+        if (e) {
+          updateProfile(e)
+        }
+      })
+    }
+  }, [principal])
 
   return (
     <div className={"App"}>
-      {/*<PostModal open={true} setOpen={()=>{}}/>*/}
       <Side/>
-      {/*<Receive open={open} setOpen={setOpen}/>*/}
       <Routes>
         <Route path="/" element={<Main/>}/>
         <Route path="home" element={<Main/>}/>

@@ -3,7 +3,7 @@ import {getActor} from "../utils/Actor";
 import {Profile} from "../declarations/user/user";
 import {Principal} from "@dfinity/principal";
 
-const userCanisterId = "j6sa4-jyaaa-aaaan-qgjxq-cai"
+const userCanisterId = "bkyz2-fmaaa-aaaaa-qaaaq-cai"
 
 class User {
 
@@ -14,7 +14,7 @@ class User {
   async createProfile(newProfile: Profile) {
     const actor = await User.getActor()
     try {
-      await actor.createProfile(newProfile)
+      await actor.create_profile(newProfile)
       console.log("create")
     } catch (e) {
       console.log("createProfile", e)
@@ -22,10 +22,11 @@ class User {
     }
   }
 
-  async getProfile(who: Principal): Promise<[] | [Profile]> {
+  async getProfile(who: Principal): Promise<Profile | undefined> {
     const actor = await User.getActor()
     try {
-      return await actor.getProfile(who) as [] | [Profile]
+      const res = await actor.get_profile(who) as [Profile]
+      return res[0]
     } catch (e) {
       console.log("getProfile", e)
       throw e

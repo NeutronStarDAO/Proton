@@ -22,6 +22,6 @@ export const Receive = ({open, setOpen}: { open: boolean, setOpen: Function }) =
         0b07bdd4e1d5 ... d450992af
       </div>
     </div>
-    <Done/>
+    {/*<Done/>*/}
   </div>}/>
 }

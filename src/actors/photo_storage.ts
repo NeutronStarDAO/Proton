@@ -30,12 +30,17 @@ class storage {
 
   upload_photo(files: File[]) {
     return new Promise<string[]>(async (resolve, reject) => {
+      if (files.length === 0) return resolve([])
       try {
         const actor = await storage.getActor()
         const allPromises: Promise<any>[] = []
         for (let i = 0; i < files.length; i++) {
-          const data = (await storage.FileRead(files[i]))
-          allPromises.push(actor.upload_photo(data))
+          if (files[i].size === 0) {
+            allPromises.push(new Promise((resolve) => resolve("")))
+          } else {
+            const data = (await storage.FileRead(files[i]))
+            allPromises.push(actor.upload_photo(data))
+          }
         }
 
         const res = (await Promise.all(allPromises)) as bigint[]

@@ -5,6 +5,7 @@ import {useLocation, useNavigate} from "react-router-dom";
 import {useAuth} from "../../utils/useAuth";
 import {Tooltip} from "antd";
 import {PostModal} from "../Modal/Post";
+import {useProfileStore} from "../../redux";
 
 const menu = ["Home", "Explore", "Wallet", "Settings"]
 export const Side = () => {
@@ -58,13 +59,15 @@ const Logo = () => {
 
 export const UserInfo = () => {
   const navigate = useNavigate();
+  const profile = useProfileStore()
+  const {principal} = useAuth()
 
   return <div className={"user_info"}>
     <div className={"info"}>
-      <img src="img_5.png" alt=""/>
+      <img src={profile.avatar_url ? profile.avatar_url : "./img_5.png"} alt=""/>
       <div style={{display: "flex", alignItems: "start", flexDirection: "column", justifyContent: "center"}}>
-        <div className={"name"}>Nash</div>
-        <div className={"id"}>@nash.icp</div>
+        <div className={"name"}>{profile.name ?? "XXX"}</div>
+        <div className={"id"}>{shortenString(principal ? principal.toString().slice(2) : "", 10)}</div>
       </div>
     </div>
     <div onClick={() => navigate("/profile")} className={"icon"}>
@@ -73,4 +76,7 @@ export const UserInfo = () => {
     </div>
   </div>
 }
+
+export const shortenString = (str: string, maxLength: number) => str.length > maxLength ? `${str.slice(0, Math.ceil((maxLength - 3) / 2))}...${str.slice(-Math.floor((maxLength - 3) / 2))}` : str;
+
 

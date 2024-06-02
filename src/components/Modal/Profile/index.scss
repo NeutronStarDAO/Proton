@@ -5,8 +5,40 @@
   align-items: center;
   gap: 1rem;
 
+  .avatar {
+    width: 11rem;
+    height: 11rem;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+
+
+  img {
+    width: 4.4rem;
+  }
+
   .title {
+    width: 100%;
+    text-align: start;
     font-size: 5rem;
+    padding: 0;
+  }
+
+  .background {
+    cursor: pointer;
+    flex: 1;
+    background: rgba(0, 0, 0, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .avatar:hover, .background:hover {
+    background: rgba(0, 0, 0, 0.1);
   }
 
   .avatar_wrap {
@@ -14,27 +46,7 @@
     width: 100%;
     gap: 3rem;
 
-    .avatar {
-      width: 11rem;
-      height: 11rem;
-      border-radius: 50%;
-      background: rgba(0, 0, 0, 0.3);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
 
-    .background {
-      flex: 1;
-      background: rgba(0, 0, 0, 0.3);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    img {
-      width: 4.4rem;
-    }
   }
 
 

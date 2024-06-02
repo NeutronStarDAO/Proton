@@ -25,7 +25,26 @@
     background: #E0E6F9;
     padding: 0.5rem 2rem;
     text-align: start;
+
+    input {
+      height: 4rem;
+      width: 100%;
+    }
+
+    textarea{
+      height: 7rem;
+      width: 100%;
+      resize: none;
+    }
+
+    input,textarea{
+      border:none;
+      background: inherit;
+      outline: none;
+      font-size: 2.5rem;
+    }
   }
+
   .done {
     width: 100%;
     padding: 1.8rem;
