@@ -8,12 +8,15 @@ import {FileRejection, useDropzone} from "react-dropzone";
 import {aApi} from "../../../actors/photo_storage";
 import {useAuth} from "../../../utils/useAuth";
 import Feed from "../../../actors/feed";
+import {useProfileStore} from "../../../redux";
+import {shortenString} from "../../Sider";
 
 
 export const PostModal = ({open, setOpen}: { open: boolean, setOpen: Function }) => {
   const [isVisible, setIsVisible] = useState(false)
   const [text, setText] = useState("")
   const [files, setFiles] = useState<File[]>([])
+  const profile = useProfileStore()
   const {userFeedCai} = useAuth()
 
   const updateData = async () => {
@@ -36,10 +39,10 @@ export const PostModal = ({open, setOpen}: { open: boolean, setOpen: Function })
   return <Modal setOpen={setOpen} open={open} component={<div className={"post_modal"}>
     <div className={"post_head"}>
       <div style={{display: "flex", alignItems: "center"}}>
-        <img src="img_5.png" alt=""/>
+        <img style={{borderRadius: "50%"}} src={profile?.avatar_url ? profile.avatar_url : "img_5.png"} alt=""/>
         <div style={{display: "flex", alignItems: "start", flexDirection: "column", justifyContent: "center"}}>
-          <div className={"name"}>Nash</div>
-          <div className={"id"}>@nash.icp</div>
+          <div className={"name"}>{profile?.name}</div>
+          <div className={"id"}>{shortenString(profile.id ? profile.id.toString() : "xxxx", 10)}</div>
         </div>
       </div>
       <div style={{cursor: "pointer"}} onClick={() => setOpen(false)}>❌</div>

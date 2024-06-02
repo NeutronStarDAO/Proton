@@ -68,7 +68,7 @@ export default class Feed {
   async createComment(postId: string, content: string) {
     const actor = await this.getActor()
     try {
-      return await actor.createComment(postId, content) as boolean
+      return await actor.create_comment(postId, content) as boolean
     } catch (e) {
       console.log("createComment", e)
       throw e
@@ -78,7 +78,7 @@ export default class Feed {
   async createRepost(postId: string) {
     const actor = await this.getActor()
     try {
-      return await actor.createRepost(postId) as boolean
+      return await actor.create_repost(postId) as boolean
     } catch (e) {
       console.log("createRepost", e)
       throw e
@@ -88,7 +88,7 @@ export default class Feed {
   async createLike(postId: string) {
     const actor = await this.getActor()
     try {
-      return await actor.createLike(postId) as boolean
+      return await actor.create_like(postId) as boolean
     } catch (e) {
       console.log("createLike", e)
       throw e

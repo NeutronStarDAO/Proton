@@ -1,10 +1,10 @@
 import "./index.scss"
 
 import React, {useEffect, useState} from 'react';
-import Icon from "../../Icons/Icon";
+import Icon, {Name} from "../../Icons/Icon";
 import {useLocation, useNavigate} from "react-router-dom";
 import {Post as postType} from "../../declarations/feed/feed";
-import {Spin, Empty} from "antd";
+import {Spin, Empty, Tooltip} from "antd";
 import {useAuth} from "../../utils/useAuth";
 import Feed from "../../actors/feed";
 import {rootPostApi} from "../../actors/root_bucket";
@@ -13,6 +13,7 @@ import {useAllDataStore} from "../../redux";
 import {userApi} from "../../actors/user";
 import {Profile} from "../../declarations/user/user";
 import {shortenString} from "../Sider";
+import {CommentModal} from "../Modal/Comment";
 
 export const Main = () => {
   const location = useLocation()
@@ -50,10 +51,8 @@ export const Main = () => {
   const getExploreData = async () => {
     const bucket = await rootPostApi.getAllAvailableBucket()
     if (bucket.length === 0) return setData([])
-    console.log(bucket)
     const bucketApi = new Bucket(bucket[0])
     const res = await bucketApi.getLatestFeed(30)
-    console.log(res)
     setData(res)
   }
 
@@ -70,7 +69,7 @@ export const Main = () => {
       <div className={"title"}>{Title}</div>
       {data ? data.length === 0 ? <Empty style={{width: "100%"}}/>
         : data.map((v, k) => {
-          return <Post post={v}/>
+          return <Post updateFunction={getExploreData} post={v}/>
         }) : <Spin spinning={true} style={{width: "100%"}}/>}
     </div>
   }
@@ -79,14 +78,19 @@ export const Main = () => {
     <div className={"title"}>{Title}</div>
     {HomeData ? HomeData.length === 0 ? <Empty style={{width: "100%"}}/>
       : HomeData.map((v, k) => {
-        return <Post post={v}/>
+        return <Post updateFunction={getHomeData} post={v}/>
       }) : <Spin spinning={true} style={{width: "100%"}}/>}
   </div>
 }
 
-export const Post = ({post}: { post: postType }) => {
+export const Post = ({post, updateFunction}: { post: postType, updateFunction: Function }) => {
   const [profile, setProfile] = useState<Profile>()
   const principal = post.user
+  const [hoverOne, setHoverOne] = useState(-1)
+  const [open, setOpen] = useState(false)
+  const navigate = useNavigate()
+  const {userFeedCai} = useAuth()
+
 
   const getProfile = async () => {
     const res = await userApi.getProfile(principal)
@@ -96,10 +100,33 @@ export const Post = ({post}: { post: postType }) => {
     getProfile()
   }, [principal])
 
+  const kk = [{label: "like", hoverColor: "rgba(249,24,128,0.6)"}, {
+    label: "comment",
+    hoverColor: "#1C9BEF"
+  }, {label: "repost", hoverColor: "rgb(0,186,124,0.6)"}]
+
+
+  const handleClick = async (index: number) => {
+    if (!userFeedCai) return 0
+    const feedApi = new Feed(userFeedCai)
+    if (index === 0) {//like
+      await feedApi.createLike(post.post_id)
+    } else if (index === 1) {//comment
+      setOpen(true)
+    } else if (index === 2) {//repost
+      await feedApi.createRepost(post.post_id)
+    }
+    updateFunction()
+  }
+
   return <div className={"post_main"}>
+    <CommentModal post={post} updateFunction={updateFunction} setOpen={setOpen} open={open}/>
     <div className={"author"}>
-      <img style={{borderRadius: "50%"}} className={"avatar"}
-           src={profile?.avatar_url ? profile.avatar_url : "img_3.png"} alt=""/>
+      <Tooltip title={profile?.name}>
+        <img style={{borderRadius: "50%"}} className={"avatar"}
+             onClick={() => navigate(`/profile/${principal.toString()}`)}
+             src={profile?.avatar_url ? profile.avatar_url : "img_3.png"} alt=""/>
+      </Tooltip>
       <div style={{display: "flex", flexDirection: "column", alignItems: "start", justifyContent: "center"}}>
         <div style={{fontSize: "2rem"}}>{profile?.name}</div>
         <div style={{
@@ -117,18 +144,14 @@ export const Post = ({post}: { post: postType }) => {
       </div>
     </div>
     <div className={"post_bottom"}>
-      <span>
-      <Icon name={"like"}/>
-        {post.like.length}
+      {kk.map((v, k) => {
+        return <span onClick={() => handleClick(k)} style={{color: hoverOne === k ? v.hoverColor : ""}} key={k}
+                     onMouseEnter={e => setHoverOne(k)}
+                     onMouseLeave={e => setHoverOne(-1)}>
+      <Icon color={hoverOne === k ? v.hoverColor : "black"} name={v.label as Name}/>
+          {post[v.label as "like" | "comment" | "repost"].length}
       </span>
-      <span>
-      <Icon name={"comment"}/>
-        {post.comment.length}
-      </span>
-      <span>
-      <Icon name={"repost"}/>
-        {post.repost.length}
-      </span>
+      })}
     </div>
   </div>
 }

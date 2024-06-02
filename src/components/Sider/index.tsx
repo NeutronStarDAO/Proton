@@ -33,9 +33,17 @@ export const Side = () => {
           </div>
         })}
         <PostModal setOpen={setOpen} open={open}/>
-        <div className={"post_button"} style={{justifyContent: "center", padding: "0"}}
-             onClick={() => setOpen(true)}>Post
-        </div>
+        <Tooltip title={isAuth ? "" : "please login first"}>
+          <div className={"post_button"}
+               style={{
+                 background: isAuth ? "#428EFF" : "gray",
+                 justifyContent: "center",
+                 padding: "0",
+                 cursor: isAuth ? "pointer" : "no-drop"
+               }}
+               onClick={() => isAuth && setOpen(true)}>Post
+          </div>
+        </Tooltip>
       </div>
     </div>
     {
@@ -67,7 +75,7 @@ export const UserInfo = () => {
       <img src={profile.avatar_url ? profile.avatar_url : "./img_5.png"} alt=""/>
       <div style={{display: "flex", alignItems: "start", flexDirection: "column", justifyContent: "center"}}>
         <div className={"name"}>{profile.name ?? "XXX"}</div>
-        <div className={"id"}>{shortenString(principal ? principal.toString().slice(2) : "", 10)}</div>
+        <div className={"id"}>{shortenString(principal ? principal.toString() : "", 10)}</div>
       </div>
     </div>
     <div onClick={() => navigate(`/profile/${principal?.toString()}`)} className={"icon"}>
@@ -77,6 +85,6 @@ export const UserInfo = () => {
   </div>
 }
 
-export const shortenString = (str: string, maxLength: number) => str.length > maxLength ? `${str.slice(0, 3)}...${str.slice(-(maxLength-3))}` : str;
+export const shortenString = (str: string, maxLength: number) => str.length > maxLength ? `${str.slice(0, 3)}...${str.slice(-(maxLength - 3))}` : str;
 
 
