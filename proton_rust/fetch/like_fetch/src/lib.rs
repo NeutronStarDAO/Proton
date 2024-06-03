@@ -73,18 +73,25 @@ async fn status() -> CanisterStatusResponse {
 
 fn store_notify(to: Vec<Principal>, post_id: String) {
     for user in to {
-        NOTIFY_MAP.with(|map| {
-            match map.borrow().get(&user) {
-                None => {
+        let is_user_have_post_id_array = 
+            NOTIFY_MAP.with(|map| {
+                map.borrow().get(&user).cloned()
+            });
+
+        match is_user_have_post_id_array {
+            None => {
+                NOTIFY_MAP.with(|map| {
                     map.borrow_mut().insert(user, vec![post_id.clone()]);
-                },
-                Some(post_id_array) => {
-                    let mut new_post_id_array = post_id_array.clone();
-                    new_post_id_array.push(post_id.clone());
+                })
+            },
+            Some(post_id_array) => {
+                let mut new_post_id_array = post_id_array.clone();
+                new_post_id_array.push(post_id.clone());
+                NOTIFY_MAP.with(|map| {
                     map.borrow_mut().insert(user, new_post_id_array);
-                }
+                })
             }
-        })
+        }
     }
 }
 

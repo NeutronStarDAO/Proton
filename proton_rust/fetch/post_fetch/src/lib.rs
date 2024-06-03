@@ -34,20 +34,27 @@ fn init(arg: InitArg) {
 
 #[ic_cdk::update]
 fn receive_notify(to: Vec<Principal>, post_id: String) {
-    NOTIFY_MAP.with(|map| {
-        for feed_canister in to.iter() {
-            match map.borrow().get(feed_canister) {
-                None => {
+    for feed_canister in to.iter() {
+        let is_feed_canister_have_post_id_array = 
+            NOTIFY_MAP.with(|map| {
+                map.borrow().get(feed_canister).cloned()
+            });
+        
+        match is_feed_canister_have_post_id_array {
+            None => {
+                NOTIFY_MAP.with(|map| {
                     map.borrow_mut().insert(*feed_canister, vec![post_id.clone()]);
-                },
-                Some(post_id_array) => {
-                    let mut new_post_id_array = post_id_array.clone();
-                    new_post_id_array.push(post_id.clone());
+                })
+            },
+            Some(post_id_array) => {
+                let mut new_post_id_array = post_id_array.clone();
+                new_post_id_array.push(post_id.clone());
+                NOTIFY_MAP.with(|map| {
                     map.borrow_mut().insert(*feed_canister, new_post_id_array);
-                }
+                })
             }
         }
-    })
+    }
 }
 
 #[ic_cdk::query]
