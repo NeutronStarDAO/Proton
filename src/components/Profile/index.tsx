@@ -2,22 +2,35 @@ import "./index.scss"
 
 import React, {useEffect, useState} from "react"
 import Icon from "../../Icons/Icon";
-import {Post} from "../Main";
 import {ProfileModal} from "../Modal/Profile";
 import {Profile as profile_type} from "../../declarations/user/user";
-import {useAuth} from "../../utils/useAuth";
 import {userApi} from "../../actors/user";
 import {shortenString} from "../Sider";
 import {useParams} from "react-router-dom";
 import {Principal} from "@dfinity/principal";
+import {Post as post_type} from "../../declarations/feed/feed";
+import {Spin} from "antd";
+import {Post} from "../Main";
+import Feed from "../../actors/feed";
 
 export const Profile = () => {
   const {id}: { id?: string } = useParams()
   const [profile, setProfile] = useState<profile_type>()
+  const [posts, setPosts] = useState<post_type[]>()
+
+  const getData = async () => {
+    if (!profile) return 0
+    if (profile.feed_canister.length === 0) return 0
+
+    const feed_cid = profile.feed_canister[0]
+    const feedApi = new Feed(feed_cid)
+    const posts = await feedApi.getAllPost()
+    setPosts(posts)
+  }
 
   useEffect(() => {
-
-  }, [])
+    getData()
+  }, [profile])
 
   useEffect(() => {
     if (id) {
@@ -37,9 +50,12 @@ export const Profile = () => {
       }}></div>
       <div className={"profile_body"}>
         <UserPanel profile={profile}/>
-        {/*<Post/>*/}
-        {/*<Post/>*/}
-        {/*<Post/>*/}
+        {
+          posts ? posts.map((v, k) => {
+            return <Post post={v} updateFunction={() => {
+            }} key={k}/>
+          }) : <Spin spinning={true} style={{width: "100%"}}/>
+        }
       </div>
     </div>
 
@@ -52,13 +68,13 @@ const UserPanel = ({profile}: { profile?: profile_type }) => {
   return <div className={"user_panel"}>
     <div className={"avatar_panel"}>
       <div className={"info"}>
-        <img src={profile ? profile.avatar_url : "img_5.png"} alt=""/>
+        <img src={profile && profile.avatar_url ? profile.avatar_url : "./img_5.png"} alt=""/>
         <div style={{display: "flex", alignItems: "start", flexDirection: "column", justifyContent: "center"}}>
           <div className={"name"}>{profile?.name}</div>
           <div className={"id"}>{shortenString(profile ? profile.id.toString() : "", 16)}</div>
         </div>
       </div>
-      <ProfileModal setOpen={setOpen} open={open}/>
+      <ProfileModal setOpen={setOpen} open={open} canClose={true}/>
       <span className={"edit"} onClick={() => setOpen(true)}>
         <Icon name={"edit"}/>
         Edit

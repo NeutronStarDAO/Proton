@@ -5,7 +5,7 @@ import Icon from "../../Icons/Icon";
 import {useAuth} from "../../utils/useAuth";
 
 export const Settings = () => {
-  const {logOut}   = useAuth()
+  const {logOut} = useAuth()
   return <div className={"setting_main"}>
     <div className={"title"}>Settings</div>
     <div className={"setting_item"}>
@@ -24,8 +24,8 @@ export const Settings = () => {
         <Icon name={"account"}/>
         Account
       </div>
-      <div className={"setting_button"}>
-        <span onClick={()=>logOut?.()}>Log Out</span>
+      <div style={{cursor: "pointer"}} className={"setting_button"}>
+        <span onClick={() => logOut?.()}>Log Out</span>
         <span>Delete Account</span>
       </div>
     </div>

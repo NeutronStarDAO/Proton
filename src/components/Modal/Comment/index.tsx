@@ -9,13 +9,15 @@ import Feed from "../../../actors/feed";
 import {useProfileStore} from "../../../redux";
 import {shortenString} from "../../Sider";
 import {Post} from "../../../declarations/feed/feed";
+import {NotificationInstance} from "antd/es/notification/interface";
+import {CheckOutlined, CloseOutlined, LoadingOutlined} from "@ant-design/icons";
 
 
 export const CommentModal = ({
                                open,
                                setOpen,
-                               updateFunction, post
-                             }: { open: boolean, setOpen: Function, updateFunction: Function, post: Post }) => {
+                               updateFunction, post, api
+                             }: { open: boolean, setOpen: Function, updateFunction: Function, post: Post, api: NotificationInstance }) => {
   const [isVisible, setIsVisible] = useState(false)
   const [text, setText] = useState("")
   const {userFeedCai} = useAuth()
@@ -24,17 +26,41 @@ export const CommentModal = ({
   const send = async () => {
     if (!userFeedCai) return 0
     const feedApi = new Feed(userFeedCai)
-    await feedApi.createComment(post.post_id, text)
-    updateFunction()
+    api.info({
+      message: 'sending ...',
+      key: 'comment',
+      duration: null,
+      description: '',
+      icon: <LoadingOutlined/>
+    });
+    try {
+      setOpen(false)
+      await feedApi.createComment(post.post_id, text)
+      updateFunction()
+      api.success({
+        message: 'Sent Successful !',
+        key: 'comment',
+        description: '',
+        icon: <CheckOutlined/>
+      })
+    } catch (e) {
+      api.error({
+        message: 'Sent failed !',
+        key: 'comment',
+        description: '',
+        icon: <CloseOutlined/>
+      })
+    }
+
   }
 
   return <Modal setOpen={setOpen} open={open} component={<div className={"comment_modal"}>
     <div className={"post_head"}>
       <div style={{display: "flex", alignItems: "center"}}>
-        <img style={{borderRadius: "50%"}} src={profile.avatar_url ? profile.avatar_url : "img_5.png"} alt=""/>
+        <img style={{borderRadius: "50%"}} src={profile.avatar_url ? profile.avatar_url : "./img_5.png"} alt=""/>
         <div style={{display: "flex", alignItems: "start", flexDirection: "column", justifyContent: "center"}}>
           <div className={"name"}>{profile.name}</div>
-          <div className={"id"}>{shortenString(profile ? profile.id.toString() : "", 10)}</div>
+          <div className={"id"}>{shortenString(profile.id ? profile.id.toString() : "", 10)}</div>
         </div>
       </div>
       <div style={{cursor: "pointer"}} onClick={() => setOpen(false)}>❌</div>

@@ -16,7 +16,7 @@ const Tx = () => {
       <span style={{fontSize: "2.7rem", gap: "2rem", display: "flex", alignItems: "center"}}>
         Transactions
         <Icon name={"tx"}/>
-        <img style={{width: "3rem"}} src="img_6.png" alt=""/>
+        <img style={{width: "3rem"}} src="./img_6.png" alt=""/>
       </span>
 
     <TxItem/>
@@ -56,7 +56,7 @@ const Balance = () => {
 
 const Token = () => {
   return <div className={"token_item"}>
-    <img src="img_6.png" alt=""/>
+    <img src="./img_6.png" alt=""/>
     4357
     <div style={{display: "flex", alignItems: "center", gap: "2rem"}}>
       <span className={"receive"}>Receive</span>

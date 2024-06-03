@@ -26,4 +26,15 @@ export default class Bucket {
     }
   }
 
+  async getPostNumber() {
+    const actor = await this.getActor()
+    try {
+      const res = await actor.get_post_number() as bigint
+      console.log(res)
+    } catch (e) {
+      console.log("getPostNumber", e)
+      throw e
+    }
+  }
+
 }

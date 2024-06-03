@@ -43,7 +43,7 @@ export const useProvideAuth = (api: NotificationInstance, authClient: IIForIdent
 
   const getFeedCai = async (principal: Principal) => {
     const e = await rootFeedApi.getUserFeedCanister(principal)
-    console.log("feed cid",e)
+    console.log("feed cid", e)
     let cai = e
     if (!e) {
       api.info({
@@ -120,7 +120,7 @@ const props: Props = {
   logIn: undefined,
   logOut: undefined,
   isAuth: false,
-  userFeedCai: undefined
+  userFeedCai: undefined,
 }
 
 const authContext = createContext(props);

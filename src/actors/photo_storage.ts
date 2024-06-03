@@ -42,10 +42,11 @@ class storage {
             allPromises.push(actor.upload_photo(data))
           }
         }
-
+        console.log(allPromises)
         const res = (await Promise.all(allPromises)) as bigint[]
         console.log(res)
-        const urls = res.map((v) => {
+        const urls = res.map((v: any) => {
+          if (v === "") return ""
           return `http://${photo_storage_cid}.localhost:4943/${Number(v)}`
         })
         console.log(urls)

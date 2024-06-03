@@ -7,7 +7,7 @@ import {Tooltip} from "antd";
 import {PostModal} from "../Modal/Post";
 import {useProfileStore} from "../../redux";
 
-const menu = ["Home", "Explore", "Wallet", "Settings"]
+const menu = ["Home", "Explore",  "Settings"]
 export const Side = () => {
   const navigate = useNavigate();
   const location = useLocation()

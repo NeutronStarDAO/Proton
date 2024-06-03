@@ -4,7 +4,7 @@ import React, {useEffect, useState} from 'react';
 import Icon, {Name} from "../../Icons/Icon";
 import {useLocation, useNavigate} from "react-router-dom";
 import {Post as postType} from "../../declarations/feed/feed";
-import {Spin, Empty, Tooltip} from "antd";
+import {Spin, Empty, Tooltip, notification} from "antd";
 import {useAuth} from "../../utils/useAuth";
 import Feed from "../../actors/feed";
 import {rootPostApi} from "../../actors/root_bucket";
@@ -14,6 +14,8 @@ import {userApi} from "../../actors/user";
 import {Profile} from "../../declarations/user/user";
 import {shortenString} from "../Sider";
 import {CommentModal} from "../Modal/Comment";
+import {CheckOutlined, CloseOutlined, LoadingOutlined} from "@ant-design/icons";
+import {updateSelectPost} from "../../redux/features/SelectPost";
 
 export const Main = () => {
   const location = useLocation()
@@ -49,7 +51,7 @@ export const Main = () => {
   }
 
   const getExploreData = async () => {
-    const bucket = await rootPostApi.getAllAvailableBucket()
+    const bucket = await rootPostApi.getAvailableBucket()
     if (bucket.length === 0) return setData([])
     const bucketApi = new Bucket(bucket[0])
     const res = await bucketApi.getLatestFeed(30)
@@ -90,6 +92,7 @@ export const Post = ({post, updateFunction}: { post: postType, updateFunction: F
   const [open, setOpen] = useState(false)
   const navigate = useNavigate()
   const {userFeedCai} = useAuth()
+  const [api, contextHolder] = notification.useNotification();
 
 
   const getProfile = async () => {
@@ -109,23 +112,55 @@ export const Post = ({post, updateFunction}: { post: postType, updateFunction: F
   const handleClick = async (index: number) => {
     if (!userFeedCai) return 0
     const feedApi = new Feed(userFeedCai)
-    if (index === 0) {//like
-      await feedApi.createLike(post.post_id)
-    } else if (index === 1) {//comment
+
+    if (index === 1) {
       setOpen(true)
-    } else if (index === 2) {//repost
-      await feedApi.createRepost(post.post_id)
+      return
     }
-    updateFunction()
+    api.info({
+      message: 'processing ...',
+      key: 'post_op',
+      duration: null,
+      description: '',
+      icon: <LoadingOutlined/>
+    });
+    try {
+      if (index === 0) {//like
+        await feedApi.createLike(post.post_id)
+      } else if (index === 2) {//repost
+        await feedApi.createRepost(post.post_id)
+      }
+      updateFunction()
+      api.success({
+        message: 'Successful !',
+        key: 'post_op',
+        description: '',
+        icon: <CheckOutlined/>
+      })
+    } catch (e) {
+      api.error({
+        message: 'failed !',
+        key: 'post_op',
+        description: '',
+        icon: <CloseOutlined/>
+      })
+    }
   }
 
-  return <div className={"post_main"}>
-    <CommentModal post={post} updateFunction={updateFunction} setOpen={setOpen} open={open}/>
+  return <div className={"post_main"} onClick={() => {
+    updateSelectPost(post)
+  }
+  }>
+    {contextHolder}
+    <CommentModal api={api} post={post} updateFunction={updateFunction} setOpen={setOpen} open={open}/>
     <div className={"author"}>
       <Tooltip title={profile?.name}>
         <img style={{borderRadius: "50%"}} className={"avatar"}
-             onClick={() => navigate(`/profile/${principal.toString()}`)}
-             src={profile?.avatar_url ? profile.avatar_url : "img_3.png"} alt=""/>
+             onClick={(e) => {
+               e.stopPropagation()
+               navigate(`/profile/${principal.toString()}`)
+             }}
+             src={profile?.avatar_url ? profile.avatar_url : "./img_3.png"} alt=""/>
       </Tooltip>
       <div style={{display: "flex", flexDirection: "column", alignItems: "start", justifyContent: "center"}}>
         <div style={{fontSize: "2rem"}}>{profile?.name}</div>
@@ -145,7 +180,10 @@ export const Post = ({post, updateFunction}: { post: postType, updateFunction: F
     </div>
     <div className={"post_bottom"}>
       {kk.map((v, k) => {
-        return <span onClick={() => handleClick(k)} style={{color: hoverOne === k ? v.hoverColor : ""}} key={k}
+        return <span onClick={(e) => {
+          e.stopPropagation()
+          handleClick(k)
+        }} style={{color: hoverOne === k ? v.hoverColor : ""}} key={k}
                      onMouseEnter={e => setHoverOne(k)}
                      onMouseLeave={e => setHoverOne(-1)}>
       <Icon color={hoverOne === k ? v.hoverColor : "black"} name={v.label as Name}/>

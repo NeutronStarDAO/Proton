@@ -1,11 +1,12 @@
 import {configureStore} from "@reduxjs/toolkit";
 import allData from "./features/AllData"
 import profile from "./features/profile"
+import selectPost from "./features/SelectPost"
 
 
 const store = configureStore({
   reducer: {
-    allData,profile
+    allData,profile,selectPost
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

@@ -6,11 +6,12 @@ import Icon from "../../../Icons/Icon";
 import {useAuth} from "../../../utils/useAuth";
 import {useDropzone} from "react-dropzone";
 import {maxSize} from "../Post";
-import {message} from "antd";
+import {message, notification} from "antd";
 import {aApi} from "../../../actors/photo_storage";
 import {userApi} from "../../../actors/user";
 import {Principal} from "@dfinity/principal";
 import {updateProfile} from "../../../redux";
+import {CheckOutlined, CloseOutlined, LoadingOutlined} from "@ant-design/icons";
 
 type form_type = {
   ID?: string,
@@ -19,10 +20,11 @@ type form_type = {
   Education: string,
   Company: string
 }
-export const ProfileModal = ({open, setOpen}: { open: boolean, setOpen: Function }) => {
+export const ProfileModal = ({open, setOpen, canClose}: { open: boolean, setOpen: Function, canClose: boolean }) => {
   const {principal, userFeedCai} = useAuth()
   const [backFile, setBackFile] = useState<File>()
   const [avatarFile, setAvatarFile] = useState<File>()
+  const [api, contextHolder] = notification.useNotification();
   const [form, setForm] = useState<form_type>({
     ID: principal?.toText(),
     Nam: "",
@@ -39,46 +41,70 @@ export const ProfileModal = ({open, setOpen}: { open: boolean, setOpen: Function
 
   const done = async () => {
     if (!principal || !userFeedCai) return 0
-    const res = await aApi.upload_photo([backFile ?? new File([], ""), avatarFile ?? new File([], "")])
-    await userApi.createProfile({
-      id: principal,
-      avatar_url: res[1],
-      name: form.Nam,
-      education: form.Education,
-      biography: form.Bio,
-      company: form.Company,
-      feed_canister: [userFeedCai],
-      back_img_url: res[0]
-    })
-    setOpen(false)
-    const profile = await userApi.getProfile(principal)
-    if (profile) updateProfile(profile)
+    api.info({
+      message: 'Edit ing ...',
+      key: 'edit',
+      duration: null,
+      description: '',
+      icon: <LoadingOutlined/>
+    });
+    try {
+      setOpen(false)
+      const res = await aApi.upload_photo([backFile ?? new File([], ""), avatarFile ?? new File([], "")])
+      await userApi.createProfile({
+        id: principal,
+        avatar_url: res[1],
+        name: form.Nam,
+        education: form.Education,
+        biography: form.Bio,
+        company: form.Company,
+        feed_canister: [userFeedCai],
+        back_img_url: res[0]
+      })
+      const profile = await userApi.getProfile(principal)
+      if (profile) updateProfile(profile)
+      api.success({
+        message: 'Edit Successful !',
+        key: 'edit',
+        description: '',
+        icon: <CheckOutlined/>
+      })
+    } catch (e) {
+      api.error({
+        message: 'Edit failed !',
+        key: 'edit',
+        description: '',
+        icon: <CloseOutlined/>
+      })
+    }
   }
 
-
-  return <Modal setOpen={setOpen} open={open} component={<div className={"login_modal"}>
-    <div style={{display: "flex", justifyContent: "space-between", width: "100%", alignItems: "center"}}>
-      <div className={"title"}>
-        <Icon name={"edit"}/>
-        Edit Profile
+  return <>
+    {contextHolder}
+    <Modal setOpen={setOpen} open={open} component={<div className={"login_modal"}>
+      <div style={{display: "flex", justifyContent: "space-between", width: "100%", alignItems: "center"}}>
+        <div className={"title"}>
+          <Icon name={"edit"}/>
+          Edit Profile
+        </div>
+        <div onClick={() => setOpen(false)} style={{cursor: "pointer", display: canClose ? "flex" : "none"}}>❌</div>
       </div>
-      <div onClick={() => setOpen(false)} style={{cursor: "pointer"}}>❌</div>
-    </div>
-    <Background setBackFile={setBackFile}/>
-    <div style={{width: "100%", display: "flex"}}>
-      <Avatar setAvatarFile={setAvatarFile}/>
-      <div style={{flex: "1", display: "flex", flexDirection: "column", justifyContent: "center", gap: "1rem"}}>
-        <InfoItem onchange={onChange} t={"ID"} value={principal?.toString()} flag={true}/>
-        <InfoItem onchange={onChange} t={"Nam"} placeholder={"your name"} flag={true}/>
+      <Background setBackFile={setBackFile}/>
+      <div style={{width: "100%", display: "flex"}}>
+        <Avatar setAvatarFile={setAvatarFile}/>
+        <div style={{flex: "1", display: "flex", flexDirection: "column", justifyContent: "center", gap: "1rem"}}>
+          <InfoItem onchange={onChange} t={"ID"} value={principal?.toString()} flag={true}/>
+          <InfoItem onchange={onChange} t={"Nam"} placeholder={"your name"} flag={true}/>
+        </div>
       </div>
-    </div>
-    <InfoItem onchange={onChange} t={"Bio"}
-              placeholder={"your biography"}
-              flag={false}/>
-    <InfoItem onchange={onChange} t={"Education"} flag={false}/>
-    <InfoItem onchange={onChange} t={"Company"} flag={false}/>
-    <Done done={done}/>
-  </div>}/>
+      <InfoItem onchange={onChange} t={"Bio"}
+                placeholder={"your biography"}
+                flag={false}/>
+      <InfoItem onchange={onChange} t={"Education"} flag={false}/>
+      <InfoItem onchange={onChange} t={"Company"} flag={false}/>
+      <Done done={done}/>
+    </div>}/>
+  </>
 }
 
 const InfoItem = ({

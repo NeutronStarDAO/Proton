@@ -22,11 +22,72 @@
     }
 
     .comment_list {
+      width: 100%;
       display: flex;
       flex: 1;
       flex-direction: column;
       align-items: center;
       overflow-y: scroll;
+    }
+  }
+}
+
+.comment_main {
+  width: 100%;
+  border-radius: 2rem;
+  display: flex;
+  cursor: pointer;
+  padding: 1rem;
+  flex-direction: column;
+
+
+  .author {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+
+    .avatar {
+      width: 5.3rem;
+      height: 5.3rem;
+      border-radius: 50%;
+    }
+  }
+
+  .tweet {
+    font-size: 2rem;
+    text-align: start;
+    line-height: 3rem;
+    margin-bottom: 2rem;
+
+    .img_list {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 1.5rem;
+
+      img {
+        width: 49%;
+        border-radius: 2rem;
+      }
+    }
+
+    .img_list img:only-child {
+      width: 100%;
+    }
+  }
+
+  .post_bottom {
+    width: 50%;
+    padding-left: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    span {
+      display: flex;
+      align-items: center;
+      font-size: 2rem;
+      gap: 1rem;
     }
   }
 }
