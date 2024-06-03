@@ -38,7 +38,6 @@ function App() {
     window.addEventListener("click", (e) => {
       // @ts-ignore
       const className = e.target.className as any
-      console.log(className)
       try {
         if (typeof className !== "string") return 0
         if (className.includes("post_main") ||
