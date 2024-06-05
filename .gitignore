@@ -1,11 +1,9 @@
 .dfx/
+
 .DS_Store
-.mops
 
-node_modules/
+target
 
-frontend/node_modules
+Cargo.lock
 
-package-lock.json
-
-frontend/package-lock.json
+.env
