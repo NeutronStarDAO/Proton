@@ -1,0 +1,55 @@
+type CanisterStatusResponse = record {
+  status : CanisterStatusType;
+  memory_size : nat;
+  cycles : nat;
+  settings : DefiniteCanisterSettings;
+  query_stats : QueryStats;
+  idle_cycles_burned_per_day : nat;
+  module_hash : opt blob;
+  reserved_cycles : nat;
+};
+type CanisterStatusType = variant { stopped; stopping; running };
+type Comment = record { content : text; user : principal; created_at : nat64 };
+type DefiniteCanisterSettings = record {
+  freezing_threshold : nat;
+  controllers : vec principal;
+  reserved_cycles_limit : nat;
+  wasm_memory_limit : nat;
+  memory_allocation : nat;
+  compute_allocation : nat;
+};
+type Like = record { user : principal; created_at : nat64 };
+type Post = record {
+  repost : vec Like;
+  post_id : text;
+  photo_url : vec text;
+  content : text;
+  like : vec Like;
+  user : principal;
+  created_at : nat64;
+  comment : vec Comment;
+  feed_canister : principal;
+  index : nat64;
+};
+type QueryStats = record {
+  response_payload_bytes_total : nat;
+  num_instructions_total : nat;
+  num_calls_total : nat;
+  request_payload_bytes_total : nat;
+};
+service : {
+  add_available_bucket : (vec principal) -> ();
+  create_bucket : () -> (principal);
+  get_all_available_bucket : () -> (vec principal) query;
+  get_all_bucket : () -> (vec principal) query;
+  get_all_unavailable_bucket : () -> (vec principal) query;
+  get_availeable_bucket : () -> (opt principal) query;
+  get_bucket_index : () -> (nat64) query;
+  get_bucket_wasm : () -> (blob) query;
+  get_buckets_latest_feed : (nat64) -> (vec Post) composite_query;
+  init : () -> ();
+  init_fetch_actor : (principal, principal) -> ();
+  re_create_bucket : () -> ();
+  status : () -> (CanisterStatusResponse);
+  update_bucket_wasm : (blob, nat64) -> (bool);
+}
