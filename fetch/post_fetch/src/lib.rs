@@ -25,7 +25,7 @@ fn init(arg: InitArg) {
 
     // start timer
     let timer_id = ic_cdk_timers::set_timer_interval(
-        Duration::from_secs(30), 
+        Duration::from_secs(10), 
         || ic_cdk::spawn(notify())
     );
     TIMER_ID.set(timer_id);
@@ -90,11 +90,19 @@ async fn notify() {
             ROOT_FEED_ACTOR.with(|actor| actor.borrow().clone()), 
             "get_user_feed_canister", 
             (user.clone(), )
-        ).await.unwrap().0.unwrap();
+        ).await.unwrap().0;
+        if user_feed_canister.is_none() {
+            // 用户还未注册 feed_canister
+            NOTIFY_MAP.with(|map| {
+                map.borrow_mut().remove(&user)
+            });
+            continue;
+        }
+
         
         // notify
         let notify_result = ic_cdk::call::<(Vec<String>, ), ()>(
-            user_feed_canister, 
+            user_feed_canister.unwrap(), 
             "batch_receive_feed", 
             (post_id_array, )
         ).await.unwrap();

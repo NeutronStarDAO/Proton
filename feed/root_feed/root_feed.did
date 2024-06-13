@@ -30,7 +30,7 @@ service : (InitArg) -> {
       vec record { principal; principal },
     ) query;
   get_feed_wasm : () -> (blob) query;
-  get_total_user_feed_canister_number : () -> (nat) query;
+  get_total_user_feed_canister_number : () -> (nat64) query;
   get_user_feed_canister : (principal) -> (opt principal) query;
   init_fetch_actor : (principal, principal, principal) -> ();
   status : () -> (CanisterStatusResponse);

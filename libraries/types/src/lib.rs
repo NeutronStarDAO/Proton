@@ -25,7 +25,7 @@ pub struct Comment {
 pub struct Post {
     pub post_id: String, // 帖子 ID 
     pub feed_canister: Principal,
-    pub index: u128, // Post Index
+    pub index: u64, // Post Index
     pub user: Principal, // 发布者
     pub content: String,
     pub photo_url: Vec<String>, // photo url array

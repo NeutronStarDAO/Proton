@@ -160,16 +160,16 @@ fn get_followers_list(user: Principal) -> Vec<Principal> {
 }
 
 #[ic_cdk::query]
-fn get_following_number(user: Principal) -> u128 {
+fn get_following_number(user: Principal) -> u64 {
     USER_DIGRAPH.with(|graph| {
-        graph.borrow().get_forward_adjacent(user).len() as u128
+        graph.borrow().get_forward_adjacent(user).len() as u64
     })
 }
 
 #[ic_cdk::query]
-fn get_follower_number(user: Principal) -> u128 {
+fn get_follower_number(user: Principal) -> u64 {
     USER_DIGRAPH.with(|graph| {
-        graph.borrow().get_reverse_adjacent(user).len() as u128
+        graph.borrow().get_reverse_adjacent(user).len() as u64
     })
 }
 

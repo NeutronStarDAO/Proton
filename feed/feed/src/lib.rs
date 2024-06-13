@@ -27,8 +27,8 @@ pub struct CreateLikeArgs {
 
 #[derive(CandidType, Deserialize, Debug, Clone)]
 pub struct PostDatabase {
-    post_index: u128,
-    post_map: HashMap<u128, Post>,
+    post_index: u64,
+    post_map: HashMap<u64, Post>,
 }
 
 #[derive(CandidType, Deserialize, Debug, Clone)]
@@ -45,13 +45,13 @@ impl PostDatabase {
         }
     }
 
-    fn get_post_index(&self) -> u128 { self.post_index }
+    fn get_post_index(&self) -> u64 { self.post_index }
 
-    fn get_post_map_entries(&self) -> Vec<(&u128, &Post)> {
+    fn get_post_map_entries(&self) -> Vec<(&u64, &Post)> {
         self.post_map.iter().collect()
     }
 
-    fn get_post_id(bucket: Principal, user: Principal, index: u128) -> String {
+    fn get_post_id(bucket: Principal, user: Principal, index: u64) -> String {
         bucket.to_text() + "#" + &user.to_text() + "#" + &index.to_string()   
     }
     
@@ -126,7 +126,7 @@ impl PostDatabase {
         None
     }
 
-    fn get_post_number(&self) -> u128 { self.post_map.len() as u128}
+    fn get_post_number(&self) -> u64 { self.post_map.len() as u64}
 
     fn get_post(&self, post_id: &String) -> Option<Post> {
         let (bucket, user, index) = check_post_id(post_id);
@@ -257,7 +257,7 @@ fn get_bucket() -> Option<Principal> {
 
 // Post
 #[ic_cdk::query]
-fn get_post_number() -> u128 {
+fn get_post_number() -> u64 {
     POST_DATABASE.with(|database| {
         database.borrow().get_post_number()
     })
@@ -353,8 +353,10 @@ async fn create_repost(post_id: String) -> bool {
                 "get_followers_list", 
                 (ic_cdk::api::caller(), )
             ).await.unwrap().0;
+
+            let mut notify_users: Vec<Principal> = vec![ic_cdk::caller()];
+
             // 从转发者的粉丝中剔除发帖者本身
-            let mut true_notify_followers: Vec<Principal> = Vec::new();
             let post_creator = POST_DATABASE.with(|database| {
                 let post = database.borrow().get_post(&post_id).unwrap();
                 post.user.clone()
@@ -363,14 +365,14 @@ async fn create_repost(post_id: String) -> bool {
                 if user == post_creator {
                     continue;
                 };
-                true_notify_followers.push(user);
+                notify_users.push(user);
             };
 
             // 通知 PostFetch
             let notify_result = ic_cdk::call::<(Vec<Principal>, String, ), ()>(
                 POST_FETCH_ACTOR.with(|post_fetch| post_fetch.borrow().clone()), 
                 "receive_notify", 
-                (true_notify_followers, post_id.clone(), )
+                (notify_users, post_id.clone(), )
             ).await.unwrap();
 
             true
@@ -643,11 +645,11 @@ fn is_feed_in_post(post_id: &String) -> bool {
 
 fn check_post_id(
     post_id: &String
-) -> (Principal, Principal, u128) {
+) -> (Principal, Principal, u64) {
     let words: Vec<&str> = post_id.split("#").collect();
     let bucket = Principal::from_text(words[0]).unwrap();
     let user = Principal::from_text(words[1]).unwrap();
-    let post_index = u128::from_str_radix(words[2], 10).unwrap();
+    let post_index = u64::from_str_radix(words[2], 10).unwrap();
     (bucket, user, post_index)
 }
 

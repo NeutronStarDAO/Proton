@@ -79,9 +79,9 @@ async fn status() -> CanisterStatusResponse {
 }
 
 #[ic_cdk::query]
-fn get_post_number() -> u128 {
+fn get_post_number() -> u64 {
     FEED_MAP.with(|map| {
-        map.borrow().len() as u128
+        map.borrow().len() as u64
     })
 }
 
@@ -114,7 +114,7 @@ fn get_posts(post_id_array: Vec<String>) -> Vec<Post> {
 }
 
 #[ic_cdk::query]
-fn get_latest_feed(n: u128) -> Vec<Post> {
+fn get_latest_feed(n: u64) -> Vec<Post> {
     FEED_MAP.with(|map| {
         let mut map_value_vec: Vec<Post> = map.borrow().values().cloned().collect();
         map_value_vec.sort_by(|a, b| {

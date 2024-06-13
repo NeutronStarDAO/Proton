@@ -1,12 +1,16 @@
-use ic_agent::agent;
+use candid::Principal;
 
 use crate::feed;
 use crate::photo_storage;
 use crate::user;
 use crate::utils;
-use crate::USERA_PEM;
+use crate::{
+    USERA_PEM, USERB_PEM,
+    USERC_PEM, USERD_PEM,
+    USERE_PEM, USERF_PEM,
+    USERG_PEM
+};
 use crate::root_feed;
-use crate::USERB_PEM;
 
 pub async fn test_upload_photo() {
     let photo_1 = 
@@ -122,16 +126,119 @@ pub async fn test_repost() {
     assert!(repost_result);
 }
 
-pub async fn test_post_fetch() {
+// Fetch 的几种形式
 
+// 1. User D follow User C
+// 那么 C 的所有帖子的更新都会推流给D
+
+// 2. User E 转发了 User C 的某个帖子
+// 那么 E 会收到此帖子的更新，同时, 此帖子也会推流给E的粉丝F
+
+pub async fn test_post_fetch() -> (String, Principal) {
+    // 第一种情况
+    let agent_c = utils::build_local_agent(USERC_PEM).await;
+    let agent_d = utils::build_local_agent(USERD_PEM).await;
+    let pr_c = agent_c.get_principal().unwrap();
+    let pr_d = agent_d.get_principal().unwrap();
+
+    // User D Follow User C
+    user::follow(agent_d.clone(), pr_c.clone()).await;
+    assert!(user::is_followed(agent_d.clone(), pr_d.clone(), pr_c.clone()).await);
+    println!("User D : {:?} Follow User C : {:?}\n", pr_d.to_text(), pr_c.to_text());
+
+    // If User C create a post
+    // the post should be fetched to User D
+        // User C create feed_canister
+    let c_feed = root_feed::create_feed_canister(agent_c.clone()).await.unwrap();
+    println!("User C feed_canister : {:?}\n", c_feed.to_text());
+        // User D create feed_canister
+    let d_feed = root_feed::create_feed_canister(agent_d.clone()).await.unwrap();
+    println!("User D feed_canister : {:?}\n", d_feed.to_text());
+
+    // User C create a post
+    let post_id = feed::create_post(
+        agent_c.clone(), 
+        c_feed.clone(), 
+        "User C create a post to test_post_fetch".to_string(), 
+        vec![]
+    ).await;
+    println!("the post_id : {:?}\n", post_id);
+
+    println!("Wait 30s !\n");
+    std::thread::sleep(std::time::Duration::from_secs(30));
+
+    // Check 
+    assert!(feed::get_feed_number(agent_d, d_feed).await == 1);
+
+    // 第二种情况
+    let agent_e = utils::build_local_agent(USERE_PEM).await;
+    let agent_f = utils::build_local_agent(USERF_PEM).await;
+    let pr_e = agent_e.get_principal().unwrap();
+
+    println!("User F Follow User E\n");
+    user::follow(agent_f.clone(), pr_e).await;
+
+    let e_feed = root_feed::create_feed_canister(agent_e.clone()).await.unwrap();
+    println!("User E feed_canister : {:?}\n", e_feed.to_text());
+
+    let f_feed = root_feed::create_feed_canister(agent_f.clone()).await.unwrap();
+    println!("User F feed_canister : {:?}\n", f_feed.to_text());
+
+    println!("User E repsot User C's post\n");
+    assert!(feed::create_repost(
+        agent_e.clone(), 
+        c_feed, 
+        post_id.clone()
+    ).await);
+
+    // 此帖子会推流给 User E 及其粉丝 F
+    println!("Wait 30s !\n");
+    std::thread::sleep(std::time::Duration::from_secs(30));
+
+    // Check 
+    assert!(feed::get_feed_number(agent_e, e_feed).await == 1);
+    assert!(feed::get_feed_number(agent_f, f_feed).await == 1);
+
+    (post_id, c_feed)
 }
 
-pub async fn test_comment_fetch() {
+// Comment Fetch 
 
+// 任何一个 User 对某一帖子评论，其帖子创建者的粉丝和转帖者及转帖者的粉丝会收到推流
+// USERG 对帖子评论
+
+// 1. User D follow User C
+// 那么 C 的所有帖子的更新都会推流给D
+
+// 2. User E 转发了 User C 的某个帖子
+// 那么 E 会收到此帖子的更新，同时, 此帖子也会推流给E的粉丝F
+pub async fn test_comment_fetch(
+    post_id: String,
+    c_feed: Principal
+) {
+    let agent_g = utils::build_local_agent(USERG_PEM).await;
+    assert!(feed::create_comment(
+        agent_g,
+        c_feed, 
+        post_id, 
+        "User G comment to test comment_fetch".to_string()
+    ).await);
+
+    // 检查Bukcet, D, E, F 的帖子是否更新
 }
 
-pub async fn test_like_fetch() {
+pub async fn test_like_fetch(
+    post_id: String,
+    c_feed: Principal
+) {
+    let agent_g = utils::build_local_agent(USERG_PEM).await;
+    assert!(feed::create_like(
+        agent_g,
+        c_feed, 
+        post_id
+    ).await);
 
+    // 检查Bukcet, D, E, F 的帖子是否更新
 }
 
 pub async fn test() {
@@ -155,4 +262,13 @@ pub async fn test() {
 
     println!("test_repost : \n");
     test_repost().await;
+
+    println!("test_post_fetch : \n");
+    let (post_id, c_feed) = test_post_fetch().await;
+
+    println!("test_comment_fetch : \n");
+    test_comment_fetch(post_id.clone(), c_feed.clone()).await;
+
+    println!("test_like_fetch : \n");
+    test_like_fetch(post_id, c_feed).await
 }

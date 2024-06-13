@@ -2,11 +2,13 @@ use candid::{CandidType, Deserialize, Encode, Principal};
 use std::borrow::Borrow;
 use std::collections::HashMap;
 use std::cell::{RefCell, Cell};
+use std::result;
 use ic_cdk::api::management_canister::main::{
     create_canister, CreateCanisterArgument, CanisterSettings,
     install_code, InstallCodeArgument, CanisterInstallMode
 };
 use ic_cdk::api::management_canister::main::{CanisterStatusResponse, CanisterIdRecord};
+use types::Post;
 
 const T_CYCLES: u128 = 1_000_000_000_000;
 
@@ -180,6 +182,35 @@ async fn status() -> CanisterStatusResponse {
     ic_cdk::api::management_canister::main::canister_status(CanisterIdRecord {
         canister_id: ic_cdk::api::id()
     }).await.unwrap().0
+}
+
+#[ic_cdk::query(composite = true)]
+async fn get_buckets_latest_feed(n: u64) -> Vec<Post> {
+    let mut posts: Vec<Post> = Vec::new();
+    let mut m = n;
+    let buckets: Vec<Principal> = AVAILABLE_BUCKET_MAP.with(|map| {
+        map.borrow().values().cloned().collect()
+    });
+    for bucket in buckets {
+        let result = ic_cdk::call::<(u64, ), (Vec<Post>, )>(
+            bucket, 
+            "get_latest_feed", 
+            (m,)
+        ).await.unwrap().0;
+        if result.len() > 0 {
+            let len = result.len() as u64;
+            for post in result {
+                posts.push(post);
+            };
+            if len < m {
+                m -= len;
+            } else {
+                m = 0;
+                break;
+            }
+        }
+    }
+    posts
 }
 
 async fn _create_bucket() -> Principal {

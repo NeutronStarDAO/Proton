@@ -19,6 +19,8 @@ pub const USERB_PEM: &str = "test/identity/2.pem";
 pub const USERC_PEM: &str = "test/identity/3.pem";
 pub const USERD_PEM: &str = "test/identity/4.pem";
 pub const USERE_PEM: &str = "test/identity/5.pem";
+pub const USERF_PEM: &str = "test/identity/6.pem";
+pub const USERG_PEM: &str = "test/identity/7.pem";
 
 lazy_static! {
     // pub static ref ROOT_BUCKET_CANISTER: Principal = Principal::from_text(env::var("CANISTER_ID_ROOT_BUCKET").unwrap()).unwrap();
@@ -60,6 +62,8 @@ async fn main() {
     println!("Principal C : {:?}\n", utils::build_agent(USERC_PEM).get_principal().unwrap().to_text());
     println!("Principal D : {:?}\n", utils::build_agent(USERD_PEM).get_principal().unwrap().to_text());
     println!("Principal E : {:?}\n", utils::build_agent(USERE_PEM).get_principal().unwrap().to_text());
+    println!("Principal F : {:?}\n", utils::build_agent(USERF_PEM).get_principal().unwrap().to_text());
+    println!("Principal G : {:?}\n", utils::build_agent(USERG_PEM).get_principal().unwrap().to_text());
 
     // deploy and init
     deploy::deploy().await;

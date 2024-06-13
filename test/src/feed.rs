@@ -90,3 +90,18 @@ pub async fn get_all_post(
     
     Decode!(&response_blob, Vec<Post>).unwrap()
 }
+
+pub async fn get_feed_number(
+    agent: Agent,
+    feed_canister: Principal
+) -> u64 {
+    let response_blob = agent
+        .query(
+            &feed_canister, 
+            "get_feed_number"
+        )
+        .with_arg(Encode!().unwrap())
+        .call().await.unwrap();
+    
+    Decode!(&response_blob, u64).unwrap()
+}

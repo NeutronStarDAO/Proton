@@ -129,9 +129,9 @@ fn get_all_user_feed_canister() -> Vec<(Principal, Principal)> {
 }
 
 #[ic_cdk::query] 
-fn get_total_user_feed_canister_number() -> u128 {
+fn get_total_user_feed_canister_number() -> u64 {
     USER_FEED_CANISTER_MAP.with(|map| {
-        map.borrow().len() as u128
+        map.borrow().len() as u64
     })
 }
 
