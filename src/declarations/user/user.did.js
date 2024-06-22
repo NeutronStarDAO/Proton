@@ -7,6 +7,7 @@ export const idlFactory = ({ IDL }) => {
     'biography' : IDL.Text,
     'company' : IDL.Text,
     'feed_canister' : IDL.Opt(IDL.Principal),
+    'handle' : IDL.Text,
     'back_img_url' : IDL.Text,
   });
   const CanisterStatusType = IDL.Variant({
@@ -44,7 +45,7 @@ export const idlFactory = ({ IDL }) => {
         [IDL.Vec(Profile)],
         ['query'],
       ),
-    'create_profile' : IDL.Func([Profile], [], []),
+    'create_profile' : IDL.Func([Profile], [IDL.Bool], []),
     'follow' : IDL.Func([IDL.Principal], [], []),
     'get_follower_number' : IDL.Func([IDL.Principal], [IDL.Nat64], ['query']),
     'get_followers_list' : IDL.Func(
@@ -64,7 +65,9 @@ export const idlFactory = ({ IDL }) => {
         [IDL.Bool],
         ['query'],
       ),
+    'is_handle_available' : IDL.Func([IDL.Text], [IDL.Bool], ['query']),
     'status' : IDL.Func([], [CanisterStatusResponse], []),
+    'update_handle' : IDL.Func([IDL.Text], [IDL.Bool], []),
     'update_profile' : IDL.Func([Profile], [], []),
   });
 };

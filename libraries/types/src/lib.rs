@@ -1,5 +1,7 @@
 mod http;
-use candid::{Principal, CandidType, Deserialize};
+use candid::{CandidType, Decode, Deserialize, Encode, Principal};
+use std::borrow::Cow;
+use ic_stable_structures::storable::{Bound, Storable};
 pub use http::*;
 
 #[derive(CandidType, Deserialize, Debug, Clone)]
@@ -33,6 +35,18 @@ pub struct Post {
     pub like: Vec<Like>,
     pub comment: Vec<Comment>,
     pub created_at: u64 // 发布时间
+}
+
+impl Storable for Post {
+    const BOUND: Bound = Bound::Unbounded;
+
+    fn to_bytes(&self) -> std::borrow::Cow<[u8]> {
+        Cow::Owned(Encode!(self).unwrap())
+    }
+
+    fn from_bytes(bytes: std::borrow::Cow<[u8]>) -> Self {
+        Decode!(bytes.as_ref(), Self).unwrap()
+    }
 }
 
 #[derive(CandidType, Deserialize, Debug)]

@@ -1,234 +1,117 @@
-use candid::{Principal, CandidType, Deserialize};
-use std::{borrow::Borrow, collections::HashMap};
+use candid::Principal;
 use std::cell::RefCell;
 use types::{Comment, Like, NewComment, NewLike, NewRepost, Post, Repost, FeedInitArg as InitArg};
 use ic_cdk::api::management_canister::main::{CanisterStatusResponse, CanisterIdRecord};
 
-#[derive(CandidType, Deserialize, Debug, Clone)]
-pub struct CreatePostArgs {
-    feed_canister: Principal,
-    content: String,
-    photo_url: Vec<String>,
-    time: u64,
-    bucket: Principal
-}
+use ic_stable_structures::memory_manager::{MemoryId, MemoryManager, VirtualMemory};
+use ic_stable_structures::{DefaultMemoryImpl, StableBTreeMap, StableCell};
 
-#[derive(CandidType, Deserialize, Debug, Clone)]
-pub struct CreateCommentArgs {
-    post_id: String,
-    content: String, 
-    created_at: u64,
-}
-
-#[derive(CandidType, Deserialize, Debug, Clone)]
-pub struct CreateLikeArgs {
-
-}
-
-#[derive(CandidType, Deserialize, Debug, Clone)]
-pub struct PostDatabase {
-    post_index: u64,
-    post_map: HashMap<u64, Post>,
-}
-
-#[derive(CandidType, Deserialize, Debug, Clone)]
-pub struct  FeedDatabase {
-    feed_map: HashMap<String, Post>
-}
-
-impl PostDatabase {
-
-    fn new() -> Self {
-        PostDatabase {
-            post_index: 0,
-            post_map: HashMap::new()
-        }
-    }
-
-    fn get_post_index(&self) -> u64 { self.post_index }
-
-    fn get_post_map_entries(&self) -> Vec<(&u64, &Post)> {
-        self.post_map.iter().collect()
-    }
-
-    fn get_post_id(bucket: Principal, user: Principal, index: u64) -> String {
-        bucket.to_text() + "#" + &user.to_text() + "#" + &index.to_string()   
-    }
-    
-    fn create_post(&mut self, user: Principal, args: CreatePostArgs) -> Post {
-        let post_index = self.post_index;
-        let post = Post {
-            post_id: PostDatabase::get_post_id(args.bucket, user, post_index),
-            feed_canister: args.feed_canister,
-            index: post_index,
-            user: user,
-            content: args.content,
-            photo_url: args.photo_url,
-            repost: Vec::new(),
-            like: Vec::new(),
-            comment: Vec::new(),
-            created_at: ic_cdk::api::time()
-        };
-        self.post_map.insert(
-            post_index, 
-            post.clone()
-        );
-        self.post_index += 1;
-        post
-    }
-
-    fn create_repost(&mut self, user: Principal, post_id: String) -> Option<(Principal, NewRepost)> {
-        let (bucket, _, post_index) = check_post_id(&post_id);
-        let value = self.post_map.get_mut(&post_index).unwrap();
-        let mut is_already_repost = false;
-        for i in value.repost.iter() {
-            if i.user == user {
-                is_already_repost = true;
-                break;
-            }
-        }
-        if !is_already_repost {
-            value.repost.push(Repost { user: user, created_at: ic_cdk::api::time()});
-            Some((bucket, value.clone().repost))
-        } else {
-            None
-        }
-    
-    }
-
-    fn create_comment(&mut self, coment_user: Principal, args: CreateCommentArgs) -> Option<(Principal, NewComment)> {
-        let (bucket, _, index) = check_post_id(&args.post_id);
-        if let Some(post) = self.post_map.get_mut(&index) {
-            post.comment.push(Comment {
-                user: coment_user,
-                content: args.content,
-                created_at: args.created_at
-            });
-            return Some((bucket, post.comment.clone()));
-        };
-        None
-    }
-
-    fn create_like(&mut self, like_user: Principal, post_id: String) -> Option<(Principal, NewLike)> {
-        let (bucket, user, index) = check_post_id(&post_id);
-        if let Some(post) = self.post_map.get_mut(&index) {
-            for i in post.like.iter() {
-                if i.user == like_user {
-                    return None;
-                }
-            }
-            post.like.push(Like {
-                user: like_user,
-                created_at: ic_cdk::api::time()
-            });
-            return Some((bucket, post.like.clone()))
-        }
-        None
-    }
-
-    fn get_post_number(&self) -> u64 { self.post_map.len() as u64}
-
-    fn get_post(&self, post_id: &String) -> Option<Post> {
-        let (bucket, user, index) = check_post_id(post_id);
-        self.post_map.get(&index).cloned()
-    }
-
-    fn get_all_post(&self) -> Vec<Post> {
-        self.post_map.values().cloned().into_iter().collect()
-    }
-
-}
-
-
-impl FeedDatabase {
-    fn new() -> Self {
-        FeedDatabase {
-            feed_map: HashMap::new()
-        }
-    }
-
-    fn get_feed_map_entries(&self) -> Vec<(String, Post)> {
-        let mut entries: Vec<(String, Post)> = Vec::new();
-        for (k, v) in self.feed_map.iter() {
-            entries.push((k.clone(), v.clone()))
-        }
-        entries
-    }
-
-    fn store_feed(&mut self, post: Post) {
-        self.feed_map.insert(post.post_id.clone(), post);
-    }
-
-    fn batch_store_feed(&mut self, post_array: Vec<Post>) {
-        for post in post_array {
-            self.feed_map.insert(post.post_id.clone(), post);
-        }
-    }
-
-    fn get_feed_number(&self) -> usize {
-        self.feed_map.len()
-    }
-
-    fn get_feed(&self, post_id: String) -> Option<Post> {
-        self.feed_map.get(&post_id).cloned()
-    }
-
-    fn get_latest_feed(&self, n: u64) -> Vec<Post> {
-        let mut map_post_vec: Vec<Post> = self.feed_map.values().cloned().collect();
-        map_post_vec.sort_by(|a, b| {
-            a.created_at.partial_cmp(&b.created_at).unwrap()
-        });
-        let mut result: Vec<Post> = Vec::new();
-        let mut i = 0;
-        for post in map_post_vec.iter().rev() {
-            if i >= n {
-                break;
-            }
-            result.push(post.clone());
-            i += 1;
-        }
-        result
-    }
-}
+type Memory = VirtualMemory<DefaultMemoryImpl>;
 
 thread_local! {
-    static POST_DATABASE: RefCell<PostDatabase> = RefCell::new(PostDatabase::new());
-    static FEED_DATABASE: RefCell<FeedDatabase> = RefCell::new(FeedDatabase::new());
-    static BUCKET: RefCell<Principal> = RefCell::new(Principal::anonymous());
-    static ROOT_BUCKET: RefCell<Principal> = RefCell::new(Principal::anonymous());
-    static USER_ACTOR: RefCell<Principal> = RefCell::new(Principal::anonymous());
-    static POST_FETCH_ACTOR: RefCell<Principal> = RefCell::new(Principal::anonymous());
-    static COMMENT_FETCH_ACTOR: RefCell<Principal> = RefCell::new(Principal::anonymous());
-    static LIKE_FETCH_ACTOR: RefCell<Principal> = RefCell::new(Principal::anonymous());
-    static OWNER: RefCell<Principal> = RefCell::new(Principal::anonymous());
+    static MEMORY_MANAGER: RefCell<MemoryManager<DefaultMemoryImpl>> =
+        RefCell::new(MemoryManager::init(DefaultMemoryImpl::default()));
+
+    static POST_INDEX: RefCell<StableCell<u64, Memory>> = RefCell::new(
+        StableCell::init(
+            MEMORY_MANAGER.with(|m| m.borrow().get(MemoryId::new(0))), 
+            0
+        ).unwrap()
+    );
+
+    static POST_MAP: RefCell<StableBTreeMap<u64, Post, Memory>> = RefCell::new(
+        StableBTreeMap::init(
+            MEMORY_MANAGER.with(|m| m.borrow().get(MemoryId::new(1))),
+        )
+    );
+
+    static FEED_MAP: RefCell<StableBTreeMap<String, Post, Memory>> = RefCell::new(
+        StableBTreeMap::init(
+            MEMORY_MANAGER.with(|m| m.borrow().get(MemoryId::new(2))),
+        )
+    );
+
+    static BUCKET: RefCell<StableCell<Principal, Memory>> = RefCell::new(
+        StableCell::init(
+            MEMORY_MANAGER.with(|m| m.borrow().get(MemoryId::new(3))), 
+            Principal::anonymous()
+        ).unwrap()
+    );
+
+    static ROOT_BUCKET: RefCell<StableCell<Principal, Memory>> = RefCell::new(
+        StableCell::init(
+            MEMORY_MANAGER.with(|m| m.borrow().get(MemoryId::new(4))), 
+            Principal::anonymous()
+        ).unwrap()  
+    );
+    
+    static USER_ACTOR: RefCell<StableCell<Principal, Memory>> = RefCell::new(
+        StableCell::init(
+            MEMORY_MANAGER.with(|m| m.borrow().get(MemoryId::new(5))), 
+            Principal::anonymous()
+        ).unwrap()   
+    );
+    
+    static POST_FETCH_ACTOR: RefCell<StableCell<Principal, Memory>> = RefCell::new(
+        StableCell::init(
+            MEMORY_MANAGER.with(|m| m.borrow().get(MemoryId::new(6))), 
+            Principal::anonymous()
+        ).unwrap()   
+    );
+    
+    static COMMENT_FETCH_ACTOR: RefCell<StableCell<Principal, Memory>> = RefCell::new(
+        StableCell::init(
+            MEMORY_MANAGER.with(|m| m.borrow().get(MemoryId::new(7))), 
+            Principal::anonymous()
+        ).unwrap()   
+    );
+    
+    static LIKE_FETCH_ACTOR: RefCell<StableCell<Principal, Memory>> = RefCell::new(
+        StableCell::init(
+            MEMORY_MANAGER.with(|m| m.borrow().get(MemoryId::new(8))), 
+            Principal::anonymous()
+        ).unwrap()     
+    );
+    
+    static OWNER: RefCell<StableCell<Principal, Memory>> = RefCell::new(
+        StableCell::init(
+            MEMORY_MANAGER.with(|m| m.borrow().get(MemoryId::new(9))), 
+            Principal::anonymous()
+        ).unwrap()      
+    );
 }
 
 #[ic_cdk::init]
 fn init_function(arg: InitArg) {
-    ROOT_BUCKET.set(arg.root_bucket);
-    USER_ACTOR.set(arg.user_actor);
-    POST_FETCH_ACTOR.set(arg.post_fetch_actor);
-    COMMENT_FETCH_ACTOR.set(arg.comment_fetch_actor);
-    LIKE_FETCH_ACTOR.set(arg.like_fetch_actor);
-    OWNER.set(arg.owner);
+    ROOT_BUCKET.with(|root_bucket| root_bucket.borrow_mut().set(arg.root_bucket).unwrap());
+
+    USER_ACTOR.with(|user_actor| user_actor.borrow_mut().set(arg.user_actor).unwrap());
+    
+    POST_FETCH_ACTOR.with(|post_fetch| post_fetch.borrow_mut().set(arg.post_fetch_actor).unwrap());
+    
+    COMMENT_FETCH_ACTOR.with(|comment_fetch| comment_fetch.borrow_mut().set(arg.comment_fetch_actor).unwrap());
+    
+    LIKE_FETCH_ACTOR.with(|like_fetch| like_fetch.borrow_mut().set(arg.like_fetch_actor).unwrap());
+    
+    OWNER.with(|owner| owner.borrow_mut().set(arg.owner).unwrap());
 }
 
 // owner
 #[ic_cdk::query]
 fn get_owner() -> Principal {
-    OWNER.with(|pr| pr.borrow().clone())
+    OWNER.with(|pr| pr.borrow().get().clone())
 }
 
 fn is_owner() -> Result<(), String>{
     OWNER.with(|owner| {
-        assert!(ic_cdk::api::caller() == owner.borrow().clone())
+        assert!(ic_cdk::api::caller() == owner.borrow().get().clone())
     });
     Ok(())
 }
 
 #[ic_cdk::update(guard = "is_owner")]
 fn update_owner(new_owner: Principal) {
-    OWNER.set(new_owner);
+    OWNER.with(|owner| owner.borrow_mut().set(new_owner).unwrap());
 }
 
 // Bucket
@@ -236,45 +119,54 @@ fn update_owner(new_owner: Principal) {
 #[ic_cdk::update]
 async fn check_available_bucket() -> bool {
     let call_result = ic_cdk::call::<(), (Option<Principal>, )>(
-        ROOT_BUCKET.with(|id| id.borrow().clone()), 
+        ROOT_BUCKET.with(|id| id.borrow().get().clone()), 
         "get_availeable_bucket", 
         ()
     ).await.unwrap().0;
     let availeable_bucket = call_result.unwrap();
-    BUCKET.set(availeable_bucket);
+    BUCKET.with(|bucket| bucket.borrow_mut().set(availeable_bucket).unwrap());
     true
 }
 
 #[ic_cdk::query]
 fn get_bucket() -> Option<Principal> {
     BUCKET.with(|pr| {
-        if pr.borrow().clone() == Principal::anonymous() {
+        if pr.borrow().get().clone() == Principal::anonymous() {
             return None;
         }
-        Some(pr.borrow().clone())
+        Some(pr.borrow().get().clone())
     })
 }
 
 // Post
 #[ic_cdk::query]
 fn get_post_number() -> u64 {
-    POST_DATABASE.with(|database| {
-        database.borrow().get_post_number()
-    })
+    POST_MAP.with(|map| map.borrow().len())
 }
 
 #[ic_cdk::query]
 fn get_post(post_id: String) -> Option<Post> {
-    POST_DATABASE.with(|database| {
-        database.borrow().get_post(&post_id)
+    let (bucket, user, index) = check_post_id(&post_id);
+    POST_MAP.with(|map| {
+        map.borrow().get(&index)
     })
 }
 
 #[ic_cdk::query] 
 fn get_all_post() -> Vec<Post> {
-    POST_DATABASE.with(|database| {
-        database.borrow().get_all_post()
+    POST_MAP.with(|map| {
+        let mut post_vec = Vec::new();
+
+        for (k, v) in map.borrow().iter() {
+            post_vec.push(v)
+        }
+
+        post_vec
     })
+}
+
+fn get_post_id(bucket: Principal, user: Principal, index: u64) -> String {
+    bucket.to_text() + "#" + &user.to_text() + "#" + &index.to_string()   
 }
 
 #[ic_cdk::update(guard = "is_owner")]
@@ -288,17 +180,25 @@ async fn create_post(content: String, photo_url: Vec<String>) -> String {
     };
 
     // 存储post
-    let post = POST_DATABASE.with(|database| {
-        database.borrow_mut().create_post(
-            ic_cdk::api::caller(),
-            CreatePostArgs {
-                feed_canister: ic_cdk::api::id(),
-                content: content,
-                photo_url: photo_url,
-                time: ic_cdk::api::time(),
-                bucket: bucket_id.unwrap().clone()
-            }
-        )
+    let post = POST_MAP.with(|map| {
+        let post_index = POST_INDEX.with(|index| index.borrow().get().clone());
+        let post = Post {
+            post_id: get_post_id(bucket_id.unwrap(), ic_cdk::caller(), post_index),
+            feed_canister: ic_cdk::api::id(),
+            index: post_index,
+            user: ic_cdk::caller(),
+            content: content,
+            photo_url: photo_url,
+            repost: Vec::new(),
+            like: Vec::new(),
+            comment: Vec::new(),
+            created_at: ic_cdk::api::time()
+        };
+
+        map.borrow_mut().insert(post_index, post.clone());
+        POST_INDEX.with(|index| index.borrow_mut().set(post_index + 1).unwrap());
+        
+        post
     });
 
     // 将帖子内容发送给公共区的 Bucket 
@@ -312,7 +212,7 @@ async fn create_post(content: String, photo_url: Vec<String>) -> String {
     // 通知 PostFetch 
       // 查询用户的粉丝
     let followers = ic_cdk::call::<(Principal, ), (Vec<Principal>, )>(
-        USER_ACTOR.with(|user| user.borrow().clone()), 
+        USER_ACTOR.with(|user| user.borrow().get().clone()), 
         "get_followers_list", 
         (ic_cdk::caller(), )
     ).await.unwrap().0;
@@ -320,7 +220,7 @@ async fn create_post(content: String, photo_url: Vec<String>) -> String {
       // post_fetch receive
     if followers.len() > 0 {
         let norify_result = ic_cdk::call::<(Vec<Principal>, String, ), ()>(
-            POST_FETCH_ACTOR.with(|post_fetch| post_fetch.borrow().clone()), 
+            POST_FETCH_ACTOR.with(|post_fetch| post_fetch.borrow().get().clone()), 
             "receive_notify", 
             (followers, post.post_id.clone(), )
         ).await.unwrap();
@@ -332,99 +232,130 @@ async fn create_post(content: String, photo_url: Vec<String>) -> String {
 
 #[ic_cdk::update]
 async fn create_repost(post_id: String) -> bool {
-    let create_repost_result = POST_DATABASE.with(|database| {
-        database.borrow_mut().create_repost(ic_cdk::caller(), post_id.clone())
-    });
+    let (bucket, _, post_index) = check_post_id(&post_id);
+    let caller = ic_cdk::caller();
+
+    let mut post = POST_MAP.with(|map| map.borrow().get(&post_index)).unwrap();
     
-    match create_repost_result{
-        None => false,
-        Some((bucket, new_repost)) => {
-            // 通知 bucket 更新转发信息
-            let call_bucket_result = ic_cdk::call::<(String, NewRepost, ), (bool, )>(
-                bucket, 
-                "update_post_repost", 
-                (post_id.clone(), new_repost, )
-            ).await.unwrap().0;
-            assert!(call_bucket_result);
-
-            // 获取转发者的粉丝
-            let repost_user_followers = ic_cdk::call::<(Principal, ), (Vec<Principal>, )>(
-                USER_ACTOR.with(|pr| pr.borrow().clone()), 
-                "get_followers_list", 
-                (ic_cdk::api::caller(), )
-            ).await.unwrap().0;
-
-            let mut notify_users: Vec<Principal> = vec![ic_cdk::caller()];
-
-            // 从转发者的粉丝中剔除发帖者本身
-            let post_creator = POST_DATABASE.with(|database| {
-                let post = database.borrow().get_post(&post_id).unwrap();
-                post.user.clone()
-            });
-            for user in repost_user_followers {
-                if user == post_creator {
-                    continue;
-                };
-                notify_users.push(user);
-            };
-
-            // 通知 PostFetch
-            let notify_result = ic_cdk::call::<(Vec<Principal>, String, ), ()>(
-                POST_FETCH_ACTOR.with(|post_fetch| post_fetch.borrow().clone()), 
-                "receive_notify", 
-                (notify_users, post_id.clone(), )
-            ).await.unwrap();
-
-            true
+    let mut is_already_repost = false;
+    for i in post.repost.iter() {
+        if i.user == caller {
+            is_already_repost = true;
+            break;
         }
+    }
+
+    if !is_already_repost {
+        post.repost.push(Repost { user: caller, created_at: ic_cdk::api::time()});
+        POST_MAP.with(|map| {
+            map.borrow_mut().insert(
+                post.index, 
+                post.clone()
+            );
+        });
+
+        let new_repost = post.repost;
+
+        // 通知 bucket 更新转发信息
+        let call_bucket_result = ic_cdk::call::<(String, NewRepost, ), (bool, )>(
+            bucket, 
+            "update_post_repost", 
+            (post_id.clone(), new_repost, )
+        ).await.unwrap().0;
+        assert!(call_bucket_result);
+
+        // 获取转发者的粉丝
+        let repost_user_followers = ic_cdk::call::<(Principal, ), (Vec<Principal>, )>(
+            USER_ACTOR.with(|pr| pr.borrow().get().clone()), 
+            "get_followers_list", 
+            (ic_cdk::api::caller(), )
+        ).await.unwrap().0;
+
+        let mut notify_users: Vec<Principal> = vec![ic_cdk::caller()];
+
+        // 从转发者的粉丝中剔除发帖者本身
+        let post_creator = post.user;
+        for user in repost_user_followers {
+            if user == post_creator {
+                continue;
+            };
+            notify_users.push(user);
+        };
+
+        // 通知 PostFetch
+        let notify_result = ic_cdk::call::<(Vec<Principal>, String, ), ()>(
+            POST_FETCH_ACTOR.with(|post_fetch| post_fetch.borrow().get().clone()), 
+            "receive_notify", 
+            (notify_users, post_id.clone(), )
+        ).await.unwrap();
+
+        true
+    } else {
+        false
     }
 }
 
 #[ic_cdk::update]
 async fn create_comment(post_id: String, content: String) -> bool {
-    match POST_DATABASE.with(|database| {
-        database.borrow_mut().create_comment(
-            ic_cdk::api::caller(), 
-            CreateCommentArgs {
-                post_id: post_id.clone(),
-                content: content, 
-                created_at: ic_cdk::api::time(),
-            }
-        )
-    }) {
-        None => false,
-        Some((bucket, new_comment)) => {
-            // 通知对应的 bucket 更新评论
-            let call_bucket_result = ic_cdk::call::<(String, NewComment, ), (bool,)>(
-                bucket,
-                "update_post_comment",
-                (post_id, new_comment, )
-            ).await.unwrap().0;
-            assert!(call_bucket_result);
-            true
-        }
-    } 
+    let (bucket, _, index) = check_post_id(&post_id);
+
+    let mut post = POST_MAP.with(|map| map.borrow().get(&index)).unwrap();
+
+    post.comment.push(Comment {
+        user: ic_cdk::caller(),
+        content: content,
+        created_at: ic_cdk::api::time()
+    });
+
+    POST_MAP.with(|map| map.borrow_mut().insert(index, post.clone()));
+
+    let new_comment = post.comment;
+
+    // 通知对应的 bucket 更新评论
+    let call_bucket_result = ic_cdk::call::<(String, NewComment, ), (bool,)>(
+        bucket,
+        "update_post_comment",
+        (post_id, new_comment, )
+    ).await.unwrap().0;
+
+    assert!(call_bucket_result);
+
+    true
 }
 
 #[ic_cdk::update]
 async fn create_like(post_id: String) -> bool {
-    match POST_DATABASE.with(|database| {
-        database.borrow_mut().create_like(ic_cdk::api::caller(), post_id.clone())
-    }) {
-        None => false,
-        Some((bucket, new_like)) => {
-            // 通知 bucket 更新点赞信息
-            let call_bucket_result = ic_cdk::call::<(String, NewLike, ), (bool, )>(
-                bucket, 
-                "update_post_like", 
-                (post_id, new_like, )
-            ).await.unwrap().0;
-            assert!(call_bucket_result);
+    let (bucket, user, index) = check_post_id(&post_id);
+    let caller = ic_cdk::caller();
 
-            // 通知 LikeFetch
-            true
+    let mut post = POST_MAP.with(|map| map.borrow().get(&index)).unwrap();
+
+    for i in post.like.iter() {
+        if i.user == caller {
+            return false;
         }
     }
+
+    post.like.push(Like {
+        user: caller,
+        created_at: ic_cdk::api::time()
+    });
+
+    POST_MAP.with(|map| map.borrow_mut().insert(index, post.clone()));
+
+    let new_like = post.like;
+
+    // 通知 bucket 更新点赞信息
+    // bucket中会通知 LikeFetch
+    let call_bucket_result = ic_cdk::call::<(String, NewLike, ), (bool, )>(
+        bucket, 
+        "update_post_like", 
+        (post_id, new_like, )
+    ).await.unwrap().0;
+
+    assert!(call_bucket_result);
+
+    true
 }
 
 // Feed
@@ -437,10 +368,13 @@ async fn receive_feed(post_id: String) -> bool {
     let call_bucket_result = ic_cdk::call::<(String, ), (Option<Post>, )>(
         bucket, 
         "get_post", 
-        (post_id, )
+        (post_id.clone(), )
     ).await.unwrap().0.unwrap();
-    FEED_DATABASE.with(|database| {
-        database.borrow_mut().store_feed(call_bucket_result)
+    FEED_MAP.with(|map| {
+        map.borrow_mut().insert(
+            post_id, 
+            call_bucket_result
+        )
     });
     true
 }
@@ -457,8 +391,11 @@ async fn batch_receive_feed(post_id_array: Vec<String>) {
             "get_post", 
             (post_id, )
         ).await.unwrap().0.unwrap();
-        FEED_DATABASE.with(|database| {
-            database.borrow_mut().store_feed(call_bucket_result)
+        FEED_MAP.with(|map| {
+            map.borrow_mut().insert(
+                call_bucket_result.post_id.clone(), 
+                call_bucket_result.clone()
+            )
         });
     }
 }
@@ -476,20 +413,23 @@ async fn receive_comment(post_id: String) -> bool {
         (post_id.clone(), )
     ).await.unwrap().0.unwrap();
 
-    FEED_DATABASE.with(|database| {
-        database.borrow_mut().store_feed(call_bucket_result.clone())
+    FEED_MAP.with(|map| {
+        map.borrow_mut().insert(
+            post_id.clone(), 
+            call_bucket_result.clone()
+        )
     });
 
-    if is_repost_user(call_bucket_result, OWNER.with(|owner| owner.borrow().clone())) {
+    if is_repost_user(call_bucket_result, OWNER.with(|owner| owner.borrow().get().clone())) {
         // 如果该用户是此贴的转发者，则继续向自己的粉丝推流    
         let repost_user_followers = ic_cdk::call::<(Principal, ), (Vec<Principal>, )>(
-            USER_ACTOR.with(|user_actor| user_actor.borrow().clone()), 
+            USER_ACTOR.with(|user_actor| user_actor.borrow().get().clone()), 
             "get_followers_list",
-            (OWNER.with(|owner| owner.borrow().clone()), )                                                                                               
+            (OWNER.with(|owner| owner.borrow().get().clone()), )                                                                                               
         ).await.unwrap().0;
 
         let call_comment_fetch_result = ic_cdk::call::<(Vec<Principal>, String, ), ()>(
-            COMMENT_FETCH_ACTOR.with(|actor| actor.borrow().clone()), 
+            COMMENT_FETCH_ACTOR.with(|actor| actor.borrow().get().clone()), 
             "receive_repost_user_notify", 
             (repost_user_followers, post_id, )
         ).await.unwrap();
@@ -513,20 +453,23 @@ async fn batch_receive_comment(post_id_array: Vec<String>) {
             (post_id.clone(), )
         ).await.unwrap().0.unwrap();
 
-        FEED_DATABASE.with(|database| {
-            database.borrow_mut().store_feed(call_bucket_result.clone());
+        FEED_MAP.with(|map| {
+            map.borrow_mut().insert(
+                call_bucket_result.post_id.clone(), 
+                call_bucket_result.clone()
+            )
         });
 
-        if is_repost_user(call_bucket_result, OWNER.with(|owner| owner.borrow().clone())) {
+        if is_repost_user(call_bucket_result, OWNER.with(|owner| owner.borrow().get().clone())) {
             // 如果该用户是此贴的转发者，则继续向自己的粉丝推流    
             let repost_user_followers = ic_cdk::call::<(Principal, ), (Vec<Principal>, )>(
-                USER_ACTOR.with(|user_actor| user_actor.borrow().clone()), 
+                USER_ACTOR.with(|user_actor| user_actor.borrow().get().clone()), 
                 "get_followers_list",
-                (OWNER.with(|owner| owner.borrow().clone()), )                                                                                               
+                (OWNER.with(|owner| owner.borrow().get().clone()), )                                                                                               
             ).await.unwrap().0;
     
             let call_comment_fetch_result = ic_cdk::call::<(Vec<Principal>, String, ), ()>(
-                COMMENT_FETCH_ACTOR.with(|actor| actor.borrow().clone()), 
+                COMMENT_FETCH_ACTOR.with(|actor| actor.borrow().get().clone()), 
                 "receive_repost_user_notify", 
                 (repost_user_followers, post_id, )
             ).await.unwrap();
@@ -548,20 +491,23 @@ async fn receive_like(post_id: String) -> bool {
         (post_id.clone(), )
     ).await.unwrap().0.unwrap();
 
-    FEED_DATABASE.with(|database| {
-        database.borrow_mut().store_feed(call_bucket_result.clone());
+    FEED_MAP.with(|map| {
+        map.borrow_mut().insert(
+            post_id.clone(), 
+            call_bucket_result.clone()
+        )
     });
 
-    if is_repost_user(call_bucket_result, OWNER.with(|owner| owner.borrow().clone())) {
+    if is_repost_user(call_bucket_result, OWNER.with(|owner| owner.borrow().get().clone())) {
         // 如果该用户是此贴的转发者，则继续向自己的粉丝推流    
         let repost_user_followers = ic_cdk::call::<(Principal, ), (Vec<Principal>, )>(
-            USER_ACTOR.with(|user_actor| user_actor.borrow().clone()), 
+            USER_ACTOR.with(|user_actor| user_actor.borrow().get().clone()), 
             "get_followers_list",
-            (OWNER.with(|owner| owner.borrow().clone()), )                                                                                               
+            (OWNER.with(|owner| owner.borrow().get().clone()), )                                                                                               
         ).await.unwrap().0;
 
         let call_like_fetch_result = ic_cdk::call::<(Vec<Principal>, String, ), ()>(
-            LIKE_FETCH_ACTOR.with(|actor| actor.borrow().clone()), 
+            LIKE_FETCH_ACTOR.with(|actor| actor.borrow().get().clone()), 
             "receive_repost_user_notify", 
             (repost_user_followers, post_id, )
         ).await.unwrap();
@@ -584,21 +530,24 @@ async fn batch_receive_like(post_id_array: Vec<String>) {
             "get_post", 
             (post_id.clone(), )
         ).await.unwrap().0.unwrap();
-    
-        FEED_DATABASE.with(|database| {
-            database.borrow_mut().store_feed(call_bucket_result.clone());
+        
+        FEED_MAP.with(|map| {
+            map.borrow_mut().insert(
+                call_bucket_result.post_id.clone(), 
+                call_bucket_result.clone()
+            )
         });
     
-        if is_repost_user(call_bucket_result, OWNER.with(|owner| owner.borrow().clone())) {
+        if is_repost_user(call_bucket_result, OWNER.with(|owner| owner.borrow().get().clone())) {
             // 如果该用户是此贴的转发者，则继续向自己的粉丝推流    
             let repost_user_followers = ic_cdk::call::<(Principal, ), (Vec<Principal>, )>(
-                USER_ACTOR.with(|user_actor| user_actor.borrow().clone()), 
+                USER_ACTOR.with(|user_actor| user_actor.borrow().get().clone()), 
                 "get_followers_list",
-                (OWNER.with(|owner| owner.borrow().clone()), )                                                                                               
+                (OWNER.with(|owner| owner.borrow().get().clone()), )                                                                                               
             ).await.unwrap().0;
     
             let call_like_fetch_result = ic_cdk::call::<(Vec<Principal>, String, ), ()>(
-                LIKE_FETCH_ACTOR.with(|actor| actor.borrow().clone()), 
+                LIKE_FETCH_ACTOR.with(|actor| actor.borrow().get().clone()), 
                 "receive_repost_user_notify", 
                 (repost_user_followers, post_id, )
             ).await.unwrap();
@@ -607,24 +556,45 @@ async fn batch_receive_like(post_id_array: Vec<String>) {
 }
 
 #[ic_cdk::query]
-fn get_feed_number() -> usize {
-    FEED_DATABASE.with(|database| {
-        database.borrow().get_feed_number()
+fn get_feed_number() -> u64 {
+    FEED_MAP.with(|map| {
+        map.borrow().len()
     })
 }
 
 #[ic_cdk::query]
 fn get_feed(post_id: String) -> Option<Post> {
-    FEED_DATABASE.with(|database| {
-        database.borrow().get_feed(post_id)
+    FEED_MAP.with(|map| {
+        map.borrow().get(&post_id)
     })
 }
 
 #[ic_cdk::query]
 fn get_latest_feed(n: u64) -> Vec<Post> {
-    FEED_DATABASE.with(|database| {
-        database.borrow().get_latest_feed(n)
-    })
+    let mut feed_vec: Vec<Post> = FEED_MAP.with(|map| {
+        let mut vec: Vec<Post> = Vec::new();
+
+        for (k, v) in map.borrow().iter() {
+            vec.push(v)
+        }
+
+        vec
+    });
+    feed_vec.sort_by(|a, b| {
+        a.created_at.partial_cmp(&b.created_at).unwrap()
+    });
+
+    let mut result: Vec<Post> = Vec::new();
+    let mut i = 0;
+    for feed in feed_vec.iter().rev() {
+        if i >= n {
+            break;
+        }
+        result.push(feed.clone());
+        i += 1;
+    }
+
+    result
 }
 
 #[ic_cdk::update]
@@ -635,8 +605,9 @@ async fn status() -> CanisterStatusResponse {
 }
 
 fn is_feed_in_post(post_id: &String) -> bool {
-    POST_DATABASE.with(|database| {
-        if let None = database.borrow().get_post(post_id) {
+    let (bucket, user, index) = check_post_id(post_id);
+    POST_MAP.with(|map| {
+        if let None = map.borrow().get(&index) {
             return false;
         }
         true

@@ -31,6 +31,7 @@ export interface Profile {
   'biography' : string,
   'company' : string,
   'feed_canister' : [] | [Principal],
+  'handle' : string,
   'back_img_url' : string,
 }
 export interface QueryStats {
@@ -41,7 +42,7 @@ export interface QueryStats {
 }
 export interface _SERVICE {
   'batch_get_profile' : ActorMethod<[Array<Principal>], Array<Profile>>,
-  'create_profile' : ActorMethod<[Profile], undefined>,
+  'create_profile' : ActorMethod<[Profile], boolean>,
   'follow' : ActorMethod<[Principal], undefined>,
   'get_follower_number' : ActorMethod<[Principal], bigint>,
   'get_followers_list' : ActorMethod<[Principal], Array<Principal>>,
@@ -49,7 +50,9 @@ export interface _SERVICE {
   'get_following_number' : ActorMethod<[Principal], bigint>,
   'get_profile' : ActorMethod<[Principal], [] | [Profile]>,
   'is_followed' : ActorMethod<[Principal, Principal], boolean>,
+  'is_handle_available' : ActorMethod<[string], boolean>,
   'status' : ActorMethod<[], CanisterStatusResponse>,
+  'update_handle' : ActorMethod<[string], boolean>,
   'update_profile' : ActorMethod<[Profile], undefined>,
 }
 export declare const idlFactory: IDL.InterfaceFactory;

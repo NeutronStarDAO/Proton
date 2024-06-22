@@ -1,14 +1,35 @@
-use candid::{Principal, CandidType, Deserialize};
-use std::collections::HashMap;
+use candid::Principal;
 use std::cell::RefCell;
 use ic_cdk::api::management_canister::main::{CanisterStatusResponse, CanisterIdRecord};
 use types::{Post, NewRepost, NewComment, NewLike};
+use ic_stable_structures::memory_manager::{MemoryId, MemoryManager, VirtualMemory};
+use ic_stable_structures::{DefaultMemoryImpl, StableBTreeMap, StableCell};
+
+type Memory = VirtualMemory<DefaultMemoryImpl>;
 
 thread_local! {
-    static FEED_MAP: RefCell<HashMap<String, Post>> = RefCell::new(HashMap::new());
+    static MEMORY_MANAGER: RefCell<MemoryManager<DefaultMemoryImpl>> =
+        RefCell::new(MemoryManager::init(DefaultMemoryImpl::default()));
+    
+    static FEED_MAP: RefCell<StableBTreeMap<String, Post, Memory>> = RefCell::new(
+        StableBTreeMap::init(
+            MEMORY_MANAGER.with(|m| m.borrow().get(MemoryId::new(0))),
+        )
+    );
 
-    static COMMENT_FETCH_ACTOR: RefCell<Principal> = RefCell::new(Principal::anonymous());
-    static LIKE_FETCH_ACTOR: RefCell<Principal> = RefCell::new(Principal::anonymous());
+    static COMMENT_FETCH_ACTOR: RefCell<StableCell<Principal, Memory>> = RefCell::new(
+        StableCell::init(
+            MEMORY_MANAGER.with(|m| m.borrow().get(MemoryId::new(1))), 
+            Principal::anonymous()
+        ).unwrap()
+    );
+
+    static LIKE_FETCH_ACTOR: RefCell<StableCell<Principal, Memory>> = RefCell::new(
+        StableCell::init(
+            MEMORY_MANAGER.with(|m| m.borrow().get(MemoryId::new(2))), 
+            Principal::anonymous()
+        ).unwrap()
+    );
 }
 
 #[ic_cdk::init]
@@ -16,8 +37,17 @@ fn init(
     comment_fetch: Principal,
     like_fetch: Principal
 ) {
-    COMMENT_FETCH_ACTOR.set(comment_fetch);
-    LIKE_FETCH_ACTOR.set(like_fetch)
+    COMMENT_FETCH_ACTOR.with(|actor| {
+        actor.borrow_mut().set(comment_fetch).unwrap()
+    });
+    LIKE_FETCH_ACTOR.with(|actor| {
+        actor.borrow_mut().set(like_fetch).unwrap()
+    });
+}
+
+#[ic_cdk::post_upgrade]
+fn post_upgrade() {
+
 }
 
 #[ic_cdk::update]
@@ -46,7 +76,7 @@ async fn update_post_comment(post_id: String, new_comment: NewComment) -> bool {
         Some(new_post) => {
             // 通知 commentFetch
             let call_comment_fetch_result = ic_cdk::call::<(Post, ), ()>(
-                COMMENT_FETCH_ACTOR.with(|comment_fetch| comment_fetch.borrow().clone()), 
+                COMMENT_FETCH_ACTOR.with(|comment_fetch| comment_fetch.borrow().get().clone()), 
                 "receive_notify", 
                 (new_post, )
             ).await.unwrap();
@@ -62,7 +92,7 @@ async fn update_post_like(post_id: String, new_like: NewLike) -> bool {
         Some(new_post) => {
             // 通知 likeFetch
             let call_like_fetch_result = ic_cdk::call::<(Post, ), ()>(
-                LIKE_FETCH_ACTOR.with(|like_fetch| like_fetch.borrow().clone()), 
+                LIKE_FETCH_ACTOR.with(|like_fetch| like_fetch.borrow().get().clone()), 
                 "receive_notify", 
                 (new_post, )
             ).await.unwrap();
@@ -115,22 +145,27 @@ fn get_posts(post_id_array: Vec<String>) -> Vec<Post> {
 
 #[ic_cdk::query]
 fn get_latest_feed(n: u64) -> Vec<Post> {
-    FEED_MAP.with(|map| {
-        let mut map_value_vec: Vec<Post> = map.borrow().values().cloned().collect();
-        map_value_vec.sort_by(|a, b| {
-            a.created_at.partial_cmp(&b.created_at).unwrap()
-        });
-        let mut result: Vec<Post> = Vec::new();
-        let mut i = 0;
-        for post in map_value_vec.iter().rev() {
-            if i >= n {
-                break;
-            }
-            result.push(post.clone());
-            i += 1;
+    let mut map_value_vec: Vec<Post> = FEED_MAP.with(|map| {
+        let mut values: Vec<Post> = Vec::new();
+        for (k, v) in map.borrow().iter() {
+            values.push(v.clone())
         }
-        result  
-    })
+        values
+    });
+
+    map_value_vec.sort_by(|a, b| {
+        a.created_at.partial_cmp(&b.created_at).unwrap()
+    });
+    let mut result: Vec<Post> = Vec::new();
+    let mut i = 0;
+    for post in map_value_vec.iter().rev() {
+        if i >= n {
+            break;
+        }
+        result.push(post.clone());
+        i += 1;
+    }
+    result  
 }
 
 fn _store_feed(post: Post) -> bool {
@@ -153,8 +188,9 @@ fn _store_feed(post: Post) -> bool {
 
 fn _update_post_repost(post_id: String, new_repost: NewRepost) -> bool {
     let old_post = FEED_MAP.with(|map| {
-        map.borrow().get(&post_id).cloned()
+        map.borrow().get(&post_id)
     });
+
     match old_post {
         None => false,
         Some(old_post) => {
@@ -182,8 +218,9 @@ fn _update_post_repost(post_id: String, new_repost: NewRepost) -> bool {
 
 fn _update_post_comment(post_id: String, new_comment: NewComment) -> Option<Post> {
     let old_post = FEED_MAP.with(|map| {
-        map.borrow().get(&post_id).cloned()
+        map.borrow().get(&post_id)
     });
+
     match old_post {
         None => None,
         Some(old_post) => {
@@ -209,8 +246,9 @@ fn _update_post_comment(post_id: String, new_comment: NewComment) -> Option<Post
 
 fn _update_post_like(post_id: String, new_like: NewLike) -> Option<Post> {
     let old_post = FEED_MAP.with(|map| {
-        map.borrow().get(&post_id).cloned()
+        map.borrow().get(&post_id)
     });
+
     match old_post {
         None => None,
         Some(old_post) => {

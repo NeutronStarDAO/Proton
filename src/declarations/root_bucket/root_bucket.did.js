@@ -70,7 +70,6 @@ export const idlFactory = ({ IDL }) => {
       ),
     'init' : IDL.Func([], [], []),
     'init_fetch_actor' : IDL.Func([IDL.Principal, IDL.Principal], [], []),
-    're_create_bucket' : IDL.Func([], [], []),
     'status' : IDL.Func([], [CanisterStatusResponse], []),
     'update_bucket_wasm' : IDL.Func(
         [IDL.Vec(IDL.Nat8), IDL.Nat64],

@@ -1,10 +1,13 @@
-use std::cell::{Cell, Ref, RefCell};
-use std::collections::HashMap;
+use std::cell::RefCell;
 use candid::{Principal, Encode, CandidType, Deserialize};
 use ic_cdk::api::management_canister::main::{
     create_canister, install_code, CanisterIdRecord, CanisterInstallMode, CanisterSettings, CanisterStatusResponse, CreateCanisterArgument, InstallCodeArgument
 };
 use types::FeedInitArg;
+use ic_stable_structures::memory_manager::{MemoryId, MemoryManager, VirtualMemory};
+use ic_stable_structures::{DefaultMemoryImpl, StableBTreeMap, StableCell};
+
+type Memory = VirtualMemory<DefaultMemoryImpl>;
 
 #[derive(CandidType, Deserialize, Debug)]
 pub struct InitArg {
@@ -15,20 +18,70 @@ pub struct InitArg {
 const T_CYCLES: u128 = 1_000_000_000_000;
 
 thread_local! {
-    static USER_FEED_CANISTER_MAP: RefCell<HashMap<Principal, Principal>> = RefCell::new(HashMap::new());
-    static FEED_WASM: RefCell<Vec<u8>> = RefCell::new(Vec::new());
-    static FEED_WASM_BUFFER: RefCell<Vec<u8>> = RefCell::new(Vec::new());
-    static ROOT_BUCKET: RefCell<Principal> = RefCell::new(Principal::anonymous());
-    static USER_ACTOR: RefCell<Principal> = RefCell::new(Principal::anonymous());
-    static POST_FETCH_ACTOR: RefCell<Principal> = RefCell::new(Principal::anonymous());
-    static COMMMENT_FETCH_ACTOR: RefCell<Principal> = RefCell::new(Principal::anonymous());
-    static LIKE_FETCH_ACTOR: RefCell<Principal> = RefCell::new(Principal::anonymous());
+    static MEMORY_MANAGER: RefCell<MemoryManager<DefaultMemoryImpl>> =
+        RefCell::new(MemoryManager::init(DefaultMemoryImpl::default()));
+
+    static USER_FEED_CANISTER_MAP: RefCell<StableBTreeMap<Principal, Principal, Memory>> = 
+        RefCell::new(
+            StableBTreeMap::init(
+                MEMORY_MANAGER.with(|m| m.borrow().get(MemoryId::new(0))),
+            )
+        );
+    
+    static FEED_WASM: RefCell<StableCell<Vec<u8>, Memory>> = RefCell::new(
+        StableCell::init(
+            MEMORY_MANAGER.with(|m| m.borrow().get(MemoryId::new(1))), 
+            Vec::new()
+        ).unwrap() 
+    );
+
+    static FEED_WASM_BUFFER: RefCell<StableCell<Vec<u8>, Memory>> = RefCell::new(
+        StableCell::init(
+            MEMORY_MANAGER.with(|m| m.borrow().get(MemoryId::new(2))), 
+            Vec::new()
+        ).unwrap() 
+    );
+
+    static ROOT_BUCKET: RefCell<StableCell<Principal, Memory>> = RefCell::new(
+        StableCell::init(
+            MEMORY_MANAGER.with(|m| m.borrow().get(MemoryId::new(3))), 
+            Principal::anonymous()
+        ).unwrap() 
+    );
+
+    static USER_ACTOR: RefCell<StableCell<Principal, Memory>> = RefCell::new(
+        StableCell::init(
+            MEMORY_MANAGER.with(|m| m.borrow().get(MemoryId::new(4))), 
+            Principal::anonymous()
+        ).unwrap() 
+    );
+
+    static POST_FETCH_ACTOR: RefCell<StableCell<Principal, Memory>> = RefCell::new(
+        StableCell::init(
+            MEMORY_MANAGER.with(|m| m.borrow().get(MemoryId::new(5))), 
+            Principal::anonymous()
+        ).unwrap() 
+    );
+
+    static COMMMENT_FETCH_ACTOR: RefCell<StableCell<Principal, Memory>> = RefCell::new(
+        StableCell::init(
+            MEMORY_MANAGER.with(|m| m.borrow().get(MemoryId::new(6))), 
+            Principal::anonymous()
+        ).unwrap() 
+    );
+
+    static LIKE_FETCH_ACTOR: RefCell<StableCell<Principal, Memory>> = RefCell::new(
+        StableCell::init(
+            MEMORY_MANAGER.with(|m| m.borrow().get(MemoryId::new(7))), 
+            Principal::anonymous()
+        ).unwrap() 
+    );
 }
 
 #[ic_cdk::init]
 fn init_function(arg: InitArg) {
-    ROOT_BUCKET.set(arg.root_bucket);
-    USER_ACTOR.set(arg.user_actor);
+    ROOT_BUCKET.with(|root_bucket| root_bucket.borrow_mut().set(arg.root_bucket).unwrap());
+    USER_ACTOR.with(|user_actor| user_actor.borrow_mut().set(arg.user_actor).unwrap());
 }
 
 #[ic_cdk::update]
@@ -37,9 +90,9 @@ fn init_fetch_actor(
     comment_fetch: Principal,
     like_fetch: Principal
 ) {
-    POST_FETCH_ACTOR.set(post_fetch);
-    COMMMENT_FETCH_ACTOR.set(comment_fetch);
-    LIKE_FETCH_ACTOR.set(like_fetch);
+    POST_FETCH_ACTOR.with(|fetch| fetch.borrow_mut().set(post_fetch).unwrap());
+    COMMMENT_FETCH_ACTOR.with(|fetch| fetch.borrow_mut().set(comment_fetch).unwrap());
+    LIKE_FETCH_ACTOR.with(|fetch| fetch.borrow_mut().set(like_fetch).unwrap());
 }
 
 #[ic_cdk::update]
@@ -63,17 +116,17 @@ async fn create_feed_canister() -> Option<Principal> {
     let canister_id = canister_record.0.canister_id;
 
     let feed_init_arg = FeedInitArg {
-        root_bucket: ROOT_BUCKET.with(|root_bucket| root_bucket.borrow().clone()),
-        user_actor: USER_ACTOR.with(|user_actor| user_actor.borrow().clone()),
-        post_fetch_actor: POST_FETCH_ACTOR.with(|post_fetch| post_fetch.borrow().clone()),
-        comment_fetch_actor: COMMMENT_FETCH_ACTOR.with(|comment_fetch_actor| comment_fetch_actor.borrow().clone()),
-        like_fetch_actor: LIKE_FETCH_ACTOR.with(|like_fetch_actor| like_fetch_actor.borrow().clone()),
+        root_bucket: ROOT_BUCKET.with(|root_bucket| root_bucket.borrow().get().clone()),
+        user_actor: USER_ACTOR.with(|user_actor| user_actor.borrow().get().clone()),
+        post_fetch_actor: POST_FETCH_ACTOR.with(|post_fetch| post_fetch.borrow().get().clone()),
+        comment_fetch_actor: COMMMENT_FETCH_ACTOR.with(|comment_fetch_actor| comment_fetch_actor.borrow().get().clone()),
+        like_fetch_actor: LIKE_FETCH_ACTOR.with(|like_fetch_actor| like_fetch_actor.borrow().get().clone()),
         owner: ic_cdk::api::caller()
     };
     install_code(InstallCodeArgument {
         mode: CanisterInstallMode::Install,
         canister_id: canister_id,
-        wasm_module: FEED_WASM.with(|wasm| wasm.borrow().clone()),
+        wasm_module: FEED_WASM.with(|wasm| wasm.borrow().get().clone()),
         arg: Encode!(&feed_init_arg).unwrap()
     }).await.unwrap();
 
@@ -87,12 +140,12 @@ async fn create_feed_canister() -> Option<Principal> {
 #[ic_cdk::update]
 fn update_feed_wasm(wasm_chunk: Vec<u8>, index: u64) -> bool {
     if index == 0 {
-        FEED_WASM_BUFFER.set(wasm_chunk);
+        FEED_WASM_BUFFER.with(|wasm_buffer| wasm_buffer.borrow_mut().set(wasm_chunk).unwrap());
         true
     } else if index == 1 {
-        let mut new_wasm = FEED_WASM_BUFFER.with(|wasm_buffer| wasm_buffer.borrow().clone());
+        let mut new_wasm = FEED_WASM_BUFFER.with(|wasm_buffer| wasm_buffer.borrow().get().clone());
         new_wasm.extend(wasm_chunk);
-        FEED_WASM.set(new_wasm);
+        FEED_WASM.with(|feed_wasm| feed_wasm.borrow_mut().set(new_wasm).unwrap());
         true
     } else {
         false
@@ -108,7 +161,7 @@ async fn status() -> CanisterStatusResponse {
 
 #[ic_cdk::query]
 fn get_feed_wasm() -> Vec<u8> {
-    FEED_WASM.with(|wasm| wasm.borrow().clone())
+    FEED_WASM.with(|wasm| wasm.borrow().get().clone())
 }
 
 #[ic_cdk::query]
@@ -124,7 +177,7 @@ fn get_user_feed_canister(user: Principal) -> Option<Principal> {
 #[ic_cdk::query]
 fn get_all_user_feed_canister() -> Vec<(Principal, Principal)> {
     USER_FEED_CANISTER_MAP.with(|map| {
-        map.borrow().iter().map(|(k, v)| (*k, *v)).collect()
+        map.borrow().iter().map(|(k, v)| (k, v)).collect()
     })
 }
 
