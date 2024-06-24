@@ -23,12 +23,7 @@ export interface DefiniteCanisterSettings {
   'memory_allocation' : bigint,
   'compute_allocation' : bigint,
 }
-export interface InitArg {
-  'like_fetch_actor' : Principal,
-  'root_bucket' : Principal,
-  'user_actor' : Principal,
-  'comment_fetch_actor' : Principal,
-}
+export interface InitArg { 'root_bucket' : Principal, 'user_actor' : Principal }
 export interface QueryStats {
   'response_payload_bytes_total' : bigint,
   'num_instructions_total' : bigint,
@@ -41,6 +36,10 @@ export interface _SERVICE {
   'get_feed_wasm' : ActorMethod<[], Uint8Array | number[]>,
   'get_total_user_feed_canister_number' : ActorMethod<[], bigint>,
   'get_user_feed_canister' : ActorMethod<[Principal], [] | [Principal]>,
+  'init_fetch_actor' : ActorMethod<
+    [Principal, Principal, Principal],
+    undefined
+  >,
   'status' : ActorMethod<[], CanisterStatusResponse>,
   'update_feed_wasm' : ActorMethod<[Uint8Array | number[], bigint], boolean>,
 }

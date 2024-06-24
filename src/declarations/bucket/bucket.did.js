@@ -15,7 +15,7 @@ export const idlFactory = ({ IDL }) => {
     'created_at' : IDL.Nat64,
     'comment' : IDL.Vec(Comment),
     'feed_canister' : IDL.Principal,
-    'index' : IDL.Nat,
+    'index' : IDL.Nat64,
   });
   const CanisterStatusType = IDL.Variant({
     'stopped' : IDL.Null,
@@ -48,9 +48,9 @@ export const idlFactory = ({ IDL }) => {
   });
   return IDL.Service({
     'batch_store_feed' : IDL.Func([IDL.Vec(Post)], [], []),
-    'get_latest_feed' : IDL.Func([IDL.Nat], [IDL.Vec(Post)], ['query']),
+    'get_latest_feed' : IDL.Func([IDL.Nat64], [IDL.Vec(Post)], ['query']),
     'get_post' : IDL.Func([IDL.Text], [IDL.Opt(Post)], ['query']),
-    'get_post_number' : IDL.Func([], [IDL.Nat], ['query']),
+    'get_post_number' : IDL.Func([], [IDL.Nat64], ['query']),
     'get_posts' : IDL.Func([IDL.Vec(IDL.Text)], [IDL.Vec(Post)], ['query']),
     'status' : IDL.Func([], [CanisterStatusResponse], []),
     'store_feed' : IDL.Func([Post], [IDL.Bool], []),
@@ -63,4 +63,4 @@ export const idlFactory = ({ IDL }) => {
     'update_post_repost' : IDL.Func([IDL.Text, IDL.Vec(Like)], [IDL.Bool], []),
   });
 };
-export const init = ({ IDL }) => { return []; };
+export const init = ({ IDL }) => { return [IDL.Principal, IDL.Principal]; };

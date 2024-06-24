@@ -17,12 +17,7 @@ type DefiniteCanisterSettings = record {
   memory_allocation : nat;
   compute_allocation : nat;
 };
-type InitArg = record {
-  like_fetch_actor : principal;
-  root_bucket : principal;
-  user_actor : principal;
-  comment_fetch_actor : principal;
-};
+type InitArg = record { root_bucket : principal; user_actor : principal };
 type QueryStats = record {
   response_payload_bytes_total : nat;
   num_instructions_total : nat;
@@ -35,8 +30,9 @@ service : (InitArg) -> {
       vec record { principal; principal },
     ) query;
   get_feed_wasm : () -> (blob) query;
-  get_total_user_feed_canister_number : () -> (nat) query;
+  get_total_user_feed_canister_number : () -> (nat64) query;
   get_user_feed_canister : (principal) -> (opt principal) query;
+  init_fetch_actor : (principal, principal, principal) -> ();
   status : () -> (CanisterStatusResponse);
   update_feed_wasm : (blob, nat64) -> (bool);
 }

@@ -1,4 +1,22 @@
 export const idlFactory = ({ IDL }) => {
+  const Like = IDL.Record({ 'user' : IDL.Principal, 'created_at' : IDL.Nat64 });
+  const Comment = IDL.Record({
+    'content' : IDL.Text,
+    'user' : IDL.Principal,
+    'created_at' : IDL.Nat64,
+  });
+  const Post = IDL.Record({
+    'repost' : IDL.Vec(Like),
+    'post_id' : IDL.Text,
+    'photo_url' : IDL.Vec(IDL.Text),
+    'content' : IDL.Text,
+    'like' : IDL.Vec(Like),
+    'user' : IDL.Principal,
+    'created_at' : IDL.Nat64,
+    'comment' : IDL.Vec(Comment),
+    'feed_canister' : IDL.Principal,
+    'index' : IDL.Nat64,
+  });
   const CanisterStatusType = IDL.Variant({
     'stopped' : IDL.Null,
     'stopping' : IDL.Null,
@@ -45,7 +63,13 @@ export const idlFactory = ({ IDL }) => {
     'get_availeable_bucket' : IDL.Func([], [IDL.Opt(IDL.Principal)], ['query']),
     'get_bucket_index' : IDL.Func([], [IDL.Nat64], ['query']),
     'get_bucket_wasm' : IDL.Func([], [IDL.Vec(IDL.Nat8)], ['query']),
+    'get_buckets_latest_feed' : IDL.Func(
+        [IDL.Nat64],
+        [IDL.Vec(Post)],
+        ['composite_query'],
+      ),
     'init' : IDL.Func([], [], []),
+    'init_fetch_actor' : IDL.Func([IDL.Principal, IDL.Principal], [], []),
     're_create_bucket' : IDL.Func([], [], []),
     'status' : IDL.Func([], [CanisterStatusResponse], []),
     'update_bucket_wasm' : IDL.Func(

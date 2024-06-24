@@ -20,12 +20,10 @@ export const CommentModal = ({
                              }: { open: boolean, setOpen: Function, updateFunction: Function, post: Post, api: NotificationInstance }) => {
   const [isVisible, setIsVisible] = useState(false)
   const [text, setText] = useState("")
-  const {userFeedCai} = useAuth()
   const profile = useProfileStore()
 
   const send = async () => {
-    if (!userFeedCai) return 0
-    const feedApi = new Feed(userFeedCai)
+    const feedApi = new Feed(post.feed_canister)
     api.info({
       message: 'sending ...',
       key: 'comment',

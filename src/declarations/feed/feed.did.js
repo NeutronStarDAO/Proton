@@ -1,5 +1,6 @@
 export const idlFactory = ({ IDL }) => {
   const FeedInitArg = IDL.Record({
+    'post_fetch_actor' : IDL.Principal,
     'owner' : IDL.Principal,
     'like_fetch_actor' : IDL.Principal,
     'root_bucket' : IDL.Principal,
@@ -22,7 +23,7 @@ export const idlFactory = ({ IDL }) => {
     'created_at' : IDL.Nat64,
     'comment' : IDL.Vec(Comment),
     'feed_canister' : IDL.Principal,
-    'index' : IDL.Nat,
+    'index' : IDL.Nat64,
   });
   const CanisterStatusType = IDL.Variant({
     'stopped' : IDL.Null,
@@ -69,7 +70,7 @@ export const idlFactory = ({ IDL }) => {
     'get_latest_feed' : IDL.Func([IDL.Nat64], [IDL.Vec(Post)], ['query']),
     'get_owner' : IDL.Func([], [IDL.Principal], ['query']),
     'get_post' : IDL.Func([IDL.Text], [IDL.Opt(Post)], ['query']),
-    'get_post_number' : IDL.Func([], [IDL.Nat], ['query']),
+    'get_post_number' : IDL.Func([], [IDL.Nat64], ['query']),
     'receive_comment' : IDL.Func([IDL.Text], [IDL.Bool], []),
     'receive_feed' : IDL.Func([IDL.Text], [IDL.Bool], []),
     'receive_like' : IDL.Func([IDL.Text], [IDL.Bool], []),
@@ -79,6 +80,7 @@ export const idlFactory = ({ IDL }) => {
 };
 export const init = ({ IDL }) => {
   const FeedInitArg = IDL.Record({
+    'post_fetch_actor' : IDL.Principal,
     'owner' : IDL.Principal,
     'like_fetch_actor' : IDL.Principal,
     'root_bucket' : IDL.Principal,

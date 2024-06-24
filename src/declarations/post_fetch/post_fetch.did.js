@@ -1,4 +1,5 @@
 export const idlFactory = ({ IDL }) => {
+  const InitArg = IDL.Record({ 'root_feed' : IDL.Principal });
   const CanisterStatusType = IDL.Variant({
     'stopped' : IDL.Null,
     'stopping' : IDL.Null,
@@ -38,4 +39,7 @@ export const idlFactory = ({ IDL }) => {
     'status' : IDL.Func([], [CanisterStatusResponse], []),
   });
 };
-export const init = ({ IDL }) => { return []; };
+export const init = ({ IDL }) => {
+  const InitArg = IDL.Record({ 'root_feed' : IDL.Principal });
+  return [InitArg];
+};

@@ -29,6 +29,7 @@ export interface DefiniteCanisterSettings {
   'compute_allocation' : bigint,
 }
 export interface FeedInitArg {
+  'post_fetch_actor' : Principal,
   'owner' : Principal,
   'like_fetch_actor' : Principal,
   'root_bucket' : Principal,

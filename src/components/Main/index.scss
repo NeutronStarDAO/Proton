@@ -51,13 +51,17 @@
       justify-content: space-between;
       gap: 1.5rem;
 
-      img {
+      div {
         width: 49%;
         border-radius: 2rem;
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: cover;
+        height: 30rem;
       }
     }
 
-    .img_list img:only-child {
+    .img_list div:only-child {
       width: 100%;
     }
   }
@@ -70,10 +74,13 @@
     justify-content: space-between;
 
     span {
+      position: relative;
       display: flex;
       align-items: center;
       font-size: 2rem;
       gap: 1rem;
     }
+
+
   }
 }

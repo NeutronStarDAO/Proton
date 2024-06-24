@@ -1,23 +1,23 @@
 import "./index.scss"
 
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
 import Icon, {Name} from "../../Icons/Icon";
 import {useLocation, useNavigate} from "react-router-dom";
 import {Post as postType} from "../../declarations/feed/feed";
-import {Spin, Empty, Tooltip, notification} from "antd";
+import {Empty, notification, Spin, Tooltip} from "antd";
 import {useAuth} from "../../utils/useAuth";
 import Feed from "../../actors/feed";
 import {rootPostApi} from "../../actors/root_bucket";
-import Bucket from "../../actors/bucket";
 import {useAllDataStore} from "../../redux";
 import {userApi} from "../../actors/user";
 import {Profile} from "../../declarations/user/user";
 import {shortenString} from "../Sider";
 import {CommentModal} from "../Modal/Comment";
-import {CheckOutlined, CloseOutlined, LoadingOutlined} from "@ant-design/icons";
+import {CloseOutlined, HeartTwoTone} from "@ant-design/icons";
 import {updateSelectPost} from "../../redux/features/SelectPost";
+import {getTime, isIn, postSort} from "../../utils/util";
 
-export const Main = () => {
+export const Main = ({scrollContainerRef}: { scrollContainerRef: React.MutableRefObject<null> }) => {
   const location = useLocation()
   const navigate = useNavigate()
   const [data, setData] = useState<postType[]>()
@@ -26,8 +26,9 @@ export const Main = () => {
 
   const HomeData = React.useMemo(() => {
     if (!allFeed || !allPost) return undefined
-    return [...allFeed, ...allPost]
+    return postSort([...allFeed, ...allPost])
   }, [allFeed, allPost])
+
 
   const change = () => {
     if (isAuth === false)
@@ -51,10 +52,7 @@ export const Main = () => {
   }
 
   const getExploreData = async () => {
-    const bucket = await rootPostApi.getAvailableBucket()
-    if (bucket.length === 0) return setData([])
-    const bucketApi = new Bucket(bucket[0])
-    const res = await bucketApi.getLatestFeed(30)
+    const res = await rootPostApi.get_buckets_latest_feed(30)
     setData(res)
   }
 
@@ -67,7 +65,7 @@ export const Main = () => {
   }, [Title, userFeedCai])
 
   if (Title === "Explore") {
-    return <div className={"main_wrap scroll_main"}>
+    return <div ref={scrollContainerRef} className={"main_wrap scroll_main"}>
       <div className={"title"}>{Title}</div>
       {data ? data.length === 0 ? <Empty style={{width: "100%"}}/>
         : data.map((v, k) => {
@@ -76,7 +74,7 @@ export const Main = () => {
     </div>
   }
 
-  return <div className={"main_wrap scroll_main"}>
+  return <div ref={scrollContainerRef} className={"main_wrap scroll_main"}>
     <div className={"title"}>{Title}</div>
     {HomeData ? HomeData.length === 0 ? <Empty style={{width: "100%"}}/>
       : HomeData.map((v, k) => {
@@ -88,12 +86,25 @@ export const Main = () => {
 export const Post = ({post, updateFunction}: { post: postType, updateFunction: Function }) => {
   const [profile, setProfile] = useState<Profile>()
   const principal = post.user
+  const {principal: user_id} = useAuth()
   const [hoverOne, setHoverOne] = useState(-1)
   const [open, setOpen] = useState(false)
   const navigate = useNavigate()
-  const {userFeedCai} = useAuth()
   const [api, contextHolder] = notification.useNotification();
 
+
+  const arg = useMemo(() => {
+    const res = {
+      time: getTime(post.created_at),
+      isLike: false, isRepost: false
+
+    }
+    if (!user_id) return res
+
+    res.isLike = isIn(user_id.toText(), post.like.map(v => v.user.toText()))
+    res.isRepost = isIn(user_id.toString(), post.repost.map(v => v.user.toText()))
+    return res
+  }, [post, user_id])
 
   const getProfile = async () => {
     const res = await userApi.getProfile(principal)
@@ -110,20 +121,12 @@ export const Post = ({post, updateFunction}: { post: postType, updateFunction: F
 
 
   const handleClick = async (index: number) => {
-    if (!userFeedCai) return 0
-    const feedApi = new Feed(userFeedCai)
+    const feedApi = new Feed(post.feed_canister)
 
     if (index === 1) {
       setOpen(true)
       return
     }
-    api.info({
-      message: 'processing ...',
-      key: 'post_op',
-      duration: null,
-      description: '',
-      icon: <LoadingOutlined/>
-    });
     try {
       if (index === 0) {//like
         await feedApi.createLike(post.post_id)
@@ -131,12 +134,6 @@ export const Post = ({post, updateFunction}: { post: postType, updateFunction: F
         await feedApi.createRepost(post.post_id)
       }
       updateFunction()
-      api.success({
-        message: 'Successful !',
-        key: 'post_op',
-        description: '',
-        icon: <CheckOutlined/>
-      })
     } catch (e) {
       api.error({
         message: 'failed !',
@@ -164,17 +161,25 @@ export const Post = ({post, updateFunction}: { post: postType, updateFunction: F
       </Tooltip>
       <div style={{display: "flex", flexDirection: "column", alignItems: "start", justifyContent: "center"}}>
         <div style={{fontSize: "2rem"}}>{profile?.name}</div>
-        <div style={{
-          fontSize: "2rem",
-          color: "rgba(0,0,0,0.5)"
-        }}>{profile ? shortenString(profile.id.toString(), 10) : ""}</div>
+        <div style={{display: "flex", alignItems: "center", fontSize: "2rem", color: "rgba(0,0,0,0.5)", gap: "1rem"}}>
+          <div>{profile ? shortenString(profile.handle, 10) : ""}</div>
+          <span style={{
+            width: "0.5rem",
+            height: "0.5rem",
+            background: "rgba(0,0,0,0.5)",
+            borderRadius: "50%"
+          }}/>
+          <div>
+            {arg.time}
+          </div>
+        </div>
       </div>
     </div>
     <div className={"tweet"}>
       {post.content}
       <div className={"img_list"}>
         {post.photo_url.map((v, k) => {
-          return <img key={k} src={v} alt=""/>
+          return <div key={k} style={{backgroundImage: `url(${v})`}}/>
         })}
       </div>
     </div>
@@ -183,10 +188,20 @@ export const Post = ({post, updateFunction}: { post: postType, updateFunction: F
         return <span onClick={(e) => {
           e.stopPropagation()
           handleClick(k)
-        }} style={{color: hoverOne === k ? v.hoverColor : ""}} key={k}
+        }}
+                     style={{color: v.label === "repost" && arg.isRepost ? v.hoverColor : v.label === "like" && arg.isLike ? v.hoverColor : hoverOne === k ? v.hoverColor : ""}}
+                     key={k}
                      onMouseEnter={e => setHoverOne(k)}
                      onMouseLeave={e => setHoverOne(-1)}>
-      <Icon color={hoverOne === k ? v.hoverColor : "black"} name={v.label as Name}/>
+            {(() => {
+              if (v.label === "like" && arg.isLike) {
+                return <HeartTwoTone twoToneColor={"red"}/>
+              }
+              if (v.label === "repost" && arg.isRepost) {
+                return <Icon color={v.hoverColor} name={v.label as Name}/>
+              }
+              return <Icon color={hoverOne === k ? v.hoverColor : "black"} name={v.label as Name}/>
+            })()}
           {post[v.label as "like" | "comment" | "repost"].length}
       </span>
       })}

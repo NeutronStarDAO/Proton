@@ -1,8 +1,8 @@
 import { Actor, HttpAgent } from "@dfinity/agent";
 
 // Imports and re-exports candid interface
-import { idlFactory } from "./post_fetch.js";
-export { idlFactory } from "./post_fetch.js";
+import { idlFactory } from "./post_fetch.did.js";
+export { idlFactory } from "./post_fetch.did.js";
 
 /* CANISTER_ID is replaced by webpack based on node environment
  * Note: canister environment variable will be standardized as

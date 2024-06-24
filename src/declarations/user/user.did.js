@@ -7,6 +7,7 @@ export const idlFactory = ({ IDL }) => {
     'biography' : IDL.Text,
     'company' : IDL.Text,
     'feed_canister' : IDL.Opt(IDL.Principal),
+    'handle' : IDL.Text,
     'back_img_url' : IDL.Text,
   });
   const CanisterStatusType = IDL.Variant({
@@ -40,31 +41,33 @@ export const idlFactory = ({ IDL }) => {
   });
   return IDL.Service({
     'batch_get_profile' : IDL.Func(
-        [IDL.Vec(IDL.Principal)],
-        [IDL.Vec(Profile)],
-        ['query'],
-      ),
-    'create_profile' : IDL.Func([Profile], [], []),
+      [IDL.Vec(IDL.Principal)],
+      [IDL.Vec(Profile)],
+      ['query'],
+    ),
+    'create_profile' : IDL.Func([Profile], [IDL.Bool], []),
     'follow' : IDL.Func([IDL.Principal], [], []),
-    'get_follower_number' : IDL.Func([IDL.Principal], [IDL.Nat], ['query']),
+    'get_follower_number' : IDL.Func([IDL.Principal], [IDL.Nat64], ['query']),
     'get_followers_list' : IDL.Func(
-        [IDL.Principal],
-        [IDL.Vec(IDL.Principal)],
-        ['query'],
-      ),
+      [IDL.Principal],
+      [IDL.Vec(IDL.Principal)],
+      ['query'],
+    ),
     'get_following_list' : IDL.Func(
-        [IDL.Principal],
-        [IDL.Vec(IDL.Principal)],
-        ['query'],
-      ),
-    'get_following_number' : IDL.Func([IDL.Principal], [IDL.Nat], ['query']),
+      [IDL.Principal],
+      [IDL.Vec(IDL.Principal)],
+      ['query'],
+    ),
+    'get_following_number' : IDL.Func([IDL.Principal], [IDL.Nat64], ['query']),
     'get_profile' : IDL.Func([IDL.Principal], [IDL.Opt(Profile)], ['query']),
     'is_followed' : IDL.Func(
-        [IDL.Principal, IDL.Principal],
-        [IDL.Bool],
-        ['query'],
-      ),
+      [IDL.Principal, IDL.Principal],
+      [IDL.Bool],
+      ['query'],
+    ),
+    'is_handle_available' : IDL.Func([IDL.Text], [IDL.Bool], ['query']),
     'status' : IDL.Func([], [CanisterStatusResponse], []),
+    'update_handle' : IDL.Func([IDL.Text], [IDL.Bool], []),
     'update_profile' : IDL.Func([Profile], [], []),
   });
 };

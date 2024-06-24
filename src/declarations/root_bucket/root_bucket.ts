@@ -15,6 +15,11 @@ export interface CanisterStatusResponse {
 export type CanisterStatusType = { 'stopped' : null } |
   { 'stopping' : null } |
   { 'running' : null };
+export interface Comment {
+  'content' : string,
+  'user' : Principal,
+  'created_at' : bigint,
+}
 export interface DefiniteCanisterSettings {
   'freezing_threshold' : bigint,
   'controllers' : Array<Principal>,
@@ -22,6 +27,19 @@ export interface DefiniteCanisterSettings {
   'wasm_memory_limit' : bigint,
   'memory_allocation' : bigint,
   'compute_allocation' : bigint,
+}
+export interface Like { 'user' : Principal, 'created_at' : bigint }
+export interface Post {
+  'repost' : Array<Like>,
+  'post_id' : string,
+  'photo_url' : Array<string>,
+  'content' : string,
+  'like' : Array<Like>,
+  'user' : Principal,
+  'created_at' : bigint,
+  'comment' : Array<Comment>,
+  'feed_canister' : Principal,
+  'index' : bigint,
 }
 export interface QueryStats {
   'response_payload_bytes_total' : bigint,
@@ -38,7 +56,9 @@ export interface _SERVICE {
   'get_availeable_bucket' : ActorMethod<[], [] | [Principal]>,
   'get_bucket_index' : ActorMethod<[], bigint>,
   'get_bucket_wasm' : ActorMethod<[], Uint8Array | number[]>,
+  'get_buckets_latest_feed' : ActorMethod<[bigint], Array<Post>>,
   'init' : ActorMethod<[], undefined>,
+  'init_fetch_actor' : ActorMethod<[Principal, Principal], undefined>,
   're_create_bucket' : ActorMethod<[], undefined>,
   'status' : ActorMethod<[], CanisterStatusResponse>,
   'update_bucket_wasm' : ActorMethod<[Uint8Array | number[], bigint], boolean>,

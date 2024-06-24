@@ -1,5 +1,8 @@
 export const idlFactory = ({ IDL }) => {
-  const FetchInitArg = IDL.Record({ 'user_actor' : IDL.Principal });
+  const FetchInitArg = IDL.Record({
+    'root_feed' : IDL.Principal,
+    'user_actor' : IDL.Principal,
+  });
   const CanisterStatusType = IDL.Variant({
     'stopped' : IDL.Null,
     'stopping' : IDL.Null,
@@ -48,10 +51,36 @@ export const idlFactory = ({ IDL }) => {
         [IDL.Vec(IDL.Principal)],
         ['query'],
       ),
+    'get_comment_fetch_wasm' : IDL.Func([], [IDL.Vec(IDL.Nat8)], ['query']),
+    'get_like_fetch_wasm' : IDL.Func([], [IDL.Vec(IDL.Nat8)], ['query']),
+    'get_post_fetch_wasm' : IDL.Func([], [IDL.Vec(IDL.Nat8)], ['query']),
+    'init_fetch_actor' : IDL.Func(
+        [IDL.Principal, IDL.Principal, IDL.Principal],
+        [],
+        [],
+      ),
     'status' : IDL.Func([], [CanisterStatusResponse], []),
+    'update_comment_fetch_wasm' : IDL.Func(
+        [IDL.Vec(IDL.Nat8), IDL.Nat64],
+        [IDL.Bool],
+        [],
+      ),
+    'update_like_fetch_wasm' : IDL.Func(
+        [IDL.Vec(IDL.Nat8), IDL.Nat64],
+        [IDL.Bool],
+        [],
+      ),
+    'update_post_fetch_wasm' : IDL.Func(
+        [IDL.Vec(IDL.Nat8), IDL.Nat64],
+        [IDL.Bool],
+        [],
+      ),
   });
 };
 export const init = ({ IDL }) => {
-  const FetchInitArg = IDL.Record({ 'user_actor' : IDL.Principal });
+  const FetchInitArg = IDL.Record({
+    'root_feed' : IDL.Principal,
+    'user_actor' : IDL.Principal,
+  });
   return [FetchInitArg];
 };

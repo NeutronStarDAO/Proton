@@ -1,6 +1,6 @@
 import {idlFactory} from "../declarations/root_bucket/root_bucket.did.js"
-import {Principal} from "@dfinity/principal";
 import {getActor} from "../utils/Actor";
+import {Post} from "../declarations/root_bucket/root_bucket";
 
 const rootPostCai = "be2us-64aaa-aaaaa-qaabq-cai"
 
@@ -9,20 +9,10 @@ class rootPost {
     return await getActor.createActor(idlFactory, rootPostCai);
   }
 
-  async getAvailableBucket() {
+  async get_buckets_latest_feed(count: number) {
     const actor = await rootPost.getActor()
     try {
-      return await actor.get_availeable_bucket() as [] | [Principal]
-    } catch (e) {
-      console.log("getAvailableBucket", e)
-      throw e
-    }
-  }
-
-  async getAllAvailableBucket() {
-    const actor = await rootPost.getActor()
-    try {
-      return await actor.get_all_available_bucket() as Principal[]
+      return await actor.get_buckets_latest_feed(BigInt(count)) as Post[]
     } catch (e) {
       throw e
     }

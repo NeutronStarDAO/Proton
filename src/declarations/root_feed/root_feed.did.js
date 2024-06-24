@@ -1,9 +1,7 @@
 export const idlFactory = ({ IDL }) => {
   const InitArg = IDL.Record({
-    'like_fetch_actor' : IDL.Principal,
     'root_bucket' : IDL.Principal,
     'user_actor' : IDL.Principal,
-    'comment_fetch_actor' : IDL.Principal,
   });
   const CanisterStatusType = IDL.Variant({
     'stopped' : IDL.Null,
@@ -42,11 +40,20 @@ export const idlFactory = ({ IDL }) => {
         ['query'],
       ),
     'get_feed_wasm' : IDL.Func([], [IDL.Vec(IDL.Nat8)], ['query']),
-    'get_total_user_feed_canister_number' : IDL.Func([], [IDL.Nat], ['query']),
+    'get_total_user_feed_canister_number' : IDL.Func(
+        [],
+        [IDL.Nat64],
+        ['query'],
+      ),
     'get_user_feed_canister' : IDL.Func(
         [IDL.Principal],
         [IDL.Opt(IDL.Principal)],
         ['query'],
+      ),
+    'init_fetch_actor' : IDL.Func(
+        [IDL.Principal, IDL.Principal, IDL.Principal],
+        [],
+        [],
       ),
     'status' : IDL.Func([], [CanisterStatusResponse], []),
     'update_feed_wasm' : IDL.Func(
@@ -58,10 +65,8 @@ export const idlFactory = ({ IDL }) => {
 };
 export const init = ({ IDL }) => {
   const InitArg = IDL.Record({
-    'like_fetch_actor' : IDL.Principal,
     'root_bucket' : IDL.Principal,
     'user_actor' : IDL.Principal,
-    'comment_fetch_actor' : IDL.Principal,
   });
   return [InitArg];
 };

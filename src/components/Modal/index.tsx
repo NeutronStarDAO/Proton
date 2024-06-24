@@ -7,7 +7,7 @@ export const Modal = ({open, component, setOpen}: { component: JSX.Element, open
       {open && (
         <div className="modal-overlay">
           <div className="modal">
-            <div>
+            <div >
               {component}
             </div>
           </div>

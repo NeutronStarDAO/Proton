@@ -23,7 +23,10 @@ export interface DefiniteCanisterSettings {
   'memory_allocation' : bigint,
   'compute_allocation' : bigint,
 }
-export interface FetchInitArg { 'user_actor' : Principal }
+export interface FetchInitArg {
+  'root_feed' : Principal,
+  'user_actor' : Principal,
+}
 export interface QueryStats {
   'response_payload_bytes_total' : bigint,
   'num_instructions_total' : bigint,
@@ -37,7 +40,26 @@ export interface _SERVICE {
   'get_all_comment_fetch_canister' : ActorMethod<[], Array<Principal>>,
   'get_all_like_fetch_canister' : ActorMethod<[], Array<Principal>>,
   'get_all_post_fetch_canister' : ActorMethod<[], Array<Principal>>,
+  'get_comment_fetch_wasm' : ActorMethod<[], Uint8Array | number[]>,
+  'get_like_fetch_wasm' : ActorMethod<[], Uint8Array | number[]>,
+  'get_post_fetch_wasm' : ActorMethod<[], Uint8Array | number[]>,
+  'init_fetch_actor' : ActorMethod<
+    [Principal, Principal, Principal],
+    undefined
+  >,
   'status' : ActorMethod<[], CanisterStatusResponse>,
+  'update_comment_fetch_wasm' : ActorMethod<
+    [Uint8Array | number[], bigint],
+    boolean
+  >,
+  'update_like_fetch_wasm' : ActorMethod<
+    [Uint8Array | number[], bigint],
+    boolean
+  >,
+  'update_post_fetch_wasm' : ActorMethod<
+    [Uint8Array | number[], bigint],
+    boolean
+  >,
 }
 export declare const idlFactory: IDL.InterfaceFactory;
 export declare const init: (args: { IDL: typeof IDL }) => IDL.Type[];

@@ -28,7 +28,10 @@ export interface DefiniteCanisterSettings {
   'memory_allocation' : bigint,
   'compute_allocation' : bigint,
 }
-export interface FetchInitArg { 'user_actor' : Principal }
+export interface FetchInitArg {
+  'root_feed' : Principal,
+  'user_actor' : Principal,
+}
 export interface Like { 'user' : Principal, 'created_at' : bigint }
 export interface Post {
   'repost' : Array<Like>,

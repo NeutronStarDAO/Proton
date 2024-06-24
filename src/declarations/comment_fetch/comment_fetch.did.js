@@ -1,5 +1,8 @@
 export const idlFactory = ({ IDL }) => {
-  const FetchInitArg = IDL.Record({ 'user_actor' : IDL.Principal });
+  const FetchInitArg = IDL.Record({
+    'root_feed' : IDL.Principal,
+    'user_actor' : IDL.Principal,
+  });
   const Like = IDL.Record({ 'user' : IDL.Principal, 'created_at' : IDL.Nat64 });
   const Comment = IDL.Record({
     'content' : IDL.Text,
@@ -16,7 +19,7 @@ export const idlFactory = ({ IDL }) => {
     'created_at' : IDL.Nat64,
     'comment' : IDL.Vec(Comment),
     'feed_canister' : IDL.Principal,
-    'index' : IDL.Nat,
+    'index' : IDL.Nat64,
   });
   const CanisterStatusType = IDL.Variant({
     'stopped' : IDL.Null,
@@ -63,6 +66,9 @@ export const idlFactory = ({ IDL }) => {
   });
 };
 export const init = ({ IDL }) => {
-  const FetchInitArg = IDL.Record({ 'user_actor' : IDL.Principal });
+  const FetchInitArg = IDL.Record({
+    'root_feed' : IDL.Principal,
+    'user_actor' : IDL.Principal,
+  });
   return [FetchInitArg];
 };

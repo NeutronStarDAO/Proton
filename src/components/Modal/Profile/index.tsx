@@ -9,12 +9,13 @@ import {maxSize} from "../Post";
 import {message, notification} from "antd";
 import {aApi} from "../../../actors/photo_storage";
 import {userApi} from "../../../actors/user";
-import {Principal} from "@dfinity/principal";
-import {updateProfile} from "../../../redux";
+import {updateProfile, useProfileStore} from "../../../redux";
 import {CheckOutlined, CloseOutlined, LoadingOutlined} from "@ant-design/icons";
+import {Profile} from "../../../declarations/user/user";
+import {getBase64} from "../../../utils/util";
 
 type form_type = {
-  ID?: string,
+  ID: string,
   Nam: string,
   Bio: string,
   Education: string,
@@ -26,13 +27,13 @@ export const ProfileModal = ({open, setOpen, canClose}: { open: boolean, setOpen
   const [avatarFile, setAvatarFile] = useState<File>()
   const [api, contextHolder] = notification.useNotification();
   const [form, setForm] = useState<form_type>({
-    ID: principal?.toText(),
+    ID: "",
     Nam: "",
     Bio: "",
     Education: "",
     Company: ""
   })
-
+  const profile = useProfileStore()
   const onChange = (title: keyof form_type, e: any) => {
     const form_1 = form
     form_1[title] = e.target.value
@@ -59,7 +60,8 @@ export const ProfileModal = ({open, setOpen, canClose}: { open: boolean, setOpen
         biography: form.Bio,
         company: form.Company,
         feed_canister: [userFeedCai],
-        back_img_url: res[0]
+        back_img_url: res[0],
+        handle: form.ID
       })
       const profile = await userApi.getProfile(principal)
       if (profile) updateProfile(profile)
@@ -89,11 +91,11 @@ export const ProfileModal = ({open, setOpen, canClose}: { open: boolean, setOpen
         </div>
         <div onClick={() => setOpen(false)} style={{cursor: "pointer", display: canClose ? "flex" : "none"}}>❌</div>
       </div>
-      <Background setBackFile={setBackFile}/>
+      <Background setBackFile={setBackFile} profile={profile}/>
       <div style={{width: "100%", display: "flex"}}>
-        <Avatar setAvatarFile={setAvatarFile}/>
+        <Avatar setAvatarFile={setAvatarFile} profile={profile}/>
         <div style={{flex: "1", display: "flex", flexDirection: "column", justifyContent: "center", gap: "1rem"}}>
-          <InfoItem onchange={onChange} t={"ID"} value={principal?.toString()} flag={true}/>
+          <InfoItem onchange={onChange} t={"ID"} value={profile.handle ? profile.handle : ""} flag={true}/>
           <InfoItem onchange={onChange} t={"Nam"} placeholder={"your name"} flag={true}/>
         </div>
       </div>
@@ -131,11 +133,16 @@ export const Done = ({done}: { done: MouseEventHandler<HTMLDivElement> }) => {
   </div>
 }
 
-const Avatar = ({setAvatarFile}: { setAvatarFile: Function }) => {
+const Avatar = ({setAvatarFile, profile}: { setAvatarFile: Function, profile: Profile }) => {
+  const [previewImg, setPreviewImg] = useState("")
+
   const onDrop = React.useCallback((files: File[]) => {
     if (files.length === 0) {
       return message.warning("aaa")
     }
+    getBase64(files[0]).then(e => {
+      setPreviewImg(e)
+    })
     setAvatarFile(files[0])
   }, [])
 
@@ -149,16 +156,22 @@ const Avatar = ({setAvatarFile}: { setAvatarFile: Function }) => {
   return <div{...getRootProps()}>
     <input {...getInputProps()} />
     <div className={"avatar"}>
-      <img src="./img_8.png" alt=""/>
+      <img
+        src={previewImg ? previewImg : ("avatar_url" in profile) && profile.avatar_url ? profile.avatar_url : "./img_8.png"}
+        style={{height: "100%", width: "100%", borderRadius: "50%"}} alt=""/>
     </div>
   </div>
 }
 
-const Background = ({setBackFile}: { setBackFile: Function }) => {
+const Background = ({setBackFile, profile}: { setBackFile: Function, profile: Profile }) => {
+  const [previewImg, setPreviewImg] = useState("")
   const onDrop = React.useCallback((files: File[]) => {
     if (files.length === 0) {
-      return message.warning("aaa")
+      return message.warning("file size is too large")
     }
+    getBase64(files[0]).then(e => {
+      setPreviewImg(e)
+    })
     setBackFile(files[0])
   }, [])
 
@@ -171,8 +184,14 @@ const Background = ({setBackFile}: { setBackFile: Function }) => {
   return <div className={"avatar_wrap"}>
     <div style={{width: "100%"}} {...getRootProps()}>
       <input {...getInputProps()} />
-      <div className={"background"}>
-        <img src="./img_8.png" alt=""/>
+      <div className={"background"}
+           style={{
+             background: `rgba(0, 0, 0, 0.3) url(${previewImg ?
+               previewImg : ("back_img_url" in profile) &&
+               profile.back_img_url ? profile.back_img_url : "./img_8.png"}) no-repeat center center `,
+             backgroundSize: previewImg || ("back_img_url" in profile) &&
+             profile.back_img_url ? "cover" : "contain"
+           }}>
       </div>
     </div>
   </div>

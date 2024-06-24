@@ -1,8 +1,7 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import './App.css';
 import {Side} from "./components/Sider";
 import {Main} from "./components/Main";
-import {Wallet} from "./components/Wallet";
 import {Settings} from "./components/Setting";
 import {Routes, Route} from "react-router-dom";
 import {Profile} from "./components/Profile";
@@ -17,12 +16,24 @@ import {ProfileModal} from "./components/Modal/Profile";
 function App() {
 
   const selectPost = useSelectPostStore()
-  const {principal} = useAuth()
+  const {principal, isAuth} = useAuth()
+  const scrollContainerRef = useRef(null);
+
   const [open, setOpen] = useState(false)
   const profile = useProfileStore()
   useEffect(() => {
-    !("id" in profile) && setOpen(true)
-  }, [profile])
+    const t = setTimeout(() => {
+      if (isAuth) {
+        if (!("id" in profile)) setOpen(true)
+        else setOpen(false)
+      }
+    }, 2000)
+
+    return () => {
+      clearTimeout(t)
+    }
+
+  }, [profile, isAuth])
 
   useEffect(() => {
     if (principal) {
@@ -59,17 +70,28 @@ function App() {
     }
   }, [])
 
+  const scrollToTop = () => {
+    console.log(scrollContainerRef.current)
+    if (scrollContainerRef.current) {
+      //@ts-ignore
+      scrollContainerRef.current.scrollTo({
+        top: 0,
+        behavior: 'smooth' // 使用平滑滚动
+      });
+    }
+  };
+
   return (
     <div className={"App"}>
       <ProfileModal setOpen={setOpen} open={open} canClose={false}/>
-      <Side/>
+      <Side scrollToTop={scrollToTop}/>
       <Routes>
-        <Route path="/" element={<Main/>}/>
-        <Route path="home" element={<Main/>}/>
-        <Route path="explore" element={<Main/>}/>
+        <Route path="/" element={<Main scrollContainerRef={scrollContainerRef}/>}/>
+        <Route path="home" element={<Main scrollContainerRef={scrollContainerRef}/>}/>
+        <Route path="explore" element={<Main scrollContainerRef={scrollContainerRef}/>}/>
         {/*<Route path="wallet" element={<Wallet/>}/>*/}
         <Route path="settings" element={<Settings/>}/>
-        <Route path="profile/:id" element={<Profile/>}/>
+        <Route path="profile/:id" element={ <Profile scrollContainerRef={scrollContainerRef} scrollToTop={scrollToTop}/>}/>
         {/*<Route path="*" element={<ErrorPage/>}/>*/}
       </Routes>
       {"comment" in selectPost ?

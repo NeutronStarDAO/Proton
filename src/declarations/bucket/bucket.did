@@ -29,7 +29,7 @@ type Post = record {
   created_at : nat64;
   comment : vec Comment;
   feed_canister : principal;
-  index : nat;
+  index : nat64;
 };
 type QueryStats = record {
   response_payload_bytes_total : nat;
@@ -37,11 +37,11 @@ type QueryStats = record {
   num_calls_total : nat;
   request_payload_bytes_total : nat;
 };
-service : {
+service : (principal, principal) -> {
   batch_store_feed : (vec Post) -> ();
-  get_latest_feed : (nat) -> (vec Post) query;
+  get_latest_feed : (nat64) -> (vec Post) query;
   get_post : (text) -> (opt Post) query;
-  get_post_number : () -> (nat) query;
+  get_post_number : () -> (nat64) query;
   get_posts : (vec text) -> (vec Post) query;
   status : () -> (CanisterStatusResponse);
   store_feed : (Post) -> (bool);

@@ -13,7 +13,10 @@ import {Spin} from "antd";
 import {Post} from "../Main";
 import Feed from "../../actors/feed";
 
-export const Profile = () => {
+export const Profile = ({
+                          scrollContainerRef,
+                          scrollToTop
+                        }: { scrollToTop: Function, scrollContainerRef: React.MutableRefObject<null> }) => {
   const {id}: { id?: string } = useParams()
   const [profile, setProfile] = useState<profile_type>()
   const [posts, setPosts] = useState<post_type[]>()
@@ -24,8 +27,9 @@ export const Profile = () => {
 
     const feed_cid = profile.feed_canister[0]
     const feedApi = new Feed(feed_cid)
-    const posts = await feedApi.getAllPost()
-    setPosts(posts)
+    const res = await Promise.all([feedApi.getAllPost(), feedApi.getLatestFeed(20)])
+
+    setPosts([...res[0], ...res[1]])
   }
 
   useEffect(() => {
@@ -41,8 +45,8 @@ export const Profile = () => {
   }, [id])
 
   return <div className={"profile_main"}>
-    <div className={"title"}>Profile</div>
-    <div style={{overflow: "scroll", width: "100%"}}>
+    <div className={"title"} style={{cursor: "pointer"}} onClick={() => scrollToTop()}>Profile</div>
+    <div ref={scrollContainerRef} style={{overflow: "scroll", width: "100%"}}>
       <div className={"background"} style={{
         backgroundImage: `url(${profile?.back_img_url})`,
         backgroundSize: "cover",
@@ -71,7 +75,7 @@ const UserPanel = ({profile}: { profile?: profile_type }) => {
         <img src={profile && profile.avatar_url ? profile.avatar_url : "./img_5.png"} alt=""/>
         <div style={{display: "flex", alignItems: "start", flexDirection: "column", justifyContent: "center"}}>
           <div className={"name"}>{profile?.name}</div>
-          <div className={"id"}>{shortenString(profile ? profile.id.toString() : "", 16)}</div>
+          <div className={"id"}>{shortenString(profile ? profile.handle : "", 16)}</div>
         </div>
       </div>
       <ProfileModal setOpen={setOpen} open={open} canClose={true}/>
