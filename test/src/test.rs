@@ -48,11 +48,12 @@ pub async fn test_create_post() {
         "This is test create post content !".to_string(), 
         vec![]
     ).await;
-    println!("test_create_post :{:?}\n", post_id);
+    println!("user_A test_create_post id :{:?}\n", post_id);
 }
 
 pub async fn test_follow() {
-    // USER A Follow USER B
+    println!("user_A follow user_B \n");
+
     let agent = utils::build_local_agent(USERA_PEM).await;
     let user_b = utils::build_local_agent(USERB_PEM).await.get_principal().unwrap();
     user::follow(agent.clone(), user_b).await;
@@ -62,7 +63,8 @@ pub async fn test_follow() {
 }
 
 pub async fn test_comment() {
-    // user_b  comment the first post 
+    println!("user_B  comment the first post \n");
+
     let agent = utils::build_local_agent(USERB_PEM).await;
     let user_a = utils::build_local_agent(USERA_PEM).await.get_principal().unwrap();
     let user_a_feed_canister = root_feed::get_user_feed_canister(
@@ -71,21 +73,21 @@ pub async fn test_comment() {
     ).await.unwrap();
 
     let post = feed::get_all_post(agent.clone(), user_a_feed_canister).await[0].clone();
-    println!("old_post : {:?}\n", post);
 
     // comment
     let comment_result = feed::create_comment(
         agent, 
         user_a_feed_canister, 
         post.post_id, 
-        "test comment".to_string()
+        "user_B  comment the first post to test_comment".to_string()
     ).await;
 
     assert!(comment_result);
 }
 
 pub async fn test_like() {
-    // user_b like the first post
+    println!("user_B like the first post \n");
+
     let agent = utils::build_local_agent(USERB_PEM).await;
     let user_a = utils::build_local_agent(USERA_PEM).await.get_principal().unwrap();
     let user_a_feed_canister = root_feed::get_user_feed_canister(
@@ -94,7 +96,6 @@ pub async fn test_like() {
     ).await.unwrap();
 
     let post = feed::get_all_post(agent.clone(), user_a_feed_canister).await[0].clone();
-    println!("old_post : {:?}\n", post);
 
     // like
     let like_result = feed::create_like(
@@ -106,7 +107,8 @@ pub async fn test_like() {
 }
 
 pub async fn test_repost() {
-    // user_b repost the first post
+    println!("user_B  repost the first post \n");
+
     let agent = utils::build_local_agent(USERB_PEM).await;
     let user_a = utils::build_local_agent(USERA_PEM).await.get_principal().unwrap();
     let user_a_feed_canister = root_feed::get_user_feed_canister(
@@ -115,7 +117,6 @@ pub async fn test_repost() {
     ).await.unwrap();
 
     let post = feed::get_all_post(agent.clone(), user_a_feed_canister).await[0].clone();
-    println!("old_post : {:?}\n", post);
 
     // repost
     let repost_result = feed::create_repost(
@@ -241,34 +242,77 @@ pub async fn test_like_fetch(
     // 检查Bukcet, D, E, F 的帖子是否更新
 }
 
+pub async fn test_time() {
+    let agent_e = utils::build_local_agent(USERE_PEM).await;
+    let pr_e = agent_e.get_principal().unwrap();
+
+    let e_feed = root_feed::get_user_feed_canister(
+        agent_e.clone(), 
+        pr_e
+    ).await.unwrap();
+    
+    for i in 0..10 {
+        let mut content = "User E create post ".to_string();
+        content.push_str(i.to_string().as_str());
+
+        let result = feed::create_post(
+            agent_e.clone(), 
+            e_feed.clone(),
+            content, 
+            Vec::new()
+        ).await;
+
+        std::thread::sleep(std::time::Duration::from_secs(5));
+    }
+}
+
 pub async fn test() {
-    println!("test_upload_photo : \n");
+    println!("---------------- Test Start ---------------- \n");
+
+    println!("---------------- TEST 1 test_upload_photo ------------------ \n");
     test_upload_photo().await;
 
-    println!("test_create_feed_canister : \n");
+    println!("---------------- TEST 2 test_create_feed_canister ------------------ \n");
     test_create_feed_canister().await;
 
-    println!("test_create_post : \n");
+    println!("---------------- TEST 3 test_create_post ------------------ \n");
     test_create_post().await;
 
-    println!("test_follow : \n");
+    println!("---------------- TEST 4 test_follow  ------------------ \n");
     test_follow().await;
 
-    println!("test_comment : \n");
+    println!("---------------- TEST 5 test_comment ------------------ \n");
     test_comment().await;
 
-    println!("test_like : \n");
+    println!("---------------- TEST 6 test_like ------------------ \n");
     test_like().await;
 
-    println!("test_repost : \n");
+    println!("---------------- TEST 7 test_repost ------------------ \n");
     test_repost().await;
 
-    println!("test_post_fetch : \n");
+    println!("---------------- TEST 8 test_post_fetch ------------------ \n");
     let (post_id, c_feed) = test_post_fetch().await;
 
-    println!("test_comment_fetch : \n");
+    println!("---------------- TEST 9 test_comment_fetch ------------------ \n");
     test_comment_fetch(post_id.clone(), c_feed.clone()).await;
 
-    println!("test_like_fetch : \n");
-    test_like_fetch(post_id, c_feed).await
+    println!("---------------- TEST 10 test_like_fetch ------------------ \n");
+    test_like_fetch(post_id, c_feed).await;
+
+    test_time().await;
 }
+
+// 关注关系
+// A 关注 B
+// D 关注 C
+// F 关注 E
+
+// Post
+// A: 有一个帖子，B 点赞、评论、转发
+// C: 有一个帖子，G 评论, G点赞
+
+// Feed
+// B: 有A的转发帖子
+// D: 有粉丝推流的C的帖子, G评论更新, G点赞更新
+// E: 有C的转发帖子, G评论更新, G点赞更新
+// F: 有E转发C的帖子, G评论更新, G点赞更新

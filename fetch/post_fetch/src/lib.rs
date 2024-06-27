@@ -9,6 +9,7 @@ use std::time::Duration;
 thread_local! {
     // user_feed_canister -> post_id_array
     static NOTIFY_MAP: RefCell<HashMap<Principal, Vec<String>>> = RefCell::new(HashMap::new());
+    static LOG_MAP: RefCell<HashMap<Principal, Vec<(String, String)>>> = RefCell::new(HashMap::new());
     static TIMER_ID: RefCell<TimerId> = RefCell::new(TimerId::default());
     static ROOT_FEED_ACTOR: RefCell<Principal> = RefCell::new(Principal::anonymous());
 }
@@ -98,19 +99,31 @@ async fn notify() {
             });
             continue;
         }
-
         
         // notify
         let notify_result = ic_cdk::call::<(Vec<String>, ), ()>(
             user_feed_canister.unwrap(), 
             "batch_receive_feed", 
-            (post_id_array, )
+            (post_id_array.clone(), )
         ).await.unwrap();
         
         // delete
-        NOTIFY_MAP.with(|map| {
-            map.borrow_mut().remove(&user)
+        let mut map_post_id_vec = NOTIFY_MAP.with(|map| {
+            map.borrow().get(&user).unwrap().clone()
         });
+
+        map_post_id_vec.retain(|x| !post_id_array.contains(x));
+
+        if map_post_id_vec.len() == 0 {
+            NOTIFY_MAP.with(|map| {
+                map.borrow_mut().remove(&user)
+            });
+        } else {
+            NOTIFY_MAP.with(|map| {
+                map.borrow_mut().insert(user, map_post_id_vec)
+            });
+        }
+
     }
 }
 

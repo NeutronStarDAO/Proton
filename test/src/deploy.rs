@@ -157,15 +157,15 @@ pub async fn init_root_fetch() {
 }
 
 pub async fn deploy() {
-    println!("Deploy and init canisters : \n");
+    println!("Deploy and Init canisters : \n");
 
-    println!("init root_bucket: \n");
+    println!("Init root_bucket: \n");
     init_root_bucket().await;
 
-    println!("init root_feed: \n");
+    println!("Init root_feed: \n");
     init_root_feed().await;
 
-    println!("init_root_fetch: \n");
+    println!("Init_root_fetch: \n");
     init_root_fetch().await;
 }
 

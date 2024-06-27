@@ -154,7 +154,7 @@ fn get_post(post_id: String) -> Option<Post> {
 
 #[ic_cdk::query] 
 fn get_all_post() -> Vec<Post> {
-    POST_MAP.with(|map| {
+    let mut post_vec = POST_MAP.with(|map| {
         let mut post_vec = Vec::new();
 
         for (k, v) in map.borrow().iter() {
@@ -162,7 +162,18 @@ fn get_all_post() -> Vec<Post> {
         }
 
         post_vec
-    })
+    });
+    post_vec.sort_by(|a, b| {
+        a.created_at.partial_cmp(&b.created_at).unwrap()
+    });
+
+    let mut sorted_post_vec = Vec::new();
+
+    for post in post_vec.iter().rev() {
+        sorted_post_vec.push(post.clone())
+    }
+
+    sorted_post_vec
 }
 
 fn get_post_id(bucket: Principal, user: Principal, index: u64) -> String {

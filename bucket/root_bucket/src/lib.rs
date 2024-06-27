@@ -276,7 +276,18 @@ async fn get_buckets_latest_feed(n: u64) -> Vec<Post> {
             }
         }
     }
-    posts
+
+    posts.sort_by(|a, b| {
+        a.created_at.partial_cmp(&b.created_at).unwrap()
+    });
+
+    let mut sorted_posts = Vec::new();
+
+    for post in posts.iter().rev() {
+        sorted_posts.push(post.clone())
+    }
+
+    sorted_posts
 }
 
 async fn _create_bucket() -> Principal {
