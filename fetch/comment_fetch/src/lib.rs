@@ -1,6 +1,6 @@
 use std::cell::RefCell;
 use std::collections::HashMap;
-use candid::{CandidType, Principal, Deserialize};
+use candid::Principal;
 use types::{Post, FetchInitArg as InitArg};
 use ic_cdk::api::management_canister::main::{CanisterStatusResponse, CanisterIdRecord};
 use ic_cdk_timers::TimerId;
@@ -122,13 +122,25 @@ async fn notify() {
         let notify_result = ic_cdk::call::<(Vec<String>, ), ()>(
             user_feed_canister.unwrap(), 
             "batch_receive_comment", 
-            (post_id_array, )
+            (post_id_array.clone(), )
         ).await.unwrap();
         
         // delete
-        NOTIFY_MAP.with(|map| {
-            map.borrow_mut().remove(&user)
+        let mut map_post_id_vec = NOTIFY_MAP.with(|map| {
+            map.borrow().get(&user).unwrap().clone()
         });
+
+        map_post_id_vec.retain(|x| !post_id_array.contains(x));
+
+        if map_post_id_vec.len() == 0 {
+            NOTIFY_MAP.with(|map| {
+                map.borrow_mut().remove(&user)
+            });
+        } else {
+            NOTIFY_MAP.with(|map| {
+                map.borrow_mut().insert(user, map_post_id_vec)
+            });
+        }
     }
 }
 

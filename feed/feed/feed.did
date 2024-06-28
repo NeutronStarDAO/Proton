@@ -45,11 +45,31 @@ type QueryStats = record {
   num_calls_total : nat;
   request_payload_bytes_total : nat;
 };
+type TransferError = variant {
+  GenericError : record { message : text; error_code : nat };
+  TemporarilyUnavailable;
+  BadBurn : record { min_burn_amount : nat };
+  Duplicate : record { duplicate_of : nat };
+  BadFee : record { expected_fee : nat };
+  CreatedInFuture : record { ledger_time : nat64 };
+  TooOld;
+  InsufficientFunds : record { balance : nat };
+};
+type TransferResult = variant { Ok : nat; Err : TransferError };
+type WalletTX = record {
+  time : nat64;
+  tx_hash : text;
+  tx_type : WalletTXType;
+  amount : nat64;
+};
+type WalletTXType = variant { Send; Receive };
 service : (FeedInitArg) -> {
   batch_receive_comment : (vec text) -> ();
   batch_receive_feed : (vec text) -> ();
   batch_receive_like : (vec text) -> ();
   check_available_bucket : () -> (bool);
+  ckBTC_balance : () -> (nat) query;
+  ckBTC_tx : () -> (vec WalletTX) query;
   create_comment : (text, text) -> (bool);
   create_like : (text) -> (bool);
   create_post : (text, vec text) -> (text);
@@ -62,9 +82,19 @@ service : (FeedInitArg) -> {
   get_owner : () -> (principal) query;
   get_post : (text) -> (opt Post) query;
   get_post_number : () -> (nat64) query;
+  ghost_balance : () -> (nat) query;
+  ghost_tx : () -> (vec WalletTX) query;
+  icp_balance : () -> (nat) query;
+  icp_tx : () -> (vec WalletTX) query;
+  icrc1_transfer : (principal, principal, nat64) -> (TransferResult);
   receive_comment : (text) -> (bool);
   receive_feed : (text) -> (bool);
   receive_like : (text) -> (bool);
   status : () -> (CanisterStatusResponse);
+  token_balance : (principal) -> (nat) query;
+  topup_by_icp : (nat64) -> (bool);
+  transfer_ckBTC : (principal, nat64) -> (TransferResult);
+  transfer_ghost : (principal, nat64) -> (TransferResult);
+  transfer_icp : (principal, nat64) -> (TransferResult);
   update_owner : (principal) -> ();
 }

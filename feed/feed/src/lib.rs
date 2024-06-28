@@ -1,4 +1,7 @@
-use candid::Principal;
+mod wallet;
+use wallet::{TransferResult, WalletTX};
+
+use candid::{Nat, Principal};
 use std::cell::RefCell;
 use types::{Comment, Like, NewComment, NewLike, NewRepost, Post, Repost, FeedInitArg as InitArg};
 use ic_cdk::api::management_canister::main::{CanisterStatusResponse, CanisterIdRecord};

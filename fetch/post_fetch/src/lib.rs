@@ -1,7 +1,7 @@
-use std::cell::{Cell, Ref, RefCell};
+use std::cell::RefCell;
 use std::collections::HashMap;
 use std::vec;
-use candid::{CandidType, Deserialize, Encode, Principal};
+use candid::{CandidType, Deserialize, Principal};
 use ic_cdk_timers::TimerId;
 use ic_cdk::api::management_canister::main::{CanisterStatusResponse, CanisterIdRecord};
 use std::time::Duration;
@@ -9,7 +9,6 @@ use std::time::Duration;
 thread_local! {
     // user_feed_canister -> post_id_array
     static NOTIFY_MAP: RefCell<HashMap<Principal, Vec<String>>> = RefCell::new(HashMap::new());
-    static LOG_MAP: RefCell<HashMap<Principal, Vec<(String, String)>>> = RefCell::new(HashMap::new());
     static TIMER_ID: RefCell<TimerId> = RefCell::new(TimerId::default());
     static ROOT_FEED_ACTOR: RefCell<Principal> = RefCell::new(Principal::anonymous());
 }
