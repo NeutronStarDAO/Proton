@@ -58,7 +58,6 @@ export interface _SERVICE {
   'get_bucket_wasm' : ActorMethod<[], Uint8Array | number[]>,
   'get_buckets_latest_feed' : ActorMethod<[bigint], Array<Post>>,
   'init' : ActorMethod<[], undefined>,
-  'init_fetch_actor' : ActorMethod<[Principal, Principal], undefined>,
   'status' : ActorMethod<[], CanisterStatusResponse>,
   'update_bucket_wasm' : ActorMethod<[Uint8Array | number[], bigint], boolean>,
 }

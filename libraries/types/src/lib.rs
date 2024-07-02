@@ -54,8 +54,6 @@ pub struct FeedInitArg {
     pub root_bucket: Principal,
     pub user_actor: Principal,
     pub post_fetch_actor: Principal,
-    pub comment_fetch_actor: Principal,
-    pub like_fetch_actor: Principal,
     pub owner: Principal
 }
 

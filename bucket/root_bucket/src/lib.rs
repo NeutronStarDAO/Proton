@@ -59,28 +59,6 @@ thread_local! {
         ).unwrap()
     );
 
-    static COMMENT_FETCH_ACTOR: RefCell<StableCell<Principal, Memory>> = RefCell::new(
-        StableCell::init(
-            MEMORY_MANAGER.with(|m| m.borrow().get(MemoryId::new(6))), 
-            Principal::anonymous()
-        ).unwrap()
-    );
-
-    static LIKE_FETCH_ACTOR: RefCell<StableCell<Principal, Memory>> = RefCell::new(
-        StableCell::init(
-            MEMORY_MANAGER.with(|m| m.borrow().get(MemoryId::new(7))), 
-            Principal::anonymous()
-        ).unwrap()
-    );
-}
-
-#[ic_cdk::update]
-fn init_fetch_actor(
-    comment_fetch: Principal,
-    like_fetch: Principal
-) {
-    COMMENT_FETCH_ACTOR.with(|actor| actor.borrow_mut().set(comment_fetch).unwrap());
-    LIKE_FETCH_ACTOR.with(|actor| actor.borrow_mut().set(like_fetch).unwrap());
 }
 
 #[ic_cdk::update]
@@ -105,10 +83,7 @@ async fn init() {
             mode: CanisterInstallMode::Install,
             canister_id: canister_id,
             wasm_module: BUCKET_WASM.with(|wasm| wasm.borrow().get().clone()),
-            arg: Encode!(
-                &COMMENT_FETCH_ACTOR.with(|comment_fetch| comment_fetch.borrow().get().clone()),
-                &LIKE_FETCH_ACTOR.with(|like_fetch| like_fetch.borrow().get().clone())
-            ).unwrap()
+            arg: vec![]
         }).await.unwrap();
         let bucket_index = BUCKET_INDEX.with(|index| index.borrow().get().clone());
         BUCKET_MAP.with(|map| {

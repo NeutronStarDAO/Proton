@@ -50,11 +50,7 @@ export const idlFactory = ({ IDL }) => {
         [IDL.Opt(IDL.Principal)],
         ['query'],
       ),
-    'init_fetch_actor' : IDL.Func(
-        [IDL.Principal, IDL.Principal, IDL.Principal],
-        [],
-        [],
-      ),
+    'init_fetch_actor' : IDL.Func([IDL.Principal], [], []),
     'status' : IDL.Func([], [CanisterStatusResponse], []),
     'update_feed_wasm' : IDL.Func(
         [IDL.Vec(IDL.Nat8), IDL.Nat64],

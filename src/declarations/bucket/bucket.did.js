@@ -47,20 +47,13 @@ export const idlFactory = ({ IDL }) => {
     'reserved_cycles' : IDL.Nat,
   });
   return IDL.Service({
-    'batch_store_feed' : IDL.Func([IDL.Vec(Post)], [], []),
+    'delete_feed' : IDL.Func([IDL.Text], [IDL.Bool], []),
     'get_latest_feed' : IDL.Func([IDL.Nat64], [IDL.Vec(Post)], ['query']),
     'get_post' : IDL.Func([IDL.Text], [IDL.Opt(Post)], ['query']),
     'get_post_number' : IDL.Func([], [IDL.Nat64], ['query']),
     'get_posts' : IDL.Func([IDL.Vec(IDL.Text)], [IDL.Vec(Post)], ['query']),
     'status' : IDL.Func([], [CanisterStatusResponse], []),
     'store_feed' : IDL.Func([Post], [IDL.Bool], []),
-    'update_post_comment' : IDL.Func(
-        [IDL.Text, IDL.Vec(Comment)],
-        [IDL.Bool],
-        [],
-      ),
-    'update_post_like' : IDL.Func([IDL.Text, IDL.Vec(Like)], [IDL.Bool], []),
-    'update_post_repost' : IDL.Func([IDL.Text, IDL.Vec(Like)], [IDL.Bool], []),
   });
 };
-export const init = ({ IDL }) => { return [IDL.Principal, IDL.Principal]; };
+export const init = ({ IDL }) => { return []; };

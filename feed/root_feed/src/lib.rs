@@ -63,19 +63,6 @@ thread_local! {
         ).unwrap() 
     );
 
-    static COMMMENT_FETCH_ACTOR: RefCell<StableCell<Principal, Memory>> = RefCell::new(
-        StableCell::init(
-            MEMORY_MANAGER.with(|m| m.borrow().get(MemoryId::new(6))), 
-            Principal::anonymous()
-        ).unwrap() 
-    );
-
-    static LIKE_FETCH_ACTOR: RefCell<StableCell<Principal, Memory>> = RefCell::new(
-        StableCell::init(
-            MEMORY_MANAGER.with(|m| m.borrow().get(MemoryId::new(7))), 
-            Principal::anonymous()
-        ).unwrap() 
-    );
 }
 
 #[ic_cdk::init]
@@ -87,12 +74,8 @@ fn init_function(arg: InitArg) {
 #[ic_cdk::update]
 fn init_fetch_actor(
     post_fetch: Principal,
-    comment_fetch: Principal,
-    like_fetch: Principal
 ) {
     POST_FETCH_ACTOR.with(|fetch| fetch.borrow_mut().set(post_fetch).unwrap());
-    COMMMENT_FETCH_ACTOR.with(|fetch| fetch.borrow_mut().set(comment_fetch).unwrap());
-    LIKE_FETCH_ACTOR.with(|fetch| fetch.borrow_mut().set(like_fetch).unwrap());
 }
 
 #[ic_cdk::update]
@@ -119,8 +102,6 @@ async fn create_feed_canister() -> Option<Principal> {
         root_bucket: ROOT_BUCKET.with(|root_bucket| root_bucket.borrow().get().clone()),
         user_actor: USER_ACTOR.with(|user_actor| user_actor.borrow().get().clone()),
         post_fetch_actor: POST_FETCH_ACTOR.with(|post_fetch| post_fetch.borrow().get().clone()),
-        comment_fetch_actor: COMMMENT_FETCH_ACTOR.with(|comment_fetch_actor| comment_fetch_actor.borrow().get().clone()),
-        like_fetch_actor: LIKE_FETCH_ACTOR.with(|like_fetch_actor| like_fetch_actor.borrow().get().clone()),
         owner: ic_cdk::api::caller()
     };
     install_code(InstallCodeArgument {

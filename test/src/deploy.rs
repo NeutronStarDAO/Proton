@@ -4,21 +4,10 @@ use ic_agent::Agent;
 use crate::{root_bucket, root_feed, root_fetch, ROOT_FETCH_CANISTER};
 use crate::utils::{build_local_agent};
 use crate::USERA_PEM;
-use crate::{
-    POST_FETCH_CANISTER,
-    LIKE_FETCH_CANISTER,
-    COMMENT_FETCH_CANISTER
-};
+use crate::POST_FETCH_CANISTER;
 
 async fn init_root_bucket() {
     let agent = build_local_agent(USERA_PEM).await;
-
-    // init_fetch_actor
-    root_bucket::init_fetch_actor(
-        agent.clone(), 
-        &COMMENT_FETCH_CANISTER, 
-        &LIKE_FETCH_CANISTER
-    ).await;
 
     // upload bucket wasm
     let bucket_wasm: Vec<u8> =
@@ -74,8 +63,6 @@ pub async fn init_root_feed() {
     root_feed::init_fetch_actor(
         agent, 
         &POST_FETCH_CANISTER, 
-        &COMMENT_FETCH_CANISTER, 
-        &LIKE_FETCH_CANISTER
     ).await;
 
 }
@@ -120,9 +107,7 @@ pub async fn init_root_fetch() {
     // init root_fetch fetch_actor
     root_fetch::init_fetch_actor(
         agent.clone(), 
-        &POST_FETCH_CANISTER, 
-        &COMMENT_FETCH_CANISTER, 
-        &LIKE_FETCH_CANISTER
+        &POST_FETCH_CANISTER
     ).await;
 
     // upload post_fetch wasm
@@ -133,26 +118,6 @@ pub async fn init_root_fetch() {
         &ROOT_FETCH_CANISTER, 
         post_fetch_wasm, 
         "update_post_fetch_wasm"
-    ).await;
-
-    // upload comment_fetch wasm
-    let comment_fetch_wasm: Vec<u8> =
-    include_bytes!("../../target/wasm32-unknown-unknown/release/comment_fetch.wasm").to_vec();
-    upload_wasm(
-        agent.clone(), 
-        &ROOT_FETCH_CANISTER, 
-        comment_fetch_wasm, 
-        "update_comment_fetch_wasm"
-    ).await;
-
-    // upload like_fetch wasm
-    let like_fetch_wasm: Vec<u8> =
-    include_bytes!("../../target/wasm32-unknown-unknown/release/like_fetch.wasm").to_vec();
-    upload_wasm(
-        agent, 
-        &ROOT_FETCH_CANISTER, 
-        like_fetch_wasm, 
-        "update_like_fetch_wasm"
     ).await;
 }
 

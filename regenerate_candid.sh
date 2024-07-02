@@ -8,10 +8,6 @@ candid-extractor target/wasm32-unknown-unknown/release/feed.wasm > feed/feed/fee
 
 candid-extractor target/wasm32-unknown-unknown/release/root_feed.wasm > feed/root_feed/root_feed.did
 
-candid-extractor target/wasm32-unknown-unknown/release/comment_fetch.wasm > fetch/comment_fetch/comment_fetch.did
-
-candid-extractor target/wasm32-unknown-unknown/release/like_fetch.wasm > fetch/like_fetch/like_fetch.did
-
 candid-extractor target/wasm32-unknown-unknown/release/post_fetch.wasm > fetch/post_fetch/post_fetch.did
 
 candid-extractor target/wasm32-unknown-unknown/release/root_fetch.wasm > fetch/root_fetch/root_fetch.did

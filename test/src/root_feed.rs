@@ -52,15 +52,13 @@ pub async fn get_user_feed_canister(
 pub async fn init_fetch_actor(
     agent: Agent,
     post_fetch: &Principal,
-    comment_fetch: &Principal,
-    like_fetch: &Principal
 ) {
     agent
         .update(
             &ROOT_FEED_CANISTER,
             "init_fetch_actor"
         )
-        .with_arg(Encode!(post_fetch, comment_fetch, like_fetch).unwrap())
+        .with_arg(Encode!(post_fetch).unwrap())
         .call_and_wait()
         .await.unwrap();
 }

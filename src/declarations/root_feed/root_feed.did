@@ -32,7 +32,7 @@ service : (InitArg) -> {
   get_feed_wasm : () -> (blob) query;
   get_total_user_feed_canister_number : () -> (nat64) query;
   get_user_feed_canister : (principal) -> (opt principal) query;
-  init_fetch_actor : (principal, principal, principal) -> ();
+  init_fetch_actor : (principal) -> ();
   status : () -> (CanisterStatusResponse);
   update_feed_wasm : (blob, nat64) -> (bool);
 }

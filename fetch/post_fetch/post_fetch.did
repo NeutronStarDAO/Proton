@@ -25,7 +25,11 @@ type QueryStats = record {
   request_payload_bytes_total : nat;
 };
 service : (InitArg) -> {
+  get_delete_notify_map_entries : () -> (
+      vec record { principal; vec text },
+    ) query;
   get_notify_map_entries : () -> (vec record { principal; vec text }) query;
+  receive_delete_notify : (vec principal, text) -> ();
   receive_notify : (vec principal, text) -> ();
   status : () -> (CanisterStatusResponse);
 }

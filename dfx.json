@@ -20,16 +20,6 @@
       "package": "root_feed",
       "type": "rust"
     },
-    "comment_fetch": {
-      "candid": "fetch/comment_fetch/comment_fetch.did",
-      "package": "comment_fetch",
-      "type": "rust"
-    },
-    "like_fetch": {
-      "candid": "fetch/like_fetch/like_fetch.did",
-      "package": "like_fetch",
-      "type": "rust"
-    },
     "post_fetch": {
       "candid": "fetch/post_fetch/post_fetch.did",
       "package": "post_fetch",

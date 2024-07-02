@@ -31,10 +31,8 @@ export interface DefiniteCanisterSettings {
 export interface FeedInitArg {
   'post_fetch_actor' : Principal,
   'owner' : Principal,
-  'like_fetch_actor' : Principal,
   'root_bucket' : Principal,
   'user_actor' : Principal,
-  'comment_fetch_actor' : Principal,
 }
 export interface Like { 'user' : Principal, 'created_at' : bigint }
 export interface Post {
@@ -76,9 +74,8 @@ export interface WalletTX {
 export type WalletTXType = { 'Send' : null } |
   { 'Receive' : null };
 export interface _SERVICE {
-  'batch_receive_comment' : ActorMethod<[Array<string>], undefined>,
+  'batch_delete_feed' : ActorMethod<[Array<string>], undefined>,
   'batch_receive_feed' : ActorMethod<[Array<string>], undefined>,
-  'batch_receive_like' : ActorMethod<[Array<string>], undefined>,
   'check_available_bucket' : ActorMethod<[], boolean>,
   'ckBTC_balance' : ActorMethod<[], bigint>,
   'ckBTC_tx' : ActorMethod<[], Array<WalletTX>>,
@@ -86,6 +83,7 @@ export interface _SERVICE {
   'create_like' : ActorMethod<[string], boolean>,
   'create_post' : ActorMethod<[string, Array<string>], string>,
   'create_repost' : ActorMethod<[string], boolean>,
+  'delete_post' : ActorMethod<[string], boolean>,
   'get_all_post' : ActorMethod<[], Array<Post>>,
   'get_bucket' : ActorMethod<[], [] | [Principal]>,
   'get_feed' : ActorMethod<[string], [] | [Post]>,
@@ -102,9 +100,7 @@ export interface _SERVICE {
     [Principal, Principal, bigint],
     TransferResult
   >,
-  'receive_comment' : ActorMethod<[string], boolean>,
   'receive_feed' : ActorMethod<[string], boolean>,
-  'receive_like' : ActorMethod<[string], boolean>,
   'status' : ActorMethod<[], CanisterStatusResponse>,
   'token_balance' : ActorMethod<[Principal], bigint>,
   'topup_by_icp' : ActorMethod<[bigint], boolean>,

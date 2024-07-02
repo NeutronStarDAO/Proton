@@ -30,10 +30,20 @@ export const idlFactory = ({ IDL }) => {
     'reserved_cycles' : IDL.Nat,
   });
   return IDL.Service({
+    'get_delete_notify_map_entries' : IDL.Func(
+        [],
+        [IDL.Vec(IDL.Tuple(IDL.Principal, IDL.Vec(IDL.Text)))],
+        ['query'],
+      ),
     'get_notify_map_entries' : IDL.Func(
         [],
         [IDL.Vec(IDL.Tuple(IDL.Principal, IDL.Vec(IDL.Text)))],
         ['query'],
+      ),
+    'receive_delete_notify' : IDL.Func(
+        [IDL.Vec(IDL.Principal), IDL.Text],
+        [],
+        [],
       ),
     'receive_notify' : IDL.Func([IDL.Vec(IDL.Principal), IDL.Text], [], []),
     'status' : IDL.Func([], [CanisterStatusResponse], []),

@@ -21,10 +21,8 @@ type DefiniteCanisterSettings = record {
 type FeedInitArg = record {
   post_fetch_actor : principal;
   owner : principal;
-  like_fetch_actor : principal;
   root_bucket : principal;
   user_actor : principal;
-  comment_fetch_actor : principal;
 };
 type Like = record { user : principal; created_at : nat64 };
 type Post = record {
@@ -64,9 +62,8 @@ type WalletTX = record {
 };
 type WalletTXType = variant { Send; Receive };
 service : (FeedInitArg) -> {
-  batch_receive_comment : (vec text) -> ();
+  batch_delete_feed : (vec text) -> ();
   batch_receive_feed : (vec text) -> ();
-  batch_receive_like : (vec text) -> ();
   check_available_bucket : () -> (bool);
   ckBTC_balance : () -> (nat) query;
   ckBTC_tx : () -> (vec WalletTX) query;
@@ -74,6 +71,7 @@ service : (FeedInitArg) -> {
   create_like : (text) -> (bool);
   create_post : (text, vec text) -> (text);
   create_repost : (text) -> (bool);
+  delete_post : (text) -> (bool);
   get_all_post : () -> (vec Post) query;
   get_bucket : () -> (opt principal) query;
   get_feed : (text) -> (opt Post) query;
@@ -87,9 +85,7 @@ service : (FeedInitArg) -> {
   icp_balance : () -> (nat) query;
   icp_tx : () -> (vec WalletTX) query;
   icrc1_transfer : (principal, principal, nat64) -> (TransferResult);
-  receive_comment : (text) -> (bool);
   receive_feed : (text) -> (bool);
-  receive_like : (text) -> (bool);
   status : () -> (CanisterStatusResponse);
   token_balance : (principal) -> (nat) query;
   topup_by_icp : (nat64) -> (bool);

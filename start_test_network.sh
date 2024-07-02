@@ -25,22 +25,6 @@ root_fetch=$(dfx canister id root_fetch)
 dfx deploy post_fetch --argument "(record {root_feed = principal \"$root_feed\"})";
 post_fetch=$(dfx canister id post_fetch)
 
-dfx deploy comment_fetch --argument "(
-  record {
-    root_feed = principal \"$root_feed\";
-    user_actor = principal \"$user\"
-  }
-)"
-comment_fetch=$(dfx canister id comment_fetch)
-
-dfx deploy like_fetch --argument "(
-  record {
-    root_feed = principal \"$root_feed\";
-    user_actor = principal \"$user\"
-  }
-)"
-like_fetch=$(dfx canister id like_fetch)
-
 dfx deploy photo_storage
 photo_storage=$(dfx canister id photo_storage)
 

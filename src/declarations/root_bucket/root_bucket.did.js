@@ -69,7 +69,6 @@ export const idlFactory = ({ IDL }) => {
         ['composite_query'],
       ),
     'init' : IDL.Func([], [], []),
-    'init_fetch_actor' : IDL.Func([IDL.Principal, IDL.Principal], [], []),
     'status' : IDL.Func([], [CanisterStatusResponse], []),
     'update_bucket_wasm' : IDL.Func(
         [IDL.Vec(IDL.Nat8), IDL.Nat64],

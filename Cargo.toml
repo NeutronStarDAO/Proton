@@ -4,8 +4,6 @@ members = [
     "bucket/root_bucket",
     "feed/feed",
     "feed/root_feed",
-    "fetch/comment_fetch",
-    "fetch/like_fetch",
     "fetch/post_fetch",
     "fetch/root_fetch",
     "libraries/types",

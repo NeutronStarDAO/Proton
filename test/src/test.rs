@@ -266,6 +266,29 @@ pub async fn test_time() {
     }
 }
 
+pub async fn test_delete_post() {
+    println!("Delete User C Post\n");
+
+    let agent_c = utils::build_local_agent(USERC_PEM).await;
+
+    let c_feed = root_feed::get_user_feed_canister(
+        agent_c.clone(), 
+        agent_c.get_principal().unwrap()
+    ).await.unwrap();
+
+    let delete_result = feed::delete_post(
+        agent_c.clone(), 
+        c_feed, 
+        "asrmz-lmaaa-aaaaa-qaaeq-cai#hzk5h-nnsdf-6mypn-z5b7h-axje3-erlod-3cvml-ahkgn-hkc3y-hdsho-sqe#0".to_string()
+    ).await;
+    println!("delete_result : {:?}\n", delete_result);
+
+    assert!(delete_result);
+
+    // 检查其粉丝D
+    // 转帖者E，E的粉丝F
+}
+
 pub async fn test() {
     println!("---------------- Test Start ---------------- \n");
 
@@ -300,6 +323,10 @@ pub async fn test() {
     test_like_fetch(post_id, c_feed).await;
 
     test_time().await;
+
+    println!("---------------- TEST 11 test_delete_post ------------------ \n");
+    test_delete_post().await;
+
 }
 
 // 关注关系

@@ -33,43 +33,15 @@ export const idlFactory = ({ IDL }) => {
     'reserved_cycles' : IDL.Nat,
   });
   return IDL.Service({
-    'create_comment_fetch_canister' : IDL.Func([], [IDL.Principal], []),
-    'create_like_fetch_canister' : IDL.Func([], [IDL.Principal], []),
     'create_post_fetch_canister' : IDL.Func([], [IDL.Principal], []),
-    'get_all_comment_fetch_canister' : IDL.Func(
-        [],
-        [IDL.Vec(IDL.Principal)],
-        ['query'],
-      ),
-    'get_all_like_fetch_canister' : IDL.Func(
-        [],
-        [IDL.Vec(IDL.Principal)],
-        ['query'],
-      ),
     'get_all_post_fetch_canister' : IDL.Func(
         [],
         [IDL.Vec(IDL.Principal)],
         ['query'],
       ),
-    'get_comment_fetch_wasm' : IDL.Func([], [IDL.Vec(IDL.Nat8)], ['query']),
-    'get_like_fetch_wasm' : IDL.Func([], [IDL.Vec(IDL.Nat8)], ['query']),
     'get_post_fetch_wasm' : IDL.Func([], [IDL.Vec(IDL.Nat8)], ['query']),
-    'init_fetch_actor' : IDL.Func(
-        [IDL.Principal, IDL.Principal, IDL.Principal],
-        [],
-        [],
-      ),
+    'init_fetch_actor' : IDL.Func([IDL.Principal], [], []),
     'status' : IDL.Func([], [CanisterStatusResponse], []),
-    'update_comment_fetch_wasm' : IDL.Func(
-        [IDL.Vec(IDL.Nat8), IDL.Nat64],
-        [IDL.Bool],
-        [],
-      ),
-    'update_like_fetch_wasm' : IDL.Func(
-        [IDL.Vec(IDL.Nat8), IDL.Nat64],
-        [IDL.Bool],
-        [],
-      ),
     'update_post_fetch_wasm' : IDL.Func(
         [IDL.Vec(IDL.Nat8), IDL.Nat64],
         [IDL.Bool],

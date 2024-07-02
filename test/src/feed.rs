@@ -23,6 +23,23 @@ pub async fn create_post(
     Decode!(&response_blob, String).unwrap()
 }
 
+pub async fn delete_post(
+    agent: ic_agent::Agent,
+    feed_canister: Principal,
+    post_id: String
+) -> bool {
+    let response_blob = agent
+        .update(
+            &feed_canister, 
+            "delete_post"
+        )
+        .with_arg(Encode!(&post_id).unwrap())
+        .call_and_wait()
+        .await.unwrap();
+    
+    Decode!(&response_blob, bool).unwrap()
+}
+
 pub async fn create_comment(
     agent: ic_agent::Agent,
     feed_canister: Principal,

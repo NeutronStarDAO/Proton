@@ -2,10 +2,8 @@ export const idlFactory = ({ IDL }) => {
   const FeedInitArg = IDL.Record({
     'post_fetch_actor' : IDL.Principal,
     'owner' : IDL.Principal,
-    'like_fetch_actor' : IDL.Principal,
     'root_bucket' : IDL.Principal,
     'user_actor' : IDL.Principal,
-    'comment_fetch_actor' : IDL.Principal,
   });
   const WalletTXType = IDL.Variant({ 'Send' : IDL.Null, 'Receive' : IDL.Null });
   const WalletTX = IDL.Record({
@@ -76,9 +74,8 @@ export const idlFactory = ({ IDL }) => {
     'reserved_cycles' : IDL.Nat,
   });
   return IDL.Service({
-    'batch_receive_comment' : IDL.Func([IDL.Vec(IDL.Text)], [], []),
+    'batch_delete_feed' : IDL.Func([IDL.Vec(IDL.Text)], [], []),
     'batch_receive_feed' : IDL.Func([IDL.Vec(IDL.Text)], [], []),
-    'batch_receive_like' : IDL.Func([IDL.Vec(IDL.Text)], [], []),
     'check_available_bucket' : IDL.Func([], [IDL.Bool], []),
     'ckBTC_balance' : IDL.Func([], [IDL.Nat], ['query']),
     'ckBTC_tx' : IDL.Func([], [IDL.Vec(WalletTX)], ['query']),
@@ -86,6 +83,7 @@ export const idlFactory = ({ IDL }) => {
     'create_like' : IDL.Func([IDL.Text], [IDL.Bool], []),
     'create_post' : IDL.Func([IDL.Text, IDL.Vec(IDL.Text)], [IDL.Text], []),
     'create_repost' : IDL.Func([IDL.Text], [IDL.Bool], []),
+    'delete_post' : IDL.Func([IDL.Text], [IDL.Bool], []),
     'get_all_post' : IDL.Func([], [IDL.Vec(Post)], ['query']),
     'get_bucket' : IDL.Func([], [IDL.Opt(IDL.Principal)], ['query']),
     'get_feed' : IDL.Func([IDL.Text], [IDL.Opt(Post)], ['query']),
@@ -103,9 +101,7 @@ export const idlFactory = ({ IDL }) => {
         [TransferResult],
         [],
       ),
-    'receive_comment' : IDL.Func([IDL.Text], [IDL.Bool], []),
     'receive_feed' : IDL.Func([IDL.Text], [IDL.Bool], []),
-    'receive_like' : IDL.Func([IDL.Text], [IDL.Bool], []),
     'status' : IDL.Func([], [CanisterStatusResponse], []),
     'token_balance' : IDL.Func([IDL.Principal], [IDL.Nat], ['query']),
     'topup_by_icp' : IDL.Func([IDL.Nat64], [IDL.Bool], []),
@@ -127,10 +123,8 @@ export const init = ({ IDL }) => {
   const FeedInitArg = IDL.Record({
     'post_fetch_actor' : IDL.Principal,
     'owner' : IDL.Principal,
-    'like_fetch_actor' : IDL.Principal,
     'root_bucket' : IDL.Principal,
     'user_actor' : IDL.Principal,
-    'comment_fetch_actor' : IDL.Principal,
   });
   return [FeedInitArg];
 };

@@ -48,16 +48,13 @@ export interface QueryStats {
   'request_payload_bytes_total' : bigint,
 }
 export interface _SERVICE {
-  'batch_store_feed' : ActorMethod<[Array<Post>], undefined>,
+  'delete_feed' : ActorMethod<[string], boolean>,
   'get_latest_feed' : ActorMethod<[bigint], Array<Post>>,
   'get_post' : ActorMethod<[string], [] | [Post]>,
   'get_post_number' : ActorMethod<[], bigint>,
   'get_posts' : ActorMethod<[Array<string>], Array<Post>>,
   'status' : ActorMethod<[], CanisterStatusResponse>,
   'store_feed' : ActorMethod<[Post], boolean>,
-  'update_post_comment' : ActorMethod<[string, Array<Comment>], boolean>,
-  'update_post_like' : ActorMethod<[string, Array<Like>], boolean>,
-  'update_post_repost' : ActorMethod<[string, Array<Like>], boolean>,
 }
 export declare const idlFactory: IDL.InterfaceFactory;
 export declare const init: (args: { IDL: typeof IDL }) => IDL.Type[];

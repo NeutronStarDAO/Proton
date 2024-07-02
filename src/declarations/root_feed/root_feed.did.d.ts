@@ -36,10 +36,7 @@ export interface _SERVICE {
   'get_feed_wasm' : ActorMethod<[], Uint8Array | number[]>,
   'get_total_user_feed_canister_number' : ActorMethod<[], bigint>,
   'get_user_feed_canister' : ActorMethod<[Principal], [] | [Principal]>,
-  'init_fetch_actor' : ActorMethod<
-    [Principal, Principal, Principal],
-    undefined
-  >,
+  'init_fetch_actor' : ActorMethod<[Principal], undefined>,
   'status' : ActorMethod<[], CanisterStatusResponse>,
   'update_feed_wasm' : ActorMethod<[Uint8Array | number[], bigint], boolean>,
 }
