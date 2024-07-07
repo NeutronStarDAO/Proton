@@ -1,0 +1,61 @@
+type CanisterStatusResponse = record {
+  status : CanisterStatusType;
+  memory_size : nat;
+  cycles : nat;
+  settings : DefiniteCanisterSettings;
+  query_stats : QueryStats;
+  idle_cycles_burned_per_day : nat;
+  module_hash : opt blob;
+  reserved_cycles : nat;
+};
+type CanisterStatusType = variant { stopped; stopping; running };
+type Comment = record { content : text; user : principal; created_at : nat64 };
+type DefiniteCanisterSettings = record {
+  freezing_threshold : nat;
+  controllers : vec principal;
+  reserved_cycles_limit : nat;
+  log_visibility : LogVisibility;
+  wasm_memory_limit : nat;
+  memory_allocation : nat;
+  compute_allocation : nat;
+};
+type Like = record { user : principal; created_at : nat64 };
+type LogVisibility = variant { controllers; public };
+type Post = record {
+  repost : vec Like;
+  post_id : text;
+  photo_url : vec text;
+  content : text;
+  like : vec Like;
+  user : principal;
+  created_at : nat64;
+  comment : vec Comment;
+  feed_canister : principal;
+  index : nat64;
+};
+type QueryStats = record {
+  response_payload_bytes_total : nat;
+  num_instructions_total : nat;
+  num_calls_total : nat;
+  request_payload_bytes_total : nat;
+};
+service : (principal) -> {
+  batch_delete_feed : (principal, vec text) -> ();
+  batch_receive_feed : (principal, vec text) -> ();
+  create_comment : (text, text) -> (bool);
+  create_like : (text) -> (bool);
+  create_post : (text, vec text) -> (text);
+  create_repost : (text) -> (bool);
+  delete_post : (text) -> (bool);
+  get_all_latest_feed : (nat64) -> (vec Post) query;
+  get_all_post : (principal) -> (vec Post) query;
+  get_delete_notify_map_entries : () -> (
+      vec record { principal; vec text },
+    ) query;
+  get_feed_number : (principal) -> (nat64) query;
+  get_latest_feed : (principal, nat64) -> (vec Post) query;
+  get_notify_map_entries : () -> (vec record { principal; vec text }) query;
+  get_post : (text) -> (opt Post) query;
+  get_post_number : (principal) -> (nat64) query;
+  status : () -> (CanisterStatusResponse);
+}

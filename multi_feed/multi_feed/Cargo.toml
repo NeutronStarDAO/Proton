@@ -1,5 +1,5 @@
 [package]
-name = "photo_storage"
+name = "multi_feed"
 version = "0.1.0"
 edition = "2021"
 
@@ -12,5 +12,6 @@ crate-type = ["cdylib"]
 candid = "0.10.9"
 ic-cdk = "0.15.0"
 serde = "1.0.203"
-serde_bytes = "0.11.15"
-types = {path = "../../libraries/types"}
+ic-stable-structures = "0.6.5"
+ic-cdk-timers = "0.9.0"
+types = { path = "../../libraries/types" }

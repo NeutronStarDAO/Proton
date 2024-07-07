@@ -1,38 +1,13 @@
 {
   "canisters": {
-    "bucket": {
-      "candid": "bucket/bucket/bucket.did",
-      "package": "bucket",
+    "multi_feed": {
+      "candid": "multi_feed/multi_feed/multi_feed.did",
+      "package": "multi_feed",
       "type": "rust"
     },
-    "root_bucket": {
-      "candid": "bucket/root_bucket/root_bucket.did",
-      "package": "root_bucket",
-      "type": "rust"
-    },
-    "feed": {
-      "candid": "feed/feed/feed.did",
-      "package": "feed",
-      "type": "rust"
-    },
-    "root_feed": {
-      "candid": "feed/root_feed/root_feed.did",
-      "package": "root_feed",
-      "type": "rust"
-    },
-    "post_fetch": {
-      "candid": "fetch/post_fetch/post_fetch.did",
-      "package": "post_fetch",
-      "type": "rust"
-    },
-    "root_fetch": {
-      "candid": "fetch/root_fetch/root_fetch.did",
-      "package": "root_fetch",
-      "type": "rust"
-    },
-    "user": {
-      "candid": "user/user.did",
-      "package": "user",
+    "multi_root_feed": {
+      "candid": "multi_feed/multi_root_feed/multi_root_feed.did",
+      "package": "multi_root_feed",
       "type": "rust"
     },
     "photo_storage": {

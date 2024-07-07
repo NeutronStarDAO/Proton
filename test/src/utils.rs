@@ -29,8 +29,8 @@ pub fn build_agent(pem_identity_path: &str) -> ic_agent::Agent {
 }
 
 pub async fn build_local_agent(pem_identity_path: &str) -> ic_agent::Agent {
-    let url = "http://127.0.0.1:4943".to_string();
-    // let url = "http://43.128.242.149:4943".to_string();
+    // let url = "http://127.0.0.1:4943".to_string();
+    let url = "http://43.128.242.149:4943".to_string();
     let identity = identity::Secp256k1Identity::from_pem_file(String::from(pem_identity_path)).expect("not found identity pem");
     let transport = http_transport::ReqwestTransport::create(&url).expect("create transport error");
     let agent = ic_agent::Agent::builder()

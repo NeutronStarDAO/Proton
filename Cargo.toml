@@ -1,14 +1,9 @@
 [workspace]
 members = [
-    "bucket/bucket",
-    "bucket/root_bucket",
-    "feed/feed",
-    "feed/root_feed",
-    "fetch/post_fetch",
-    "fetch/root_fetch",
     "libraries/types",
-    "user",
     "storage/photo_storage",
-    "test"
+    "test",
+    "multi_feed/multi_feed",
+    "multi_feed/multi_root_feed",
 ]
 resolver = "2"
