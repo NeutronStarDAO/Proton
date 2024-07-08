@@ -18,8 +18,8 @@ type form_type = {
   ID: string,
   Nam: string,
   Bio: string,
-  Education: string,
-  Company: string
+  Location: string,
+  Network: string
 }
 export const ProfileModal = ({open, setOpen, canClose}: { open: boolean, setOpen: Function, canClose: boolean }) => {
   const {principal, userFeedCai} = useAuth()
@@ -30,8 +30,8 @@ export const ProfileModal = ({open, setOpen, canClose}: { open: boolean, setOpen
     ID: "",
     Nam: "",
     Bio: "",
-    Education: "",
-    Company: ""
+    Location: "",
+    Network: ""
   })
   const profile = useProfileStore()
   const onChange = (title: keyof form_type, e: any) => {
@@ -42,13 +42,6 @@ export const ProfileModal = ({open, setOpen, canClose}: { open: boolean, setOpen
 
   const done = async () => {
     if (!principal || !userFeedCai) return 0
-    api.info({
-      message: 'Edit ing ...',
-      key: 'edit',
-      duration: null,
-      description: '',
-      icon: <LoadingOutlined/>
-    });
     try {
       setOpen(false)
       const res = await aApi.upload_photo([backFile ?? new File([], ""), avatarFile ?? new File([], "")])
@@ -56,21 +49,15 @@ export const ProfileModal = ({open, setOpen, canClose}: { open: boolean, setOpen
         id: principal,
         avatar_url: res[1],
         name: form.Nam,
-        education: form.Education,
+        education: form.Location,
         biography: form.Bio,
-        company: form.Company,
+        company: form.Network,
         feed_canister: [userFeedCai],
         back_img_url: res[0],
         handle: form.ID
       })
       const profile = await userApi.getProfile(principal)
       if (profile) updateProfile(profile)
-      api.success({
-        message: 'Edit Successful !',
-        key: 'edit',
-        description: '',
-        icon: <CheckOutlined/>
-      })
     } catch (e) {
       api.error({
         message: 'Edit failed !',
@@ -95,15 +82,15 @@ export const ProfileModal = ({open, setOpen, canClose}: { open: boolean, setOpen
       <div style={{width: "100%", display: "flex"}}>
         <Avatar setAvatarFile={setAvatarFile} profile={profile}/>
         <div style={{flex: "1", display: "flex", flexDirection: "column", justifyContent: "center", gap: "1rem"}}>
-          <InfoItem onchange={onChange} t={"ID"} value={profile.handle ? profile.handle : ""} flag={true}/>
+          <InfoItem onchange={onChange} t={"ID"} value={profile.handle ? profile.handle : undefined} flag={true}/>
           <InfoItem onchange={onChange} t={"Nam"} placeholder={"your name"} flag={true}/>
         </div>
       </div>
       <InfoItem onchange={onChange} t={"Bio"}
                 placeholder={"your biography"}
                 flag={false}/>
-      <InfoItem onchange={onChange} t={"Education"} flag={false}/>
-      <InfoItem onchange={onChange} t={"Company"} flag={false}/>
+      <InfoItem onchange={onChange} t={"Location"} flag={false}/>
+      <InfoItem onchange={onChange} t={"Network"} flag={false}/>
       <Done done={done}/>
     </div>}/>
   </>
@@ -158,7 +145,11 @@ const Avatar = ({setAvatarFile, profile}: { setAvatarFile: Function, profile: Pr
     <div className={"avatar"}>
       <img
         src={previewImg ? previewImg : ("avatar_url" in profile) && profile.avatar_url ? profile.avatar_url : "./img_8.png"}
-        style={{height: "100%", width: "100%", borderRadius: "50%"}} alt=""/>
+        style={{
+          height: !previewImg && !(("avatar_url" in profile) && profile.avatar_url) ? "50%" : "100%",
+          width: !previewImg && !(("avatar_url" in profile) && profile.avatar_url) ? "50%" : "100%",
+          borderRadius: "50%"
+        }} alt=""/>
     </div>
   </div>
 }
@@ -184,15 +175,18 @@ const Background = ({setBackFile, profile}: { setBackFile: Function, profile: Pr
   return <div className={"avatar_wrap"}>
     <div style={{width: "100%"}} {...getRootProps()}>
       <input {...getInputProps()} />
-      <div className={"background"}
-           style={{
-             background: `rgba(0, 0, 0, 0.3) url(${previewImg ?
-               previewImg : ("back_img_url" in profile) &&
-               profile.back_img_url ? profile.back_img_url : "./img_8.png"}) no-repeat center center `,
-             backgroundSize: previewImg || ("back_img_url" in profile) &&
-             profile.back_img_url ? "cover" : "contain"
-           }}>
-      </div>
+
+      {previewImg || (("back_img_url" in profile) &&
+        profile.back_img_url) ? <div className={"background"} style={{
+          background: `rgba(0, 0, 0, 0.3) url(${previewImg ?
+            previewImg : profile.back_img_url}) no-repeat center center `,
+          backgroundSize: "cover"
+        }}/>
+        :
+        <div className={"background"} style={{
+          background: "rgba(0, 0, 0, 0.3) url(./img_8.png) no-repeat center center ",
+        }}/>
+      }
     </div>
   </div>
 }

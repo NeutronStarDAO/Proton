@@ -10,7 +10,7 @@ import {useAuth} from "./utils/useAuth";
 import {userApi} from "./actors/user";
 import {updateProfile, useProfileStore} from "./redux";
 import {Sidebar} from "./components/Sidebar";
-import {updateSelectPost, useSelectPostStore} from "./redux/features/SelectPost";
+import {useSelectPostStore} from "./redux/features/SelectPost";
 import {ProfileModal} from "./components/Modal/Profile";
 
 function App() {
@@ -21,6 +21,7 @@ function App() {
 
   const [open, setOpen] = useState(false)
   const profile = useProfileStore()
+
   useEffect(() => {
     const t = setTimeout(() => {
       if (isAuth) {
@@ -38,6 +39,7 @@ function App() {
   useEffect(() => {
     if (principal) {
       userApi.getProfile(principal).then(e => {
+        console.log(e)
         if (e) {
           updateProfile(e)
         }
@@ -45,33 +47,7 @@ function App() {
     }
   }, [principal])
 
-  useEffect(() => {
-    window.addEventListener("click", (e) => {
-      // @ts-ignore
-      const className = e.target.className as any
-      try {
-        if (typeof className !== "string") return 0
-        if (className.includes("post_main") ||
-          className.includes("author") || className.includes("tweet")
-          || className.includes("img_list") || className.includes("post_bottom") || className.includes("comment")) {
-
-        } else {
-          updateSelectPost({})
-        }
-      } catch (e) {
-        console.log(e)
-      }
-
-    })
-
-    return () => {
-      window.removeEventListener("click", () => {
-      })
-    }
-  }, [])
-
   const scrollToTop = () => {
-    console.log(scrollContainerRef.current)
     if (scrollContainerRef.current) {
       //@ts-ignore
       scrollContainerRef.current.scrollTo({
@@ -91,7 +67,8 @@ function App() {
         <Route path="explore" element={<Main scrollContainerRef={scrollContainerRef}/>}/>
         {/*<Route path="wallet" element={<Wallet/>}/>*/}
         <Route path="settings" element={<Settings/>}/>
-        <Route path="profile/:id" element={ <Profile scrollContainerRef={scrollContainerRef} scrollToTop={scrollToTop}/>}/>
+        <Route path="profile/:id"
+               element={<Profile scrollContainerRef={scrollContainerRef} scrollToTop={scrollToTop}/>}/>
         {/*<Route path="*" element={<ErrorPage/>}/>*/}
       </Routes>
       {"comment" in selectPost ?

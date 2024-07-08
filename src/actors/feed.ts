@@ -75,6 +75,16 @@ export default class Feed {
     }
   }
 
+  async deletePost(postId: string) {
+    const actor = await this.getActor()
+    try {
+      return await actor.delete_post(postId) as boolean
+    } catch (e) {
+      console.log("deletePost", e)
+      throw e
+    }
+  }
+
   async createRepost(postId: string) {
     const actor = await this.getActor()
     try {

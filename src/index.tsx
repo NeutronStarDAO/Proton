@@ -8,7 +8,10 @@ import {BrowserRouter} from "react-router-dom";
 import {ProvideAuth} from "./utils/useAuth";
 import {Provider} from "react-redux";
 import store from "./redux/store";
+import gsap from 'gsap';
+import { useGSAP } from '@gsap/react';
 
+gsap.registerPlugin(useGSAP);
 fontResize()
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement

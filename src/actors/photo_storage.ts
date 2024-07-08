@@ -1,7 +1,7 @@
 import {getActor} from "../utils/Actor";
 import {idlFactory} from "../declarations/photo_storage/photo_storage.did.js";
 
-const photo_storage_cid = "asrmz-lmaaa-aaaaa-qaaeq-cai"
+const photo_storage_cid = "by6od-j4aaa-aaaaa-qaadq-cai"
 
 class storage {
 

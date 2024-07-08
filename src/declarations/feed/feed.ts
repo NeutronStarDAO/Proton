@@ -31,10 +31,8 @@ export interface DefiniteCanisterSettings {
 export interface FeedInitArg {
   'post_fetch_actor' : Principal,
   'owner' : Principal,
-  'like_fetch_actor' : Principal,
   'root_bucket' : Principal,
   'user_actor' : Principal,
-  'comment_fetch_actor' : Principal,
 }
 export interface Like { 'user' : Principal, 'created_at' : bigint }
 export interface Post {
@@ -55,15 +53,37 @@ export interface QueryStats {
   'num_calls_total' : bigint,
   'request_payload_bytes_total' : bigint,
 }
+export type TransferError = {
+  'GenericError' : { 'message' : string, 'error_code' : bigint }
+} |
+  { 'TemporarilyUnavailable' : null } |
+  { 'BadBurn' : { 'min_burn_amount' : bigint } } |
+  { 'Duplicate' : { 'duplicate_of' : bigint } } |
+  { 'BadFee' : { 'expected_fee' : bigint } } |
+  { 'CreatedInFuture' : { 'ledger_time' : bigint } } |
+  { 'TooOld' : null } |
+  { 'InsufficientFunds' : { 'balance' : bigint } };
+export type TransferResult = { 'Ok' : bigint } |
+  { 'Err' : TransferError };
+export interface WalletTX {
+  'time' : bigint,
+  'tx_hash' : string,
+  'tx_type' : WalletTXType,
+  'amount' : bigint,
+}
+export type WalletTXType = { 'Send' : null } |
+  { 'Receive' : null };
 export interface _SERVICE {
-  'batch_receive_comment' : ActorMethod<[Array<string>], undefined>,
+  'batch_delete_feed' : ActorMethod<[Array<string>], undefined>,
   'batch_receive_feed' : ActorMethod<[Array<string>], undefined>,
-  'batch_receive_like' : ActorMethod<[Array<string>], undefined>,
   'check_available_bucket' : ActorMethod<[], boolean>,
+  'ckBTC_balance' : ActorMethod<[], bigint>,
+  'ckBTC_tx' : ActorMethod<[], Array<WalletTX>>,
   'create_comment' : ActorMethod<[string, string], boolean>,
   'create_like' : ActorMethod<[string], boolean>,
   'create_post' : ActorMethod<[string, Array<string>], string>,
   'create_repost' : ActorMethod<[string], boolean>,
+  'delete_post' : ActorMethod<[string], boolean>,
   'get_all_post' : ActorMethod<[], Array<Post>>,
   'get_bucket' : ActorMethod<[], [] | [Principal]>,
   'get_feed' : ActorMethod<[string], [] | [Post]>,
@@ -72,10 +92,21 @@ export interface _SERVICE {
   'get_owner' : ActorMethod<[], Principal>,
   'get_post' : ActorMethod<[string], [] | [Post]>,
   'get_post_number' : ActorMethod<[], bigint>,
-  'receive_comment' : ActorMethod<[string], boolean>,
+  'ghost_balance' : ActorMethod<[], bigint>,
+  'ghost_tx' : ActorMethod<[], Array<WalletTX>>,
+  'icp_balance' : ActorMethod<[], bigint>,
+  'icp_tx' : ActorMethod<[], Array<WalletTX>>,
+  'icrc1_transfer' : ActorMethod<
+    [Principal, Principal, bigint],
+    TransferResult
+  >,
   'receive_feed' : ActorMethod<[string], boolean>,
-  'receive_like' : ActorMethod<[string], boolean>,
   'status' : ActorMethod<[], CanisterStatusResponse>,
+  'token_balance' : ActorMethod<[Principal], bigint>,
+  'topup_by_icp' : ActorMethod<[bigint], boolean>,
+  'transfer_ckBTC' : ActorMethod<[Principal, bigint], TransferResult>,
+  'transfer_ghost' : ActorMethod<[Principal, bigint], TransferResult>,
+  'transfer_icp' : ActorMethod<[Principal, bigint], TransferResult>,
   'update_owner' : ActorMethod<[Principal], undefined>,
 }
 export declare const idlFactory: IDL.InterfaceFactory;

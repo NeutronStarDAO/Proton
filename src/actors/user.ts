@@ -14,8 +14,8 @@ class User {
   async createProfile(newProfile: Profile) {
     const actor = await User.getActor()
     try {
-      await actor.create_profile(newProfile)
-      console.log("create")
+      const res = await actor.create_profile(newProfile)
+      console.log("create", res)
     } catch (e) {
       console.log("createProfile", e)
       throw e
@@ -46,7 +46,7 @@ class User {
   async getFollowerNumber(who: Principal): Promise<number> {
     const actor = await User.getActor()
     try {
-      const res = await actor.getFollowerNumber(who) as bigint
+      const res = await actor.get_follower_number(who) as bigint
       return Number(res)
     } catch (e) {
       console.log("getFollowerNumber", e)
@@ -57,7 +57,7 @@ class User {
   async getFollowingNumber(who: Principal): Promise<number> {
     const actor = await User.getActor()
     try {
-      const res = await actor.getFollowingNumber(who) as bigint
+      const res = await actor.get_following_number(who) as bigint
       return Number(res)
     } catch (e) {
       console.log("getFollowingNumber", e)

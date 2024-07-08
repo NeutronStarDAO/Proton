@@ -23,7 +23,7 @@
   border-radius: 2rem;
   display: flex;
   cursor: pointer;
-  padding: 1rem;
+  padding: 2rem 2rem 1rem 2rem;
   flex-direction: column;
 
 
@@ -36,6 +36,44 @@
       width: 5.3rem;
       height: 5.3rem;
       border-radius: 50%;
+    }
+  }
+
+  .more_wrap {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 5rem;
+    height: 5rem;
+    border-radius: 50%;
+  }
+
+  .more_wrap:hover {
+    background: #d7e4ff;
+  }
+
+  .dropdown_wrap {
+    position: absolute;
+    display: flex;
+    top: 6rem;
+    gap: 2rem;
+    left: -11rem;
+    flex-direction: column;
+    padding: 1rem;
+    background: beige;
+    border-radius: 2rem;
+    font-size: 2.5rem;
+
+    div {
+      display: flex;
+      align-items: center;
+      padding: 1rem;
+      border-radius: 2rem;
+      gap: 2rem
+    }
+
+    div:hover {
+      background: ghostwhite;
     }
   }
 
@@ -81,6 +119,43 @@
       gap: 1rem;
     }
 
+
+  }
+
+  .reply_wrap {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    gap: 2rem;
+    margin-top: 2rem;
+    align-items: end;
+    background: #D7E4FF;
+    border-radius: 2rem;
+    padding: 1rem 1rem 1rem 2rem;
+
+
+    textarea {
+      width: 100%;
+      font-size: 2rem;
+      outline: none;
+      border: none;
+      resize: none;
+      background: inherit;
+      max-height: 20rem;
+    }
+
+    div {
+      background: #10499F;
+      font-size: 2.3rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 3rem;
+      border-radius: 2rem;
+      color: white;
+      height: 4.6rem;
+      cursor: pointer;
+    }
 
   }
 }

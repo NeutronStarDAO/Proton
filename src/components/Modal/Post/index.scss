@@ -73,6 +73,13 @@
     padding-bottom: 2rem;
     margin-bottom: 2rem;
 
+    em-emoji-picker {
+
+
+      height: 40rem;
+      width: 35.2rem;
+    }
+
     svg {
       cursor: pointer;
     }
@@ -82,8 +89,10 @@
     }
 
     .picker {
-      top: 100%;
+      top: 0;
+      left: 10rem;
       position: absolute;
+
     }
   }
 

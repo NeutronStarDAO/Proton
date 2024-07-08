@@ -43,24 +43,11 @@ export const useProvideAuth = (api: NotificationInstance, authClient: IIForIdent
 
   const getFeedCai = async (principal: Principal) => {
     const e = await rootFeedApi.getUserFeedCanister(principal)
-    console.log("feed cid", e)
+    console.log("feed cid", e?.toText())
     let cai = e
     if (!e) {
-      api.info({
-        message: 'Creating Feed Canister ...',
-        key: 'createFeed',
-        duration: null,
-        description: '',
-        icon: <LoadingOutlined/>
-      })
       try {
         cai = await rootFeedApi.createFeedCanister()
-        api.success({
-          message: 'Create Successful !',
-          key: 'createFeed',
-          description: '',
-          icon: <CheckOutlined/>
-        });
       } catch (e) {
         api.error({
           message: 'Create Failed !',

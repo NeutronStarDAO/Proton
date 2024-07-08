@@ -9,7 +9,7 @@ import {shortenString} from "../Sider";
 import {useParams} from "react-router-dom";
 import {Principal} from "@dfinity/principal";
 import {Post as post_type} from "../../declarations/feed/feed";
-import {Spin} from "antd";
+import {Skeleton, Spin} from "antd";
 import {Post} from "../Main";
 import Feed from "../../actors/feed";
 
@@ -20,6 +20,9 @@ export const Profile = ({
   const {id}: { id?: string } = useParams()
   const [profile, setProfile] = useState<profile_type>()
   const [posts, setPosts] = useState<post_type[]>()
+  const [followerNumber, setFollowerNumber] = useState(0)
+  const [followingNumber, setFollowingNumber] = useState(0)
+
 
   const getData = async () => {
     if (!profile) return 0
@@ -41,19 +44,25 @@ export const Profile = ({
       userApi.getProfile(Principal.from(id)).then(e => {
         setProfile(e)
       })
+      userApi.getFollowerNumber(Principal.from(id)).then(e => {
+        setFollowerNumber(e)
+      })
+      userApi.getFollowingNumber(Principal.from(id)).then(e => {
+        setFollowingNumber(e)
+      })
     }
   }, [id])
 
   return <div className={"profile_main"}>
     <div className={"title"} style={{cursor: "pointer"}} onClick={() => scrollToTop()}>Profile</div>
-    <div ref={scrollContainerRef} style={{overflow: "scroll", width: "100%"}}>
+    <div ref={scrollContainerRef} style={{overflow: "scroll", width: "100%", flex: "1"}}>
       <div className={"background"} style={{
         backgroundImage: `url(${profile?.back_img_url})`,
         backgroundSize: "cover",
         backgroundRepeat: "no-repeat", backgroundPositionY: "50%"
       }}></div>
       <div className={"profile_body"}>
-        <UserPanel profile={profile}/>
+        <UserPanel profile={profile} followingNum={followingNumber} followerNum={followerNumber}/>
         {
           posts ? posts.map((v, k) => {
             return <Post post={v} updateFunction={() => {
@@ -67,7 +76,11 @@ export const Profile = ({
 }
 
 
-const UserPanel = ({profile}: { profile?: profile_type }) => {
+const UserPanel = ({profile, followingNum, followerNum}: {
+  profile?: profile_type,
+  followerNum?: number,
+  followingNum?: number
+}) => {
   const [open, setOpen] = useState(false)
   return <div className={"user_panel"}>
     <div className={"avatar_panel"}>
@@ -104,10 +117,10 @@ const UserPanel = ({profile}: { profile?: profile_type }) => {
       {/*</div>*/}
 
       <div className={"label"}>
-        <span><span className={"number"}>270</span>Following</span>
+        <span><span className={"number"}>{followingNum}</span>Following</span>
       </div>
       <div className={"label"}>
-        <span><span className={"number"}> 375</span>Followers</span>
+        <span><span className={"number"}> {followerNum}</span>Followers</span>
       </div>
     </div>
   </div>
