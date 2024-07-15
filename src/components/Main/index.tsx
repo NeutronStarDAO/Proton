@@ -244,15 +244,15 @@ export const Post = ({post, updateFunction}: { post: postType, updateFunction: F
         </Tooltip>
         <div style={{display: "flex", flexDirection: "column", alignItems: "start", justifyContent: "center"}}>
           <div style={{fontSize: "2rem"}}>{profile?.name}</div>
-          <div style={{display: "flex", alignItems: "center", fontSize: "2rem", color: "rgba(0,0,0,0.5)", gap: "1rem"}}>
+          <div style={{display: "flex", alignItems: "center", fontSize: "2rem", color: "#737373", gap: "1rem"}}>
             <div>{profile ? shortenString(profile.handle, 10) : ""}</div>
             <span style={{
               width: "0.5rem",
               height: "0.5rem",
-              background: "rgba(0,0,0,0.5)",
+              background: "#737373",
               borderRadius: "50%"
             }}/>
-            <div>
+            <div style={{color: "#737373"}}>
               {arg.time}
             </div>
           </div>

@@ -65,6 +65,25 @@ class User {
     }
   }
 
+  async getFollowingList(who: Principal): Promise<Principal[]> {
+    const actor = await User.getActor()
+    try {
+      return await actor.get_following_list(who) as Principal[]
+    } catch (e) {
+      console.log("getFollowingList", e)
+      throw e
+    }
+  }
+
+  async getFollowerList(who: Principal): Promise<Principal[]> {
+    const actor = await User.getActor()
+    try {
+      return await actor.get_followers_list(who) as Principal[]
+    } catch (e) {
+      console.log("getFollowerList", e)
+      throw e
+    }
+  }
   async follow(who: Principal) {
     const actor = await User.getActor()
     try {
@@ -78,7 +97,7 @@ class User {
   async isFollowed(A: Principal, B: Principal) {//判断 A 是否是 B的粉丝
     const actor = await User.getActor()
     try {
-      return await actor.isFollowed(A, B) as boolean
+      return await actor.is_followed(A, B) as boolean
     } catch (e) {
       console.log("isFollowed", e)
       throw e

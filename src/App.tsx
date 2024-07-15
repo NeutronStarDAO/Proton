@@ -12,6 +12,7 @@ import {updateProfile, useProfileStore} from "./redux";
 import {Sidebar} from "./components/Sidebar";
 import {useSelectPostStore} from "./redux/features/SelectPost";
 import {ProfileModal} from "./components/Modal/Profile";
+import {FollowList} from "./components/FollowList";
 
 function App() {
 
@@ -67,6 +68,8 @@ function App() {
         <Route path="explore" element={<Main scrollContainerRef={scrollContainerRef}/>}/>
         {/*<Route path="wallet" element={<Wallet/>}/>*/}
         <Route path="settings" element={<Settings/>}/>
+        <Route path="followers/:id" element={<FollowList/>}/>
+        <Route path="following/:id" element={<FollowList/>}/>
         <Route path="profile/:id"
                element={<Profile scrollContainerRef={scrollContainerRef} scrollToTop={scrollToTop}/>}/>
         {/*<Route path="*" element={<ErrorPage/>}/>*/}

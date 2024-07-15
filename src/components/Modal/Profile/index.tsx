@@ -1,6 +1,6 @@
 import "./index.scss"
 
-import React, {ChangeEventHandler, MouseEventHandler, useState} from "react"
+import React, {MouseEventHandler, useState} from "react"
 import {Modal} from "../index";
 import Icon from "../../../Icons/Icon";
 import {useAuth} from "../../../utils/useAuth";
@@ -10,7 +10,7 @@ import {message, notification} from "antd";
 import {aApi} from "../../../actors/photo_storage";
 import {userApi} from "../../../actors/user";
 import {updateProfile, useProfileStore} from "../../../redux";
-import {CheckOutlined, CloseOutlined, LoadingOutlined} from "@ant-design/icons";
+import {CloseOutlined} from "@ant-design/icons";
 import {Profile} from "../../../declarations/user/user";
 import {getBase64} from "../../../utils/util";
 
@@ -44,6 +44,19 @@ export const ProfileModal = ({open, setOpen, canClose}: { open: boolean, setOpen
     if (!principal || !userFeedCai) return 0
     try {
       setOpen(false)
+      const a_url = avatarFile ? await getBase64(avatarFile) : ""
+      const b_url = backFile ? await getBase64(backFile) : ""
+      updateProfile({
+        id: principal,
+        avatar_url: a_url,
+        name: form.Nam,
+        education: form.Location,
+        biography: form.Bio,
+        company: form.Network,
+        feed_canister: [userFeedCai],
+        back_img_url: b_url,
+        handle: form.ID
+      })
       const res = await aApi.upload_photo([backFile ?? new File([], ""), avatarFile ?? new File([], "")])
       await userApi.createProfile({
         id: principal,
@@ -101,7 +114,13 @@ const InfoItem = ({
                     value,
                     flag,
                     placeholder, onchange
-                  }: { t: keyof form_type, value?: string, flag: boolean, placeholder?: string, onchange: (arg0: keyof form_type, e: any) => void }) => {
+                  }: {
+  t: keyof form_type,
+  value?: string,
+  flag: boolean,
+  placeholder?: string,
+  onchange: (arg0: keyof form_type, e: any) => void
+}) => {
 
   return <div className={"item_wrap"}
               style={{flexDirection: flag ? "row" : "column", alignItems: flag ? "center" : "start"}}>

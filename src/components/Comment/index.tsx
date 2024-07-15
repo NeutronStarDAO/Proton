@@ -8,6 +8,7 @@ import {userApi} from "../../actors/user";
 import {Profile} from "../../declarations/user/user";
 import {Tooltip} from "antd";
 import {useNavigate} from "react-router-dom";
+import {getTime} from "../../utils/util";
 
 export const Comment = ({comments}: { comments: comment_type[] }) => {
   const [profiles, setProfiles] = useState<Profile[]>([])
@@ -49,10 +50,23 @@ const CommentCon = ({comment, profile}: { comment: comment_type, profile: Profil
       </Tooltip>
       <div style={{display: "flex", flexDirection: "column", alignItems: "start", justifyContent: "center"}}>
         <div style={{fontSize: "2rem"}}>{profile?.name}</div>
-        <div style={{
-          fontSize: "2rem",
-          color: "rgba(0,0,0,0.5)"
-        }}>{profile ? shortenString(profile.id.toString(), 10) : ""}</div>
+        <div style={{display: "flex", alignItems: "center", fontSize: "1.5rem", color: "#737373", gap: "1rem"}}>
+          <div style={{
+            fontSize: "2rem",
+            color: "rgba(0,0,0,0.5)"
+          }}>
+            {profile ? shortenString(profile.handle.toString(), 10) : ""}
+          </div>
+          <span style={{
+            width: "0.5rem",
+            height: "0.5rem",
+            background: "#737373",
+            borderRadius: "50%"
+          }}/>
+          <div style={{color:"#737373"}}>
+            {getTime(comment.created_at)}
+          </div>
+        </div>
       </div>
     </div>
     <div className={"tweet"}>

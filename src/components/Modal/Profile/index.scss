@@ -22,9 +22,12 @@
   }
 
   .title {
+    display: flex;
+    align-items: center;
     width: 100%;
     text-align: start;
-    font-size: 5rem;
+    font-weight: bold;
+    font-size: 3rem;
     padding: 0;
   }
 
