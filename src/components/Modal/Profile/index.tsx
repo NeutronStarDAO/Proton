@@ -13,6 +13,7 @@ import {updateProfile, useProfileStore} from "../../../redux";
 import {CloseOutlined} from "@ant-design/icons";
 import {Profile} from "../../../declarations/user/user";
 import {getBase64} from "../../../utils/util";
+import {Done} from "./Done";
 
 type form_type = {
   ID: string,
@@ -133,13 +134,14 @@ const InfoItem = ({
 }
 
 
-export const Done = ({done}: { done: MouseEventHandler<HTMLDivElement> }) => {
-  return <div className={"done"} onClick={done}>
-    Done
-  </div>
-}
 
-const Avatar = ({setAvatarFile, profile}: { setAvatarFile: Function, profile: Profile }) => {
+const Avatar = ({
+                  setAvatarFile, profile
+                }: {
+  setAvatarFile: Function, profile
+    :
+    Profile
+}) => {
   const [previewImg, setPreviewImg] = useState("")
 
   const onDrop = React.useCallback((files: File[]) => {
@@ -173,7 +175,13 @@ const Avatar = ({setAvatarFile, profile}: { setAvatarFile: Function, profile: Pr
   </div>
 }
 
-const Background = ({setBackFile, profile}: { setBackFile: Function, profile: Profile }) => {
+const Background = ({
+                      setBackFile, profile
+                    }: {
+  setBackFile: Function, profile
+    :
+    Profile
+}) => {
   const [previewImg, setPreviewImg] = useState("")
   const onDrop = React.useCallback((files: File[]) => {
     if (files.length === 0) {
