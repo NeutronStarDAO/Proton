@@ -1,4 +1,4 @@
-# IceCube🧊 (Proton) - A SocialFi DApp
+# IceCube🧊 (Proton) - A Social DApp
 
 <img src="https://github.com/user-attachments/assets/4245a30f-c93e-47f5-bf6c-9522bdac0c17" style="width: 25%;" />
 <br>
