@@ -1,81 +1,116 @@
-.sidebar_wrap {
-  width: 52rem;
-  min-height: 100%;
+.side_wrap {
+  font-family: "Fredoka", sans-serif;
+  width: 32.7rem;
   display: flex;
-  padding: 2rem ;
   flex-direction: column;
   align-items: center;
-  gap: 2rem;
+  overflow: scroll;
+  min-height: 100%;
+  justify-content: space-between;
+  padding-bottom: 2rem;
 
-
-  .search_bar {
+  .logo {
+    padding-left: 3rem;
     width: 100%;
-    height: 9.5rem;
-    border-radius: 2rem;
-    border: 1px solid #679BF8;
+    height: 6.27rem;
+    margin-top: 2.1rem;
+    margin-bottom: 4.5rem;
+    display: flex;
+    cursor: pointer;
+    align-items: start;
+
+    img {
+      height: 100%;
+    }
+  }
+
+  .side_items {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 27.7rem;
+    gap: 2rem;
+
+
+    .item, .post_button {
+      width: 100%;
+      font-size: 3rem;
+      font-weight: 400;
+      color: black;
+      height: 6.73rem;
+      border-radius: 2rem;
+      display: flex;
+      align-items: center;
+      padding-left: 25%;
+      cursor: pointer;
+    }
+
+    .post_button {
+      background: #428EFF;
+      border-radius: 5rem;
+      color: white;
+    }
+
+    .item:hover {
+      box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.25);
+    }
+  }
+
+  .side_bottom {
+    width: 23.8rem;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 3rem;
-
-    input {
-      background: #F0F4FF;
-      border-radius: 2rem;
-      padding-left: 2rem;
-      margin-left: 2rem;
-      height: 5rem;
-      flex: 1;
-      outline: none;
-      border: none;
-    }
+    font-size: 3.3rem;
+    background: #E5DAFD;
+    border-radius: 2rem;
+    cursor: pointer;
+    padding: 2rem 2.5rem;
+    color: black;
+    font-weight: 500;
   }
 
-  .trends {
-    width: 100%;
-    flex:1;
+  .user_info {
+    width: 28.6rem;
     display: flex;
-    align-items: start;
     flex-direction: column;
+    gap: 2rem;
+    background: #F8F5FF;
     border-radius: 2rem;
-    border: 1px solid #679BF8;
-    padding: 2rem;
-    gap: 1rem;
+    padding: 1rem 1rem;
 
-    span {
-      font-size: 2.5rem;
+    .info {
+      display: flex;
+
+      img {
+        width: 7rem;
+        height: 7rem;
+        margin-right: 1rem;
+        border-radius: 50%;
+      }
+
+      .name {
+        font-size: 2.7rem;
+
+      }
+
+      .id {
+        font-size: 2.3rem;
+      }
     }
-  }
 
-  .popular {
-    border-radius: 2rem;
-    border: 1px solid #679BF8;
-    width: 100%;
-    flex:1;
-    display: flex;
-    flex-direction: column;
-    padding:2rem 1rem;
-    align-items: start;
-    overflow: auto;
-
-    .user {
-      height: 8.25rem;
+    .icon {
       width: 100%;
       display: flex;
-      cursor: pointer;
       align-items: center;
-      justify-content: space-between;
-      margin-top: 3rem;
-      border-radius: 4rem;
-      padding: 1rem;
+      justify-content: center;
+      border-radius: 5rem;
+      padding: 1rem 0;
+      cursor: pointer;
+      background: #DAD2EC;
+      font-size: 3rem;
     }
 
-    .user:hover{
-      background: #F0F4FF;
-    }
-
-    img {
-      height: 6.9rem;
-      margin-right: 2rem;
-    }
   }
 }
+
