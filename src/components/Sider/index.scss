@@ -7,6 +7,7 @@
   min-height: 100%;
   justify-content: space-between;
   padding-bottom: 2rem;
+  font-family: "Fredoka", sans-serif;
 
   .logo {
     padding-left: 3rem;
@@ -34,6 +35,8 @@
     .item, .post_button {
       width: 100%;
       font-size: 3rem;
+      font-weight: 400;
+      color: black;
       height: 6.73rem;
       border-radius: 2rem;
       display: flex;
@@ -64,7 +67,7 @@
     cursor: pointer;
     padding: 2rem 2.5rem;
     color: black;
-    font-weight: bold;
+    font-weight: 500;
   }
 
   .user_info {
