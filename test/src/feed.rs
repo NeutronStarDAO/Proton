@@ -94,14 +94,15 @@ pub async fn create_repost(
 
 pub async fn get_all_post(
     agent: ic_agent::Agent,
-    feed_canister: Principal
+    feed_canister: Principal,
+    user: Principal
 ) -> Vec<Post> {
     let response_blob = agent
         .query(
             &feed_canister, 
             "get_all_post"
         )
-        .with_arg(Encode!().unwrap())
+        .with_arg(Encode!(&user).unwrap())
         .call()
         .await.unwrap();
     
@@ -110,14 +111,15 @@ pub async fn get_all_post(
 
 pub async fn get_feed_number(
     agent: Agent,
-    feed_canister: Principal
+    feed_canister: Principal,
+    user: Principal
 ) -> u64 {
     let response_blob = agent
         .query(
             &feed_canister, 
             "get_feed_number"
         )
-        .with_arg(Encode!().unwrap())
+        .with_arg(Encode!(&user).unwrap())
         .call().await.unwrap();
     
     Decode!(&response_blob, u64).unwrap()

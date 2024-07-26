@@ -4,7 +4,7 @@ use crate::ROOT_FEED_CANISTER;
 
 pub async fn create_feed_canister(
     agent: Agent
-) -> Option<Principal> {
+) -> Principal {
     let response_blob = agent
         .update(
             &ROOT_FEED_CANISTER, 
@@ -14,7 +14,22 @@ pub async fn create_feed_canister(
         .call_and_wait()
         .await.unwrap();
 
-    Decode!(&response_blob, Option<Principal>).unwrap()
+    Decode!(&response_blob, Principal).unwrap()
+}
+
+pub async fn init_user_feed(
+    agent: Agent
+) -> Principal {
+    let response_blob = agent
+        .update(
+            &ROOT_FEED_CANISTER, 
+            "init_user_feed"
+        )
+        .with_arg(Encode!().unwrap())
+        .call_and_wait()
+        .await.unwrap();
+
+    Decode!(&response_blob, Principal).unwrap()
 }
 
 pub async fn update_feed_wasm(

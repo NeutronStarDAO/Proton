@@ -3,7 +3,12 @@ members = [
     "libraries/types",
     "storage/photo_storage",
     "test",
-    "multi_feed/multi_feed",
-    "multi_feed/multi_root_feed",
+    "feed/feed",
+    "feed/root_feed",
+    "bucket/bucket",
+    "bucket/root_bucket",
+    "fetch/post_fetch",
+    "fetch/root_fetch",
+    "user",
 ]
 resolver = "2"

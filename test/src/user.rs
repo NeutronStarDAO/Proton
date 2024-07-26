@@ -15,6 +15,19 @@ pub async fn follow(
     .await.unwrap();
 }
 
+pub async fn cancle_follow(
+    agent: Agent,
+    user: Principal
+) {
+    agent.update(
+        &USER_CANISTER, 
+        "cancle_follow"
+    )
+    .with_arg(Encode!(&user).unwrap())
+    .call_and_wait()
+    .await.unwrap();
+}
+
 pub async fn is_followed(
     agent: Agent,
     user_a: Principal,
