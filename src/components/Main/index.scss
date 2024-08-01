@@ -60,7 +60,7 @@
     left: -11rem;
     flex-direction: column;
     padding: 1rem;
-    background: beige;
+    background: #F0F4FF;
     border-radius: 2rem;
     font-size: 2.5rem;
 
@@ -94,7 +94,7 @@
         border-radius: 2rem;
         background-repeat: no-repeat;
         background-position: center;
-        background-size: cover;
+        background-size: contain;
         height: 30rem;
       }
     }

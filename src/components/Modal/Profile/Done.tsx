@@ -1,11 +1,10 @@
 import React, {MouseEventHandler, useEffect} from "react";
 import "./done.scss"
 
-export const Done = ({done}: { done: MouseEventHandler<HTMLDivElement> }) => {
+export const Done = ({done, setOpen}: { done: Function, setOpen?: Function }) => {
 
   function handleEvent(event: any) {
     const self = event.currentTarget;
-    console.log(self)
     if (!self.classList.contains('loading')) {
       self.classList.add('loading');
       setTimeout(function () {
@@ -13,6 +12,7 @@ export const Done = ({done}: { done: MouseEventHandler<HTMLDivElement> }) => {
         setTimeout(function () {
           self.classList.remove('loading');
           self.classList.remove('done');
+          setOpen?.(false)
         }, 1600);
       }, 3200);
     }
@@ -36,7 +36,7 @@ export const Done = ({done}: { done: MouseEventHandler<HTMLDivElement> }) => {
             <use xlinkHref="#check"/>
         </svg>
     </span>
-      <div style={{width:"1rem"}}/>
+      <div style={{width: "1rem"}}/>
       <ul>
         <li>Done</li>
         <li>Waiting</li>

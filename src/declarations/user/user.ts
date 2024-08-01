@@ -27,11 +27,11 @@ export interface Profile {
   'id' : Principal,
   'avatar_url' : string,
   'name' : string,
-  'education' : string,
   'biography' : string,
-  'company' : string,
+  'website' : string,
   'feed_canister' : [] | [Principal],
   'handle' : string,
+  'location' : string,
   'back_img_url' : string,
 }
 export interface QueryStats {
@@ -42,6 +42,7 @@ export interface QueryStats {
 }
 export interface _SERVICE {
   'batch_get_profile' : ActorMethod<[Array<Principal>], Array<Profile>>,
+  'cancle_follow' : ActorMethod<[Principal], undefined>,
   'create_profile' : ActorMethod<[Profile], boolean>,
   'follow' : ActorMethod<[Principal], undefined>,
   'get_follower_number' : ActorMethod<[Principal], bigint>,

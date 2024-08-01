@@ -19,6 +19,7 @@ export interface DefiniteCanisterSettings {
   'freezing_threshold' : bigint,
   'controllers' : Array<Principal>,
   'reserved_cycles_limit' : bigint,
+  'log_visibility' : LogVisibility,
   'wasm_memory_limit' : bigint,
   'memory_allocation' : bigint,
   'compute_allocation' : bigint,
@@ -35,6 +36,8 @@ export interface HttpResponse {
   'streaming_strategy' : [] | [StreamingStrategy],
   'status_code' : number,
 }
+export type LogVisibility = { 'controllers' : null } |
+  { 'public' : null };
 export interface QueryStats {
   'response_payload_bytes_total' : bigint,
   'num_instructions_total' : bigint,
@@ -42,8 +45,8 @@ export interface QueryStats {
   'request_payload_bytes_total' : bigint,
 }
 export type StreamingStrategy = {
-    'Callback' : { 'token' : Token, 'callback' : [Principal, string] }
-  };
+  'Callback' : { 'token' : Token, 'callback' : [Principal, string] }
+};
 export interface Token {
   'key' : string,
   'sha256' : [] | [Uint8Array | number[]],

@@ -153,10 +153,10 @@ const UserPanel = ({profile}: { profile?: profile_type }) => {
 
     <div className={"aa"} ref={ref}>
       <div className={"label"}>
-        <Icon name={"location"}/> {profile?.education}
+        <Icon name={"location"}/> {profile?.location}
       </div>
       <div className={"label"}>
-        <Icon name={"link"}/> {profile?.company}
+        <Icon name={"link"}/> {profile?.website}
       </div>
       <div className={"label"}>
         <span className={"wrap"}>

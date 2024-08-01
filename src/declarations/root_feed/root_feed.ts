@@ -19,11 +19,13 @@ export interface DefiniteCanisterSettings {
   'freezing_threshold' : bigint,
   'controllers' : Array<Principal>,
   'reserved_cycles_limit' : bigint,
+  'log_visibility' : LogVisibility,
   'wasm_memory_limit' : bigint,
   'memory_allocation' : bigint,
   'compute_allocation' : bigint,
 }
-export interface InitArg { 'root_bucket' : Principal, 'user_actor' : Principal }
+export type LogVisibility = { 'controllers' : null } |
+  { 'public' : null };
 export interface QueryStats {
   'response_payload_bytes_total' : bigint,
   'num_instructions_total' : bigint,
@@ -31,15 +33,11 @@ export interface QueryStats {
   'request_payload_bytes_total' : bigint,
 }
 export interface _SERVICE {
-  'create_feed_canister' : ActorMethod<[], [] | [Principal]>,
-  'get_all_user_feed_canister' : ActorMethod<[], Array<[Principal, Principal]>>,
+  'create_feed_canister' : ActorMethod<[], Principal>,
   'get_feed_wasm' : ActorMethod<[], Uint8Array | number[]>,
-  'get_total_user_feed_canister_number' : ActorMethod<[], bigint>,
   'get_user_feed_canister' : ActorMethod<[Principal], [] | [Principal]>,
-  'init_fetch_actor' : ActorMethod<
-    [Principal, Principal, Principal],
-    undefined
-  >,
+  'init_fetch_actor' : ActorMethod<[Principal], undefined>,
+  'init_user_feed' : ActorMethod<[], Principal>,
   'status' : ActorMethod<[], CanisterStatusResponse>,
   'update_feed_wasm' : ActorMethod<[Uint8Array | number[], bigint], boolean>,
 }

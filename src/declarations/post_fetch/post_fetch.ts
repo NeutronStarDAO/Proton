@@ -31,7 +31,12 @@ export interface QueryStats {
   'request_payload_bytes_total' : bigint,
 }
 export interface _SERVICE {
+  'get_delete_notify_map_entries' : ActorMethod<
+    [],
+    Array<[Principal, Array<string>]>
+  >,
   'get_notify_map_entries' : ActorMethod<[], Array<[Principal, Array<string>]>>,
+  'receive_delete_notify' : ActorMethod<[Array<Principal>, string], undefined>,
   'receive_notify' : ActorMethod<[Array<Principal>, string], undefined>,
   'status' : ActorMethod<[], CanisterStatusResponse>,
 }

@@ -22,6 +22,17 @@ class User {
     }
   }
 
+  async updateProfile(newProfile: Profile) {
+    const actor = await User.getActor()
+    try {
+      const res = await actor.update_profile(newProfile)
+      console.log("updateProfile", res)
+    } catch (e) {
+      console.log("updateProfile", e)
+      throw e
+    }
+  }
+
   async getProfile(who: Principal): Promise<Profile | undefined> {
     const actor = await User.getActor()
     try {

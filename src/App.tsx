@@ -60,7 +60,7 @@ function App() {
 
   return (
     <div className={"App"}>
-      <ProfileModal setOpen={setOpen} open={true} canClose={false}/>
+      <ProfileModal setOpen={setOpen} open={open} canClose={false}/>
       <Side scrollToTop={scrollToTop}/>
       <Routes>
         <Route path="/" element={<Main scrollContainerRef={scrollContainerRef}/>}/>

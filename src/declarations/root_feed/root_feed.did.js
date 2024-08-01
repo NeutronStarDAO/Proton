@@ -1,17 +1,18 @@
 export const idlFactory = ({ IDL }) => {
-  const InitArg = IDL.Record({
-    'root_bucket' : IDL.Principal,
-    'user_actor' : IDL.Principal,
-  });
   const CanisterStatusType = IDL.Variant({
     'stopped' : IDL.Null,
     'stopping' : IDL.Null,
     'running' : IDL.Null,
   });
+  const LogVisibility = IDL.Variant({
+    'controllers' : IDL.Null,
+    'public' : IDL.Null,
+  });
   const DefiniteCanisterSettings = IDL.Record({
     'freezing_threshold' : IDL.Nat,
     'controllers' : IDL.Vec(IDL.Principal),
     'reserved_cycles_limit' : IDL.Nat,
+    'log_visibility' : LogVisibility,
     'wasm_memory_limit' : IDL.Nat,
     'memory_allocation' : IDL.Nat,
     'compute_allocation' : IDL.Nat,
@@ -33,40 +34,21 @@ export const idlFactory = ({ IDL }) => {
     'reserved_cycles' : IDL.Nat,
   });
   return IDL.Service({
-    'create_feed_canister' : IDL.Func([], [IDL.Opt(IDL.Principal)], []),
-    'get_all_user_feed_canister' : IDL.Func(
-        [],
-        [IDL.Vec(IDL.Tuple(IDL.Principal, IDL.Principal))],
-        ['query'],
-      ),
+    'create_feed_canister' : IDL.Func([], [IDL.Principal], []),
     'get_feed_wasm' : IDL.Func([], [IDL.Vec(IDL.Nat8)], ['query']),
-    'get_total_user_feed_canister_number' : IDL.Func(
-        [],
-        [IDL.Nat64],
-        ['query'],
-      ),
     'get_user_feed_canister' : IDL.Func(
-        [IDL.Principal],
-        [IDL.Opt(IDL.Principal)],
-        ['query'],
-      ),
-    'init_fetch_actor' : IDL.Func(
-        [IDL.Principal, IDL.Principal, IDL.Principal],
-        [],
-        [],
-      ),
+      [IDL.Principal],
+      [IDL.Opt(IDL.Principal)],
+      ['query'],
+    ),
+    'init_fetch_actor' : IDL.Func([IDL.Principal], [], []),
+    'init_user_feed' : IDL.Func([], [IDL.Principal], []),
     'status' : IDL.Func([], [CanisterStatusResponse], []),
     'update_feed_wasm' : IDL.Func(
-        [IDL.Vec(IDL.Nat8), IDL.Nat64],
-        [IDL.Bool],
-        [],
-      ),
+      [IDL.Vec(IDL.Nat8), IDL.Nat64],
+      [IDL.Bool],
+      [],
+    ),
   });
 };
-export const init = ({ IDL }) => {
-  const InitArg = IDL.Record({
-    'root_bucket' : IDL.Principal,
-    'user_actor' : IDL.Principal,
-  });
-  return [InitArg];
-};
+export const init = ({ IDL }) => { return [IDL.Principal, IDL.Principal]; };

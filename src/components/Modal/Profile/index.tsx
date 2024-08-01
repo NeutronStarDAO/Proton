@@ -1,6 +1,6 @@
 import "./index.scss"
 
-import React, {MouseEventHandler, useState} from "react"
+import React, {MouseEventHandler, useEffect, useState} from "react"
 import {Modal} from "../index";
 import Icon from "../../../Icons/Icon";
 import {useAuth} from "../../../utils/useAuth";
@@ -42,36 +42,36 @@ export const ProfileModal = ({open, setOpen, canClose}: { open: boolean, setOpen
   }
 
   const done = async () => {
+    console.log("??")
     if (!principal || !userFeedCai) return 0
     try {
-      setOpen(false)
       const a_url = avatarFile ? await getBase64(avatarFile) : ""
       const b_url = backFile ? await getBase64(backFile) : ""
       updateProfile({
         id: principal,
         avatar_url: a_url,
         name: form.Nam,
-        education: form.Location,
+        location: form.Location,
         biography: form.Bio,
-        company: form.Network,
+        website: form.Network,
         feed_canister: [userFeedCai],
         back_img_url: b_url,
         handle: form.ID
       })
       const res = await aApi.upload_photo([backFile ?? new File([], ""), avatarFile ?? new File([], "")])
-      await userApi.createProfile({
+      const newProfile: Profile = {
         id: principal,
         avatar_url: res[1],
         name: form.Nam,
-        education: form.Location,
+        location: form.Location,
         biography: form.Bio,
-        company: form.Network,
+        website: form.Network,
         feed_canister: [userFeedCai],
         back_img_url: res[0],
         handle: form.ID
-      })
-      const profile = await userApi.getProfile(principal)
-      if (profile) updateProfile(profile)
+      }
+      canClose ? await userApi.updateProfile(newProfile) : await userApi.createProfile(newProfile)
+      if (profile) updateProfile(newProfile)
     } catch (e) {
       api.error({
         message: 'Edit failed !',
@@ -81,6 +81,16 @@ export const ProfileModal = ({open, setOpen, canClose}: { open: boolean, setOpen
       })
     }
   }
+
+  useEffect(() => {
+    setForm({
+        ID: profile.handle ? profile.handle : "",
+        Nam: profile.name ? profile.name : "",
+        Bio: profile.biography ? profile.biography : "",
+        Location: profile.location ? profile.location : "",
+        Network: profile.website ? profile.website : ""
+    })
+  }, [open]);
 
   return <>
     {contextHolder}
@@ -105,7 +115,7 @@ export const ProfileModal = ({open, setOpen, canClose}: { open: boolean, setOpen
                 flag={false}/>
       <InfoItem onchange={onChange} t={"Location"} flag={false}/>
       <InfoItem onchange={onChange} t={"Network"} flag={false}/>
-      <Done done={done}/>
+      <Done done={done} setOpen={setOpen}/>
     </div>}/>
   </>
 }
@@ -132,7 +142,6 @@ const InfoItem = ({
 
   </div>
 }
-
 
 
 const Avatar = ({
