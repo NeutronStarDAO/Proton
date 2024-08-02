@@ -23,12 +23,21 @@ pub const USERF_PEM: &str = "test/identity/6.pem";
 pub const USERG_PEM: &str = "test/identity/7.pem";
 
 lazy_static! {
-    pub static ref ROOT_BUCKET_CANISTER: Principal = Principal::from_text("be2us-64aaa-aaaaa-qaabq-cai").unwrap();
-    pub static ref ROOT_FEED_CANISTER: Principal = Principal::from_text("br5f7-7uaaa-aaaaa-qaaca-cai").unwrap();
-    pub static ref ROOT_FETCH_CANISTER: Principal = Principal::from_text("bw4dl-smaaa-aaaaa-qaacq-cai").unwrap();
-    pub static ref POST_FETCH_CANISTER: Principal = Principal::from_text("b77ix-eeaaa-aaaaa-qaada-cai").unwrap();
-    pub static ref USER_CANISTER: Principal = Principal::from_text("bkyz2-fmaaa-aaaaa-qaaaq-cai").unwrap(); 
-    pub static ref PHOTO_STORAGE_CANISTER: Principal = Principal::from_text("by6od-j4aaa-aaaaa-qaadq-cai").unwrap();
+    // // local
+    // pub static ref ROOT_BUCKET_CANISTER: Principal = Principal::from_text("be2us-64aaa-aaaaa-qaabq-cai").unwrap();
+    // pub static ref ROOT_FEED_CANISTER: Principal = Principal::from_text("br5f7-7uaaa-aaaaa-qaaca-cai").unwrap();
+    // pub static ref ROOT_FETCH_CANISTER: Principal = Principal::from_text("bw4dl-smaaa-aaaaa-qaacq-cai").unwrap();
+    // pub static ref POST_FETCH_CANISTER: Principal = Principal::from_text("b77ix-eeaaa-aaaaa-qaada-cai").unwrap();
+    // pub static ref USER_CANISTER: Principal = Principal::from_text("bkyz2-fmaaa-aaaaa-qaaaq-cai").unwrap(); 
+    // pub static ref PHOTO_STORAGE_CANISTER: Principal = Principal::from_text("by6od-j4aaa-aaaaa-qaadq-cai").unwrap();
+
+    // ic
+    pub static ref ROOT_BUCKET_CANISTER: Principal = Principal::from_text("pc5ag-oiaaa-aaaan-qmthq-cai").unwrap();
+    pub static ref ROOT_FEED_CANISTER: Principal = Principal::from_text("n7aoo-5aaaa-aaaan-qmtia-cai").unwrap();
+    pub static ref ROOT_FETCH_CANISTER: Principal = Principal::from_text("nybi2-qyaaa-aaaan-qmtiq-cai").unwrap();
+    pub static ref POST_FETCH_CANISTER: Principal = Principal::from_text("nrcdg-gqaaa-aaaan-qmtja-cai").unwrap();
+    pub static ref USER_CANISTER: Principal = Principal::from_text("pf4gs-dqaaa-aaaan-qmtha-cai").unwrap(); 
+    pub static ref PHOTO_STORAGE_CANISTER: Principal = Principal::from_text("nwdfs-liaaa-aaaan-qmtjq-cai").unwrap();
 }
 
 #[tokio::main]
@@ -43,11 +52,15 @@ async fn main() {
     println!("Principal F : {:?}\n", utils::build_agent(USERF_PEM).get_principal().unwrap().to_text());
     println!("Principal G : {:?}\n", utils::build_agent(USERG_PEM).get_principal().unwrap().to_text());
 
-    // deploy and init
-    deploy::deploy().await;
+    // // deploy and init
+    // deploy::deploy().await;
+    // // test 
+    // test::test().await;
 
+    // deploy and init On IC
+    deploy::deploy_on_ic().await;
     // test 
-    test::test().await;
+    test::test_on_ic().await;
 
     // http://127.0.0.1:4943/?canisterId=bd3sg-teaaa-aaaaa-qaaba-cai&id=bw4dl-smaaa-aaaaa-qaacq-cai
 }

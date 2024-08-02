@@ -1,9 +1,10 @@
 use candid::Principal;
+use ic_agent::Agent;
 
 use crate::feed;
 use crate::photo_storage;
 use crate::user;
-use crate::utils;
+use crate::utils::{build_agent, build_local_agent};
 use crate::{
     USERA_PEM, USERB_PEM,
     USERC_PEM, USERD_PEM,
@@ -12,11 +13,9 @@ use crate::{
 };
 use crate::root_feed;
 
-pub async fn test_upload_photo() {
+pub async fn test_upload_photo(agent: Agent) {
     let photo_1 = 
         include_bytes!("../img/img_1.png").to_vec();
-
-    let agent = utils::build_local_agent(USERA_PEM).await;
 
     let upload_index = photo_storage::upload_photo(
         agent, 
@@ -25,9 +24,7 @@ pub async fn test_upload_photo() {
     println!("upload_index : {:?}\n", upload_index);
 }
 
-pub async fn test_init_user_feed() {
-    let agent = utils::build_local_agent(USERA_PEM).await;
-
+pub async fn test_init_user_feed(agent: Agent) {
     let feed_canister = root_feed::init_user_feed(agent.clone()).await;
     println!("user_A feed_canister : {:?}\n", feed_canister.to_text());
 
@@ -35,8 +32,7 @@ pub async fn test_init_user_feed() {
     // assert!((root_feed::create_feed_canister(agent).await) == None);
 }
 
-pub async fn test_create_post() {
-    let agent = utils::build_local_agent(USERA_PEM).await;
+pub async fn test_create_post(agent: Agent) {
     let caller = agent.get_principal().unwrap();
     let user_feed_canister = root_feed::get_user_feed_canister(
         agent.clone(), 
@@ -51,32 +47,36 @@ pub async fn test_create_post() {
     println!("user_A test_create_post id :{:?}\n", post_id);
 }
 
-pub async fn test_follow() {
+pub async fn test_follow(
+    agent_a: Agent,
+    agent_b: Agent
+) {
     println!("user_A follow user_B \n");
 
-    let agent = utils::build_local_agent(USERA_PEM).await;
-    let user_b = utils::build_local_agent(USERB_PEM).await.get_principal().unwrap();
-    user::follow(agent.clone(), user_b).await;
+    let user_b = agent_b.get_principal().unwrap();
+    user::follow(agent_a.clone(), user_b).await;
 
     // is_followed
-    assert!((user::is_followed(agent.clone(), agent.get_principal().unwrap(), user_b).await) == true);
+    assert!((user::is_followed(agent_a.clone(), agent_a.get_principal().unwrap(), user_b).await) == true);
 }
 
-pub async fn test_comment() {
+pub async fn test_comment(
+    agent_a: Agent,
+    agent_b: Agent
+) {
     println!("user_B  comment the first post \n");
 
-    let agent = utils::build_local_agent(USERB_PEM).await;
-    let user_a = utils::build_local_agent(USERA_PEM).await.get_principal().unwrap();
+    let user_a = agent_a.get_principal().unwrap();
     let user_a_feed_canister = root_feed::get_user_feed_canister(
-        agent.clone(), 
+        agent_b.clone(), 
         user_a
     ).await.unwrap();
 
-    let post = feed::get_all_post(agent.clone(), user_a_feed_canister, user_a).await[0].clone();
+    let post = feed::get_all_post(agent_b.clone(), user_a_feed_canister, user_a).await[0].clone();
 
     // comment
     let comment_result = feed::create_comment(
-        agent, 
+        agent_b, 
         user_a_feed_canister, 
         post.post_id, 
         "user_B  comment the first post to test_comment".to_string()
@@ -85,42 +85,47 @@ pub async fn test_comment() {
     assert!(comment_result);
 }
 
-pub async fn test_like() {
+pub async fn test_like(
+    agent_a: Agent,
+    agent_b: Agent
+) {
     println!("user_B like the first post \n");
 
-    let agent = utils::build_local_agent(USERB_PEM).await;
-    let user_a = utils::build_local_agent(USERA_PEM).await.get_principal().unwrap();
+    let user_a = agent_a.get_principal().unwrap();
     let user_a_feed_canister = root_feed::get_user_feed_canister(
-        agent.clone(), 
+        agent_b.clone(), 
         user_a
     ).await.unwrap();
 
-    let post = feed::get_all_post(agent.clone(), user_a_feed_canister, user_a).await[0].clone();
+    let post = feed::get_all_post(agent_b.clone(), user_a_feed_canister, user_a).await[0].clone();
 
     // like
     let like_result = feed::create_like(
-        agent, 
+        agent_b, 
         user_a_feed_canister, 
         post.post_id
     ).await;
     assert!(like_result);
 }
 
-pub async fn test_repost() {
+pub async fn test_repost(
+    agent_a: Agent,
+    agent_b: Agent
+) {
     println!("user_B  repost the first post \n");
 
-    let agent = utils::build_local_agent(USERB_PEM).await;
-    let user_a = utils::build_local_agent(USERA_PEM).await.get_principal().unwrap();
+
+    let user_a = agent_a.get_principal().unwrap();
     let user_a_feed_canister = root_feed::get_user_feed_canister(
-        agent.clone(), 
+        agent_b.clone(), 
         user_a
     ).await.unwrap();
 
-    let post = feed::get_all_post(agent.clone(), user_a_feed_canister, user_a).await[0].clone();
+    let post = feed::get_all_post(agent_b.clone(), user_a_feed_canister, user_a).await[0].clone();
 
     // repost
     let repost_result = feed::create_repost(
-        agent, 
+        agent_b, 
         user_a_feed_canister, 
         post.post_id
     ).await;
@@ -135,10 +140,13 @@ pub async fn test_repost() {
 // 2. User E 转发了 User C 的某个帖子
 // 那么 E 会收到此帖子的更新，同时, 此帖子也会推流给E的粉丝F
 
-pub async fn test_post_fetch() -> (String, Principal) {
+pub async fn test_post_fetch(
+    agent_c: Agent,
+    agent_d: Agent,
+    agent_e: Agent,
+    agent_f: Agent
+) -> (String, Principal) {
     // 第一种情况
-    let agent_c = utils::build_local_agent(USERC_PEM).await;
-    let agent_d = utils::build_local_agent(USERD_PEM).await;
     let pr_c = agent_c.get_principal().unwrap();
     let pr_d = agent_d.get_principal().unwrap();
 
@@ -172,8 +180,6 @@ pub async fn test_post_fetch() -> (String, Principal) {
     assert!(feed::get_feed_number(agent_d, d_feed, pr_d).await == 1);
 
     // 第二种情况
-    let agent_e = utils::build_local_agent(USERE_PEM).await;
-    let agent_f = utils::build_local_agent(USERF_PEM).await;
     let pr_e = agent_e.get_principal().unwrap();
     let pr_f = agent_f.get_principal().unwrap();
 
@@ -215,10 +221,10 @@ pub async fn test_post_fetch() -> (String, Principal) {
 // 2. User E 转发了 User C 的某个帖子
 // 那么 E 会收到此帖子的更新，同时, 此帖子也会推流给E的粉丝F
 pub async fn test_comment_fetch(
+    agent_g: Agent,
     post_id: String,
     c_feed: Principal
 ) {
-    let agent_g = utils::build_local_agent(USERG_PEM).await;
     assert!(feed::create_comment(
         agent_g,
         c_feed, 
@@ -230,10 +236,10 @@ pub async fn test_comment_fetch(
 }
 
 pub async fn test_like_fetch(
+    agent_g: Agent,
     post_id: String,
     c_feed: Principal
 ) {
-    let agent_g = utils::build_local_agent(USERG_PEM).await;
     assert!(feed::create_like(
         agent_g,
         c_feed, 
@@ -243,8 +249,7 @@ pub async fn test_like_fetch(
     // 检查Bukcet, D, E, F 的帖子是否更新
 }
 
-pub async fn test_time() {
-    let agent_e = utils::build_local_agent(USERE_PEM).await;
+pub async fn test_time(agent_e: Agent) {
     let pr_e = agent_e.get_principal().unwrap();
 
     let e_feed = root_feed::get_user_feed_canister(
@@ -267,20 +272,20 @@ pub async fn test_time() {
     }
 }
 
-pub async fn test_delete_post() {
+pub async fn test_delete_post(agent_c: Agent) {
     println!("Delete User C Post\n");
-
-    let agent_c = utils::build_local_agent(USERC_PEM).await;
 
     let c_feed = root_feed::get_user_feed_canister(
         agent_c.clone(), 
         agent_c.get_principal().unwrap()
     ).await.unwrap();
 
+    let post_vec = feed::get_all_post(agent_c.clone(), c_feed, agent_c.get_principal().unwrap()).await;
+
     let delete_result = feed::delete_post(
         agent_c.clone(), 
         c_feed, 
-        "asrmz-lmaaa-aaaaa-qaaeq-cai#fnf7e-j6wxs-25gtc-sayrv-r5owl-sa3av-g7ubc-k6vt7-xlcqs-yfm3f-tqe#1".to_string()
+        post_vec[0].post_id.clone()
     ).await;
     println!("delete_result : {:?}\n", delete_result);
 
@@ -290,10 +295,11 @@ pub async fn test_delete_post() {
     // 转帖者E，E的粉丝F
 }
 
-async fn test_cancle_follow() {
+async fn test_cancle_follow(
+    agent_e: Agent,
+    agent_f: Agent
+) {
     // F 取消关注 E
-    let agent_e = utils::build_local_agent(USERE_PEM).await;
-    let agent_f = utils::build_local_agent(USERF_PEM).await;
     let pr_e = agent_e.get_principal().unwrap();
     let pr_f = agent_f.get_principal().unwrap();
 
@@ -308,42 +314,142 @@ pub async fn test() {
     println!("---------------- Test Start ---------------- \n");
 
     println!("---------------- TEST 1 test_upload_photo ------------------ \n");
-    test_upload_photo().await;
+    test_upload_photo(build_local_agent(USERA_PEM).await).await;
 
     println!("---------------- TEST 2 init_user_feed_canister ------------------ \n");
-    test_init_user_feed().await;
+    test_init_user_feed(build_local_agent(USERA_PEM).await).await;
 
     println!("---------------- TEST 3 test_create_post ------------------ \n");
-    test_create_post().await;
+    test_create_post(build_local_agent(USERA_PEM).await).await;
 
     println!("---------------- TEST 4 test_follow  ------------------ \n");
-    test_follow().await;
+    test_follow(
+        build_local_agent(USERA_PEM).await,
+        build_local_agent(USERB_PEM).await
+    ).await;
 
     println!("---------------- TEST 5 test_comment ------------------ \n");
-    test_comment().await;
+    test_comment(
+        build_local_agent(USERA_PEM).await,
+        build_local_agent(USERB_PEM).await
+    ).await;
 
     println!("---------------- TEST 6 test_like ------------------ \n");
-    test_like().await;
+    test_like(
+        build_local_agent(USERA_PEM).await,
+        build_local_agent(USERB_PEM).await
+    ).await;
 
     println!("---------------- TEST 7 test_repost ------------------ \n");
-    test_repost().await;
+    test_repost(
+        build_local_agent(USERA_PEM).await,
+        build_local_agent(USERB_PEM).await
+    ).await;
 
     println!("---------------- TEST 8 test_post_fetch ------------------ \n");
-    let (post_id, c_feed) = test_post_fetch().await;
+    let (post_id, c_feed) = test_post_fetch(
+        build_local_agent(USERC_PEM).await,
+        build_local_agent(USERD_PEM).await,
+        build_local_agent(USERE_PEM).await,
+        build_local_agent(USERF_PEM).await
+    ).await;
 
     println!("---------------- TEST 9 test_comment_fetch ------------------ \n");
-    test_comment_fetch(post_id.clone(), c_feed.clone()).await;
+    test_comment_fetch(
+        build_local_agent(USERG_PEM).await,
+        post_id.clone(), 
+        c_feed.clone()
+    ).await;
 
     println!("---------------- TEST 10 test_like_fetch ------------------ \n");
-    test_like_fetch(post_id, c_feed).await;
+    test_like_fetch(
+        build_local_agent(USERG_PEM).await,
+        post_id, 
+        c_feed
+    ).await;
 
-    test_time().await;
+    test_time(build_local_agent(USERE_PEM).await).await;
 
     println!("---------------- TEST 11 test_delete_post ------------------ \n");
-    test_delete_post().await;
+    test_delete_post(build_local_agent(USERC_PEM).await).await;
 
     println!("---------------- TEST 12 cancle_follow ------------------ \n");
-    test_cancle_follow().await;
+    test_cancle_follow(
+        build_local_agent(USERE_PEM).await,
+        build_local_agent(USERF_PEM).await
+    ).await;
+
+}
+
+pub async fn test_on_ic() {
+    println!("---------------- Test Start ---------------- \n");
+
+    println!("---------------- TEST 1 test_upload_photo ------------------ \n");
+    test_upload_photo(build_agent(USERA_PEM)).await;
+
+    println!("---------------- TEST 2 init_user_feed_canister ------------------ \n");
+    test_init_user_feed(build_agent(USERA_PEM)).await;
+
+    println!("---------------- TEST 3 test_create_post ------------------ \n");
+    test_create_post(build_agent(USERA_PEM)).await;
+
+    println!("---------------- TEST 4 test_follow  ------------------ \n");
+    test_follow(
+        build_agent(USERA_PEM),
+        build_agent(USERB_PEM)
+    ).await;
+
+    println!("---------------- TEST 5 test_comment ------------------ \n");
+    test_comment(
+        build_agent(USERA_PEM),
+        build_agent(USERB_PEM)
+    ).await;
+
+    println!("---------------- TEST 6 test_like ------------------ \n");
+    test_like(
+        build_agent(USERA_PEM),
+        build_agent(USERB_PEM)  
+    ).await;
+
+    println!("---------------- TEST 7 test_repost ------------------ \n");
+    test_repost(
+        build_agent(USERA_PEM),
+        build_agent(USERB_PEM)  
+    ).await;
+
+    println!("---------------- TEST 8 test_post_fetch ------------------ \n");
+    let (post_id, c_feed) = test_post_fetch(
+        build_agent(USERC_PEM),
+        build_agent(USERD_PEM),
+        build_agent(USERE_PEM),
+        build_agent(USERF_PEM)
+    ).await;
+
+    println!("---------------- TEST 9 test_comment_fetch ------------------ \n");
+    test_comment_fetch(
+        build_agent(USERG_PEM),
+        post_id.clone(), 
+        c_feed.clone()
+    ).await;
+
+    println!("---------------- TEST 10 test_like_fetch ------------------ \n");
+    test_like_fetch(
+        build_agent(USERG_PEM),
+        post_id, 
+        c_feed
+    ).await;
+
+    test_time(build_agent(USERE_PEM)).await;
+
+    println!("---------------- TEST 11 test_delete_post ------------------ \n");
+    test_delete_post(build_agent(USERC_PEM)).await;
+
+    println!("---------------- TEST 12 cancle_follow ------------------ \n");
+    test_cancle_follow(
+        build_agent(USERE_PEM),
+        build_agent(USERF_PEM)
+    ).await;
+
 
 }
 

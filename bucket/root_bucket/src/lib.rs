@@ -60,7 +60,7 @@ thread_local! {
 
 #[ic_cdk::update]
 async fn init() {
-    for _ in 0..5 {
+    for _ in 0..3 {
         let canister_record = create_canister(
             CreateCanisterArgument {
                 settings: Some(CanisterSettings {

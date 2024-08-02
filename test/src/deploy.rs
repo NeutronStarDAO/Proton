@@ -2,13 +2,11 @@ use candid::{Decode, Encode, Principal};
 use ic_agent::Agent;
 
 use crate::{root_bucket, root_feed, root_fetch, ROOT_FETCH_CANISTER};
-use crate::utils::{build_local_agent};
+use crate::utils::{build_agent, build_local_agent};
 use crate::USERA_PEM;
 use crate::POST_FETCH_CANISTER;
 
-async fn init_root_bucket() {
-    let agent = build_local_agent(USERA_PEM).await;
-
+async fn init_root_bucket(agent: Agent) {
     // upload bucket wasm
     let bucket_wasm: Vec<u8> =
     include_bytes!("../../target/wasm32-unknown-unknown/release/bucket.wasm").to_vec();
@@ -35,7 +33,7 @@ async fn init_root_bucket() {
     root_bucket::init(agent.clone()).await;
 }
 
-pub async fn init_root_feed() {
+pub async fn init_root_feed(agent: Agent) {
     // upload feed wasm
     let bucket_wasm: Vec<u8> =
     include_bytes!("../../target/wasm32-unknown-unknown/release/feed.wasm").to_vec();
@@ -44,7 +42,6 @@ pub async fn init_root_feed() {
     let first_wasm_chunk = bucket_wasm[0..middle_len].to_vec();
     let seconde_wasm_chunk = bucket_wasm[middle_len..len].to_vec();
 
-    let agent = build_local_agent(USERA_PEM).await;
     // upload first_chunk
     assert!(root_feed::update_feed_wasm(
         agent.clone(), 
@@ -64,7 +61,6 @@ pub async fn init_root_feed() {
         agent.clone(), 
         &POST_FETCH_CANISTER, 
     ).await;
-
 
     let feed_canister = root_feed::create_feed_canister(agent).await;
     println!("Create the first feed_canister : {:?}\n", feed_canister.to_text());
@@ -104,9 +100,7 @@ async fn upload_wasm(
     assert!(Decode!(&upload_second_chunk_result, bool).unwrap());
 }
 
-pub async fn init_root_fetch() {
-    let agent = build_local_agent(USERA_PEM).await;
-
+pub async fn init_root_fetch(agent: Agent) {
     // init root_fetch fetch_actor
     root_fetch::init_fetch_actor(
         agent.clone(), 
@@ -128,12 +122,25 @@ pub async fn deploy() {
     println!("Deploy and Init canisters : \n");
 
     println!("Init root_bucket: \n");
-    init_root_bucket().await;
+    init_root_bucket(build_local_agent(USERA_PEM).await).await;
 
     println!("Init root_feed: \n");
-    init_root_feed().await;
+    init_root_feed(build_local_agent(USERA_PEM).await).await;
 
     println!("Init_root_fetch: \n");
-    init_root_fetch().await;
+    init_root_fetch(build_local_agent(USERA_PEM).await).await;
+}
+
+pub async fn deploy_on_ic() {
+    println!("Deploy and Init canisters On IC: \n");
+
+    println!("Init root_bucket: \n");
+    init_root_bucket(build_agent(USERA_PEM)).await;
+
+    println!("Init root_feed: \n");
+    init_root_feed(build_agent(USERA_PEM)).await;
+
+    println!("Init_root_fetch: \n");
+    init_root_fetch(build_agent(USERA_PEM)).await;
 }
 

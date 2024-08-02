@@ -1,0 +1,20 @@
+{
+    "user" : {
+        "ic" : "pf4gs-dqaaa-aaaan-qmtha-cai"
+    },
+    "root_bucket" : {
+        "ic" : "pc5ag-oiaaa-aaaan-qmthq-cai"
+    },
+    "root_feed" : {
+        "ic" : "n7aoo-5aaaa-aaaan-qmtia-cai"
+    },
+    "root_fetch" : {
+        "ic" : "nybi2-qyaaa-aaaan-qmtiq-cai"
+    },
+    "post_fetch" : {
+        "ic" : "nrcdg-gqaaa-aaaan-qmtja-cai"
+    },
+    "photo_storage" : {
+        "ic"  : "nwdfs-liaaa-aaaan-qmtjq-cai"
+    }
+}

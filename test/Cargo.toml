@@ -7,8 +7,8 @@ edition = "2021"
 
 [dependencies]
 ic-agent = "0.37.1"
-candid = "0.10.9"
-tokio = { version = "1.39.1", features = ["full"] }
+candid = "0.10.10"
+tokio = { version = "1.39.2", features = ["full"] }
 ic-cdk = "0.15.0"
 serde = "1.0.204"
 serde_bytes = "0.11.15"
