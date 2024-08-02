@@ -7,8 +7,8 @@ import {authClient} from "./IIForIdentity";
     try {
       return new HttpAgent({
         identity: await authClient.getIdentity() as any,
-        // host: "https://ic0.app"
-        host: "http://43.128.242.149:4943"
+        host: "https://ic0.app"
+        // host: "http://43.128.242.149:4943"
       })
     } catch (e) {
       throw e
@@ -18,8 +18,8 @@ import {authClient} from "./IIForIdentity";
 
   async getNoIdentityAgent() {
     return new HttpAgent({
-      // host: "https://ic0.app"
-      host: "http://43.128.242.149:4943"
+      host: "https://ic0.app"
+      // host: "http://43.128.242.149:4943"
     });
   }
 

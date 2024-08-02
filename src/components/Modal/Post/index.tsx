@@ -23,7 +23,7 @@ export const PostModal = ({open, setOpen}: { open: boolean, setOpen: Function })
   const [img, setImg] = useState<string[]>([])
   const profile = useProfileStore()
   const textareaRef = useRef(null);
-  const {userFeedCai} = useAuth()
+  const {userFeedCai, principal} = useAuth()
   const [api, contextHolder] = notification.useNotification();
   const ref = useRef(null)
 
@@ -144,9 +144,9 @@ export const PostModal = ({open, setOpen}: { open: boolean, setOpen: Function })
   })
 
   const updateData = async () => {
-    if (!userFeedCai) return 0
+    if (!userFeedCai || !principal) return 0
     const feedApi = new Feed(userFeedCai)
-    await Promise.all([feedApi.getAllPost(), feedApi.getLatestFeed(20)])
+    await Promise.all([feedApi.getAllPost(principal), feedApi.getLatestFeed(principal, 20)])
   }
 
   const send = async () => {

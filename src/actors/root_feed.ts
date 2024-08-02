@@ -2,7 +2,7 @@ import {getActor} from "../utils/Actor";
 import {idlFactory} from "../declarations/root_feed/root_feed.did.js"
 import {Principal} from "@dfinity/principal";
 
-const rootFeedCai = "br5f7-7uaaa-aaaaa-qaaca-cai"
+const rootFeedCai = "n7aoo-5aaaa-aaaan-qmtia-cai"
 
 class rootFeed {
 
@@ -10,13 +10,12 @@ class rootFeed {
     return await getActor.createActor(idlFactory, rootFeedCai);
   }
 
-  async createFeedCanister(): Promise<Principal> {
+  async init_user_feed(): Promise<Principal> {
     const actor = await rootFeed.getActor()
     try {
-      const res = await actor.create_feed_canister() as [] | [Principal]
+      const res = await actor.init_user_feed() as Principal
       console.log("create res", res)
-      if (res[0]) return res[0]
-      throw new Error("create error")
+      return res
     } catch (e) {
       console.log("create error", e)
       throw e

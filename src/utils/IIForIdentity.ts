@@ -37,7 +37,7 @@ export class IIForIdentity {
           this.isAuthClientReady = await this.authClient?.isAuthenticated();
           resolve(this.identity);
         },
-        identityProvider:"http://avqkn-guaaa-aaaaa-qaaea-cai.localhost:4943",
+        // identityProvider:"http://avqkn-guaaa-aaaaa-qaaea-cai.localhost:4943",
         onError: (err) => {
           reject(err);
         },

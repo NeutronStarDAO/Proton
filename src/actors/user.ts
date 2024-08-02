@@ -3,7 +3,7 @@ import {getActor} from "../utils/Actor";
 import {Profile} from "../declarations/user/user";
 import {Principal} from "@dfinity/principal";
 
-const userCanisterId = "bkyz2-fmaaa-aaaaa-qaaaq-cai"
+const userCanisterId = "pf4gs-dqaaa-aaaan-qmtha-cai"
 
 class User {
 

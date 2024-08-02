@@ -18,13 +18,11 @@ export const Done = ({done, setOpen}: { done: Function, setOpen?: Function }) =>
     }
   }
 
-  useEffect(() => {
-    document.querySelectorAll('.done_button').forEach(function (element) {
-      element.addEventListener('click', handleEvent);
-    });
-  }, []);
   return <>
-    <a className="done_button">
+    <a className="done_button" onClick={(e) => {
+      done()
+      handleEvent(e)
+    }}>
       <span>
         <svg>
             <use xlinkHref="#circle"/>

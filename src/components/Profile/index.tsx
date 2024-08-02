@@ -15,6 +15,7 @@ import Feed from "../../actors/feed";
 import {useAuth} from "../../utils/useAuth";
 import {useGSAP} from "@gsap/react";
 import gsap from 'gsap';
+import {useSelectPostStore} from "../../redux/features/SelectPost";
 
 export const Profile = ({
                           scrollContainerRef,
@@ -23,21 +24,22 @@ export const Profile = ({
   const {id}: { id?: string } = useParams()
   const [profile, setProfile] = useState<profile_type>()
   const [posts, setPosts] = useState<post_type[]>()
+  const selectPost = useSelectPostStore()
 
   const getData = async () => {
-    if (!profile) return 0
+    if (!profile || !id) return 0
     if (profile.feed_canister.length === 0) return 0
 
     const feed_cid = profile.feed_canister[0]
     const feedApi = new Feed(feed_cid)
-    const res = await Promise.all([feedApi.getAllPost(), feedApi.getLatestFeed(20)])
+    const res = await Promise.all([feedApi.getAllPost(Principal.from(id)), feedApi.getLatestFeed(Principal.from(id), 20)])
 
     setPosts([...res[0], ...res[1]])
   }
 
   useEffect(() => {
     getData()
-  }, [profile])
+  }, [profile, id])
 
   useEffect(() => {
     if (id) {
@@ -59,7 +61,7 @@ export const Profile = ({
         <UserPanel profile={profile}/>
         {
           posts ? posts.map((v, k) => {
-            return <Post post={v} updateFunction={() => {
+            return <Post selectedID={"post_id" in selectPost ? selectPost.post_id : ""} post={v} updateFunction={() => {
             }} key={k}/>
           }) : <Spin spinning={true} style={{width: "100%"}}/>
         }

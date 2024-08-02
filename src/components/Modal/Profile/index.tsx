@@ -27,14 +27,15 @@ export const ProfileModal = ({open, setOpen, canClose}: { open: boolean, setOpen
   const [backFile, setBackFile] = useState<File>()
   const [avatarFile, setAvatarFile] = useState<File>()
   const [api, contextHolder] = notification.useNotification();
+  const profile = useProfileStore()
+
   const [form, setForm] = useState<form_type>({
     ID: "",
     Nam: "",
     Bio: "",
     Location: "",
-    Network: ""
+    Network: "",
   })
-  const profile = useProfileStore()
   const onChange = (title: keyof form_type, e: any) => {
     const form_1 = form
     form_1[title] = e.target.value
@@ -42,11 +43,10 @@ export const ProfileModal = ({open, setOpen, canClose}: { open: boolean, setOpen
   }
 
   const done = async () => {
-    console.log("??")
     if (!principal || !userFeedCai) return 0
     try {
-      const a_url = avatarFile ? await getBase64(avatarFile) : ""
-      const b_url = backFile ? await getBase64(backFile) : ""
+      const a_url = avatarFile ? await getBase64(avatarFile) : profile.avatar_url ? profile.avatar_url : ""
+      const b_url = backFile ? await getBase64(backFile) : profile.back_img_url ? profile.back_img_url : ""
       updateProfile({
         id: principal,
         avatar_url: a_url,
@@ -61,13 +61,13 @@ export const ProfileModal = ({open, setOpen, canClose}: { open: boolean, setOpen
       const res = await aApi.upload_photo([backFile ?? new File([], ""), avatarFile ?? new File([], "")])
       const newProfile: Profile = {
         id: principal,
-        avatar_url: res[1],
+        avatar_url: res[1] ? res[1] : a_url ? a_url : "",
         name: form.Nam,
         location: form.Location,
         biography: form.Bio,
         website: form.Network,
         feed_canister: [userFeedCai],
-        back_img_url: res[0],
+        back_img_url: res[0] ? res[0] : b_url ? b_url : "",
         handle: form.ID
       }
       canClose ? await userApi.updateProfile(newProfile) : await userApi.createProfile(newProfile)
@@ -84,11 +84,11 @@ export const ProfileModal = ({open, setOpen, canClose}: { open: boolean, setOpen
 
   useEffect(() => {
     setForm({
-        ID: profile.handle ? profile.handle : "",
-        Nam: profile.name ? profile.name : "",
-        Bio: profile.biography ? profile.biography : "",
-        Location: profile.location ? profile.location : "",
-        Network: profile.website ? profile.website : ""
+      ID: profile.handle ? profile.handle : "",
+      Nam: profile.name ? profile.name : "",
+      Bio: profile.biography ? profile.biography : "",
+      Location: profile.location ? profile.location : "",
+      Network: profile.website ? profile.website : ""
     })
   }, [open]);
 
@@ -106,15 +106,15 @@ export const ProfileModal = ({open, setOpen, canClose}: { open: boolean, setOpen
       <div style={{width: "100%", display: "flex"}}>
         <Avatar setAvatarFile={setAvatarFile} profile={profile}/>
         <div style={{flex: "1", display: "flex", flexDirection: "column", justifyContent: "center", gap: "1rem"}}>
-          <InfoItem onchange={onChange} t={"ID"} value={profile.handle ? profile.handle : undefined} flag={true}/>
-          <InfoItem onchange={onChange} t={"Nam"} placeholder={"your name"} flag={true}/>
+          <InfoItem onchange={onChange} t={"ID"} value={profile.handle} readOnly={!!profile.handle} flag={true}/>
+          <InfoItem onchange={onChange} t={"Nam"} value={form.Nam} placeholder={"your name"} flag={true}/>
         </div>
       </div>
       <InfoItem onchange={onChange} t={"Bio"}
-                placeholder={"your biography"}
+                placeholder={"your biography"} value={form.Bio}
                 flag={false}/>
-      <InfoItem onchange={onChange} t={"Location"} flag={false}/>
-      <InfoItem onchange={onChange} t={"Network"} flag={false}/>
+      <InfoItem onchange={onChange} t={"Location"} flag={false} value={form.Location}/>
+      <InfoItem onchange={onChange} t={"Network"} flag={false} value={form.Network}/>
       <Done done={done} setOpen={setOpen}/>
     </div>}/>
   </>
@@ -124,20 +124,22 @@ const InfoItem = ({
                     t,
                     value,
                     flag,
-                    placeholder, onchange
+                    placeholder, onchange, readOnly
                   }: {
   t: keyof form_type,
   value?: string,
   flag: boolean,
-  placeholder?: string,
+  placeholder?: string, readOnly?: boolean,
   onchange: (arg0: keyof form_type, e: any) => void
 }) => {
 
   return <div className={"item_wrap"}
               style={{flexDirection: flag ? "row" : "column", alignItems: flag ? "center" : "start"}}>
     <div style={{fontWeight: "bold", width: "14%", display: "flex"}}>{t}</div>
-    {t === "Bio" ? <textarea onChange={(e) => onchange(t, e)} placeholder={placeholder} name="" id=""></textarea> :
-      <input onChange={(e) => onchange(t, e)} value={value} readOnly={!!value} placeholder={placeholder} type="text"/>
+    {t === "Bio" ? <textarea onChange={(e) => onchange(t, e)} defaultValue={value} placeholder={placeholder} name=""
+                             id=""></textarea> :
+      <input onChange={(e) => onchange(t, e)} defaultValue={value} readOnly={readOnly} placeholder={placeholder}
+             type="text"/>
     }
 
   </div>

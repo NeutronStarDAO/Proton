@@ -43,10 +43,10 @@ export default class Feed {
     }
   }
 
-  async getAllPost() {
+  async getAllPost(who:Principal) {
     const actor = await this.getNoIdentityActor()
     try {
-      const res = await actor.get_all_post() as Post[]
+      const res = await actor.get_all_post(who) as Post[]
       updateAllData({allPost: res})
       return res
     } catch (e) {
@@ -115,10 +115,10 @@ export default class Feed {
     }
   }
 
-  async getLatestFeed(n: number) {
+  async getLatestFeed(who:Principal,n: number) {
     const actor = await this.getActor()
     try {
-      const res = await actor.get_latest_feed(BigInt(n)) as Post[]
+      const res = await actor.get_latest_feed(who,BigInt(n)) as Post[]
       updateAllData({allFeed: res})
       return res
     } catch (e) {

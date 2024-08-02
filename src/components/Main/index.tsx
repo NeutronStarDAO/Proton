@@ -20,8 +20,9 @@ export const Main = ({scrollContainerRef}: { scrollContainerRef: React.MutableRe
   const location = useLocation()
   const navigate = useNavigate()
   const [data, setData] = useState<postType[]>()
-  const {userFeedCai, isAuth} = useAuth()
+  const {userFeedCai, isAuth, principal} = useAuth()
   const {allPost, allFeed} = useAllDataStore()
+  const selectPost = useSelectPostStore()
 
   const HomeData = React.useMemo(() => {
     if (!allFeed || !allPost) return undefined
@@ -45,9 +46,9 @@ export const Main = ({scrollContainerRef}: { scrollContainerRef: React.MutableRe
 
 
   const getHomeData = async () => {
-    if (!userFeedCai) return 0
+    if (!userFeedCai || !principal) return 0
     const feedApi = new Feed(userFeedCai)
-    await Promise.all([feedApi.getAllPost(), feedApi.getLatestFeed(20)])
+    await Promise.all([feedApi.getAllPost(principal), feedApi.getLatestFeed(principal, 20)])
   }
 
   const getExploreData = async () => {
@@ -61,14 +62,15 @@ export const Main = ({scrollContainerRef}: { scrollContainerRef: React.MutableRe
     } else {
       getExploreData()
     }
-  }, [Title, userFeedCai])
+  }, [Title, userFeedCai, principal])
 
   if (Title === "Explore") {
     return <div ref={scrollContainerRef} className={"main_wrap scroll_main"}>
       <div className={"title"}>{Title}</div>
       {data ? data.length === 0 ? <Empty style={{width: "100%"}}/>
         : data.map((v, k) => {
-          return <Post updateFunction={getExploreData} post={v}/>
+          return <Post selectedID={"post_id" in selectPost ? selectPost.post_id : ""} updateFunction={getExploreData}
+                       post={v}/>
         }) : <Spin spinning={true} style={{width: "100%"}}/>}
     </div>
   }
@@ -77,12 +79,17 @@ export const Main = ({scrollContainerRef}: { scrollContainerRef: React.MutableRe
     <div className={"title"}>{Title}</div>
     {HomeData ? HomeData.length === 0 ? <Empty style={{width: "100%"}}/>
       : HomeData.map((v, k) => {
-        return <Post updateFunction={getHomeData} post={v}/>
+        return <Post selectedID={"post_id" in selectPost ? selectPost.post_id : ""} updateFunction={getHomeData}
+                     post={v}/>
       }) : <Spin spinning={true} style={{width: "100%"}}/>}
   </div>
 }
 
-export const Post = ({post, updateFunction}: { post: postType, updateFunction: Function }) => {
+export const Post = ({post, updateFunction, selectedID}: {
+  post: postType,
+  updateFunction: Function,
+  selectedID: string
+}) => {
   const [profile, setProfile] = useState<Profile>()
   const principal = post.user
   const {principal: user_id} = useAuth()
@@ -230,7 +237,8 @@ export const Post = ({post, updateFunction}: { post: postType, updateFunction: F
   }
 
 
-  return <div ref={postRef} className={"post_main"} onClick={() => updateSelectPost(post)}>
+  return <div ref={postRef} style={{background: selectedID === post.post_id ? "#F0F4FF" : ""}} className={"post_main"}
+              onClick={() => updateSelectPost(post)}>
     {contextHolder}
     <div style={{display: "flex", justifyContent: "space-between", alignItems: "center"}}>
       <div className={"author"}>

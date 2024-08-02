@@ -1,7 +1,7 @@
 import {getActor} from "../utils/Actor";
 import {idlFactory} from "../declarations/photo_storage/photo_storage.did.js";
 
-const photo_storage_cid = "by6od-j4aaa-aaaaa-qaadq-cai"
+const photo_storage_cid = "nwdfs-liaaa-aaaan-qmtjq-cai"
 
 class storage {
 
@@ -47,7 +47,7 @@ class storage {
         console.log(res)
         const urls = res.map((v: any) => {
           if (v === "") return ""
-          return `http://${photo_storage_cid}.localhost:4943/${Number(v)}`
+          return `http://${photo_storage_cid}.raw.icp0.io/${Number(v)}`
         })
         console.log(urls)
         return resolve(urls)

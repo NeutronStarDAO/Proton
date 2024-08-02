@@ -25,6 +25,7 @@ export const useProvideAuth = (api: NotificationInstance, authClient: IIForIdent
   const [authenticated, setAuthenticated] = useState<boolean | undefined>(undefined);
   if (!isAuthClientReady) authClient.create().then(() => setAuthClientReady(true));
 
+
   const init = async () => {
     const [identity, isAuthenticated] = await Promise.all([
       authClient.getIdentity(),
@@ -47,7 +48,7 @@ export const useProvideAuth = (api: NotificationInstance, authClient: IIForIdent
     let cai = e
     if (!e) {
       try {
-        cai = await rootFeedApi.createFeedCanister()
+        cai = await rootFeedApi.init_user_feed()
       } catch (e) {
         api.error({
           message: 'Create Failed !',

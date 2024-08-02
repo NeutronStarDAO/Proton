@@ -2,11 +2,11 @@ import {idlFactory} from "../declarations/root_bucket/root_bucket.did.js"
 import {getActor} from "../utils/Actor";
 import {Post} from "../declarations/root_bucket/root_bucket";
 
-const rootPostCai = "be2us-64aaa-aaaaa-qaabq-cai"
+const root_bucket = "pc5ag-oiaaa-aaaan-qmthq-cai"
 
 class rootPost {
   private static async getActor() {
-    return await getActor.createActor(idlFactory, rootPostCai);
+    return await getActor.createActor(idlFactory, root_bucket);
   }
 
   async get_buckets_latest_feed(count: number) {
