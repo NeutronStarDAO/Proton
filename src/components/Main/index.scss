@@ -3,14 +3,17 @@
   display: flex;
   flex-direction: column;
   align-items: start;
-  padding: 3rem;
+  padding: 2rem;
   overflow: auto;
   border-right: 1px solid #679BF8;
   border-left: 1px solid #679BF8;
-  gap: 4rem;
+  gap: 2rem;
 
   .title {
     font-size: 3.7rem;
+    font-family: "Fredoka", sans-serif;
+    padding-bottom: 1rem;
+    padding-top: 1rem;
   }
 }
 
