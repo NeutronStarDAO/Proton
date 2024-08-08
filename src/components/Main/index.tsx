@@ -243,16 +243,16 @@ export const Post = ({post, updateFunction}: { post: postType, updateFunction: F
                src={profile?.avatar_url ? profile.avatar_url : "./img_3.png"} alt=""/>
         </Tooltip>
         <div style={{display: "flex", flexDirection: "column", alignItems: "start", justifyContent: "center"}}>
-          <div style={{fontSize: "2.3rem", fontWeight: "500", fontFamily: "Fredoka, sans-serif"}}>{profile?.name}</div>
-          <div style={{display: "flex", alignItems: "center", fontSize: "2rem", color: "#737373", gap: "1rem"}}>
+          <div style={{fontSize: "2.1rem", fontWeight: "500", fontFamily: "Fredoka, sans-serif"}}>{profile?.name}</div>
+          <div style={{display: "flex", alignItems: "center", fontSize: "2rem", color: "#6F7073", gap: "1rem"}}>
             <div>{profile ? shortenString(profile.handle, 10) : ""}</div>
             <span style={{
               width: "0.5rem",
               height: "0.5rem",
-              background: "#737373",
+              background: "#6F7073",
               borderRadius: "50%"
             }}/>
-            <div style={{color: "#737373"}}>
+            <div style={{color: "#6F7073"}}>
               {arg.time}
             </div>
           </div>
