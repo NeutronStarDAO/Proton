@@ -10,9 +10,11 @@ export const Sidebar = () => {
     </div>
     <div className="trends">
       <span style={{fontSize: "3.7rem"}}>Trends</span>
-      <span>#ICP</span>
-      <span>#ICP</span>
-      <span>#ICP</span>
+      <span>#Feature</span>
+      <span>#To</span>
+      <span>#Be</span>
+      <span>#Released</span>
+      <span>#Soon</span>
     </div>
     <div className="popular scroll_main">
       <span style={{fontSize: "3.7rem"}}>Popular Users</span>
