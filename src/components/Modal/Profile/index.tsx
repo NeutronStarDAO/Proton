@@ -17,7 +17,7 @@ import {Done} from "./Done";
 
 type form_type = {
   ID: string,
-  Nam: string,
+  Name: string,
   Bio: string,
   Location: string,
   Network: string
@@ -31,7 +31,7 @@ export const ProfileModal = ({open, setOpen, canClose}: { open: boolean, setOpen
 
   const [form, setForm] = useState<form_type>({
     ID: "",
-    Nam: "",
+    Name: "",
     Bio: "",
     Location: "",
     Network: "",
@@ -50,7 +50,7 @@ export const ProfileModal = ({open, setOpen, canClose}: { open: boolean, setOpen
       updateProfile({
         id: principal,
         avatar_url: a_url,
-        name: form.Nam,
+        name: form.Name,
         location: form.Location,
         biography: form.Bio,
         website: form.Network,
@@ -62,7 +62,7 @@ export const ProfileModal = ({open, setOpen, canClose}: { open: boolean, setOpen
       const newProfile: Profile = {
         id: principal,
         avatar_url: res[1] ? res[1] : a_url ? a_url : "",
-        name: form.Nam,
+        name: form.Name,
         location: form.Location,
         biography: form.Bio,
         website: form.Network,
@@ -85,7 +85,7 @@ export const ProfileModal = ({open, setOpen, canClose}: { open: boolean, setOpen
   useEffect(() => {
     setForm({
       ID: profile.handle ? profile.handle : "",
-      Nam: profile.name ? profile.name : "",
+      Name: profile.name ? profile.name : "",
       Bio: profile.biography ? profile.biography : "",
       Location: profile.location ? profile.location : "",
       Network: profile.website ? profile.website : ""
@@ -94,20 +94,19 @@ export const ProfileModal = ({open, setOpen, canClose}: { open: boolean, setOpen
 
   return <>
     {contextHolder}
-    <Modal setOpen={setOpen} open={open} component={<div className={"login_modal"}>
+    <Modal setOpen={setOpen} open={open} canClose={canClose} component={<div className={"login_modal"}>
       <div style={{display: "flex", justifyContent: "space-between", width: "100%", alignItems: "center"}}>
         <div className={"title"}>
           <Icon name={"edit"}/>
           Edit Profile
         </div>
-        <div onClick={() => setOpen(false)} style={{cursor: "pointer", display: canClose ? "flex" : "none"}}>❌</div>
       </div>
       <Background setBackFile={setBackFile} profile={profile}/>
       <div style={{width: "100%", display: "flex"}}>
         <Avatar setAvatarFile={setAvatarFile} profile={profile}/>
         <div style={{flex: "1", display: "flex", flexDirection: "column", justifyContent: "center", gap: "1rem"}}>
           <InfoItem onchange={onChange} t={"ID"} value={profile.handle} readOnly={!!profile.handle} flag={true}/>
-          <InfoItem onchange={onChange} t={"Nam"} value={form.Nam} placeholder={"your name"} flag={true}/>
+          <InfoItem onchange={onChange} t={"Name"} value={form.Name} placeholder={"your name"} flag={true}/>
         </div>
       </div>
       <InfoItem onchange={onChange} t={"Bio"}

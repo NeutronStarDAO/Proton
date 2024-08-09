@@ -1,7 +1,7 @@
 export type Name = "Home" | "Home_Click" | "Explore" | "Explore_Click" | "link" | "right" |
   "Wallet" | "Settings" | "Settings_Click" | "edit" | "location" | "email" | "calendar"
   | "search" | "like" | "comment" | "repost" | "user" | "tx" | "receive" | "theme" | "account"
-  | "picture" | "smile" | "like_click" | "more" | "trash" | "pin"
+  | "picture" | "smile" | "like_click" | "more" | "trash" | "pin" | "dark_user"
 
 
 interface Props {
@@ -16,6 +16,13 @@ interface Props {
 
 const Icon = ({name, bg, color, width, height, spin, className}: Props) => {
   switch (name) {
+    case "dark_user":
+      return <svg width="3rem" height="3rem" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path fill-rule="evenodd" clip-rule="evenodd"
+              d="M14.5833 29.1667C22.6375 29.1667 29.1667 22.6375 29.1667 14.5833C29.1667 6.52918 22.6375 0 14.5833 0C6.52918 0 0 6.52918 0 14.5833C0 22.6375 6.52918 29.1667 14.5833 29.1667ZM18.9585 10.2083C18.9585 12.6246 16.9998 14.5833 14.5835 14.5833C12.1673 14.5833 10.2085 12.6246 10.2085 10.2083C10.2085 7.79209 12.1673 5.83333 14.5835 5.83333C16.9998 5.83333 18.9585 7.79209 18.9585 10.2083ZM20.4166 23.3333C22.0274 23.3333 23.379 21.9632 22.6573 20.5231C22.2219 19.6544 21.5847 18.8559 20.7704 18.1773C19.1295 16.8099 16.9039 16.0417 14.5832 16.0417C12.2626 16.0417 10.037 16.8099 8.39605 18.1773C7.58178 18.8559 6.94457 19.6544 6.5092 20.5231C5.78742 21.9631 7.13907 23.3333 8.7499 23.3333H20.4166Z"
+              fill="#1F1F1F"/>
+      </svg>
+
     case "pin":
       return <svg width="1.9rem" height="2.8rem" viewBox="0 0 19 28" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path

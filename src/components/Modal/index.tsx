@@ -24,7 +24,7 @@ export const Modal = ({open, component, setOpen, canClose = true}: {
 
   return (
     <>
-      <div className="modal_overlay" ref={ref} onClick={() => canClose ? null : setOpen(false)}>
+      <div className="modal_overlay" ref={ref} onClick={() => !canClose ? null : setOpen(false)}>
         <div className="modal" onClick={e => e.stopPropagation()}>
           <div>
             {component}

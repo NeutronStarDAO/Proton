@@ -216,7 +216,7 @@ export const PostModal = ({open, setOpen}: { open: boolean, setOpen: Function })
 
   return <>
     {contextHolder}
-    <Modal canClose={false} setOpen={setOpen} open={open} component={<div className={"post_modal"}>
+    <Modal canClose={true} setOpen={setOpen} open={open} component={<div className={"post_modal"}>
       <div className={"post_head"}>
         <div style={{display: "flex", alignItems: "center"}}>
           <img style={{borderRadius: "50%"}} src={profile?.avatar_url ? profile.avatar_url : "./img_5.png"} alt=""/>

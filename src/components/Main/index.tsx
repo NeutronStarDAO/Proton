@@ -334,7 +334,7 @@ export const Post = ({post, updateFunction, selectedID}: {
       e.stopPropagation()
     }} ref={specifiedElementRef} style={{display: open ? "flex" : "none"}} className={"reply_wrap"}>
       <textarea onChange={e => setReplyContent(e.target.value)} value={replyContent} name="" id="" rows={3}
-                placeholder={"reply"}/>
+                placeholder={"Reply"}/>
 
       <div onClick={sendReply}>
         Send

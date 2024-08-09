@@ -70,6 +70,7 @@ export const UserInfo = () => {
   const navigate = useNavigate();
   const profile = useProfileStore()
   const {principal} = useAuth()
+  const location = useLocation()
 
   return <div className={"user_info"}>
     <div className={"info"}>
@@ -80,7 +81,7 @@ export const UserInfo = () => {
       </div>
     </div>
     <div onClick={() => navigate(`/profile/${principal?.toString()}`)} className={"icon"}>
-      <Icon name={"user"}/>
+      <Icon name={location.pathname.includes("profile")?"dark_user":"user"}/>
       Profile
     </div>
   </div>

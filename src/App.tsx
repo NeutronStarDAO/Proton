@@ -19,34 +19,21 @@ function App() {
   const selectPost = useSelectPostStore()
   const {principal, isAuth} = useAuth()
   const scrollContainerRef = useRef(null);
-
   const [open, setOpen] = useState(false)
-  const profile = useProfileStore()
 
   useEffect(() => {
-    const t = setTimeout(() => {
-      if (isAuth) {
-        if (!("id" in profile)) setOpen(true)
-        else setOpen(false)
-      }
-    }, 2000)
-
-    return () => {
-      clearTimeout(t)
-    }
-
-  }, [profile, isAuth])
-
-  useEffect(() => {
-    if (principal) {
+    if (principal && isAuth) {
       userApi.getProfile(principal).then(e => {
         console.log(e)
         if (e) {
           updateProfile(e)
+          setOpen(false)
+        } else {
+          setOpen(true)
         }
       })
     }
-  }, [principal])
+  }, [principal, isAuth])
 
   const scrollToTop = () => {
     if (scrollContainerRef.current) {

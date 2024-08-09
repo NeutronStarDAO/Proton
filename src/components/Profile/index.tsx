@@ -154,10 +154,11 @@ const UserPanel = ({profile}: { profile?: profile_type }) => {
     </div>
 
     <div className={"aa"} ref={ref}>
-      <div className={"label"}>
+      <div className={"label"} style={{display: !!profile?.location ? "flex" : "none"}}>
         <Icon name={"location"}/> {profile?.location}
       </div>
-      <div className={"label"}>
+      <div className={"label"} style={{display: !!profile?.website ? "flex" : "none"}}>
+
         <Icon name={"link"}/> {profile?.website}
       </div>
       <div className={"label"}>
