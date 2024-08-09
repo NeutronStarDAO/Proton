@@ -31,11 +31,11 @@ export const Side = ({scrollToTop}: { scrollToTop: Function }) => {
                         scrollToTop()
                       }} key={k} className="item">
             <Icon name={isClick ? `${v}_Click` as Name : v as Name}/>&nbsp;{v === "Home" ?
-            <Tooltip title={v === "Home" && !isAuth ? "please login first" : ""}>{v}</Tooltip> : <div>{v}</div>}
+            <Tooltip title={v === "Home" && !isAuth ? "Please login first" : ""}>{v}</Tooltip> : <div>{v}</div>}
           </div>
         })}
         <PostModal setOpen={setOpen} open={open}/>
-        <Tooltip title={isAuth ? "" : "please login first"}>
+        <Tooltip title={isAuth ? "" : "Please login first"}>
           <div className={"post_button"}
                style={{
                  background: isAuth ? "#428EFF" : "gray",
@@ -76,7 +76,7 @@ export const UserInfo = () => {
     <div className={"info"}>
       <img src={profile.avatar_url ? profile.avatar_url : "./img_5.png"} alt=""/>
       <div style={{display: "flex", alignItems: "start", flexDirection: "column", justifyContent: "center"}}>
-        <div className={"name"}>{profile.name ?? "XXX"}</div>
+        <div className={"name"}>{profile.name ?? "Loading"}</div>
         <div className={"id"}>{shortenString(profile.handle ?? "", 10)}</div>
       </div>
     </div>
