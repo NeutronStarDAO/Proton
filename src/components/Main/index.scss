@@ -3,14 +3,17 @@
   display: flex;
   flex-direction: column;
   align-items: start;
-  padding: 3rem;
+  padding: 2rem;
   overflow: auto;
   border-right: 1px solid #679BF8;
   border-left: 1px solid #679BF8;
-  gap: 4rem;
+  gap: 2rem;
 
   .title {
     font-size: 3.7rem;
+    font-family: "Fredoka", sans-serif;
+    padding-bottom: 1rem;
+    padding-top: 1rem;
   }
 }
 
@@ -54,15 +57,15 @@
 
   .dropdown_wrap {
     position: absolute;
-    display: flex;
-    top: 6rem;
-    gap: 2rem;
-    left: -11rem;
     flex-direction: column;
-    padding: 1rem;
-    background: #F0F4FF;
+    background: #d7e4ff;
     border-radius: 2rem;
-    font-size: 2.5rem;
+    font-size: 2.1rem;
+    font-weight: 500;
+    gap: 0rem;
+    left: -8rem;
+    padding: 0.5rem;
+    top: 5rem;
 
     div {
       display: flex;
@@ -79,6 +82,7 @@
 
   .tweet {
     font-size: 2rem;
+    color: #000;
     text-align: start;
     line-height: 3rem;
     margin-bottom: 2rem;

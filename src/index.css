@@ -19,7 +19,7 @@ code {
 
 * {
     box-sizing: border-box;
-    color: rgba(0, 0, 0, 0.7);
+    color: #1f2328;
 }
 
 ::-webkit-scrollbar {

@@ -134,7 +134,7 @@ const InfoItem = ({
 
   return <div className={"item_wrap"}
               style={{flexDirection: flag ? "row" : "column", alignItems: flag ? "center" : "start"}}>
-    <div style={{fontWeight: "bold", width: "14%", display: "flex"}}>{t}</div>
+    <div style={{fontWeight: "500", width: "14%", display: "flex"}}>{t}</div>
     {t === "Bio" ? <textarea onChange={(e) => onchange(t, e)} defaultValue={value} placeholder={placeholder} name=""
                              id=""></textarea> :
       <input onChange={(e) => onchange(t, e)} defaultValue={value} readOnly={readOnly} placeholder={placeholder}
