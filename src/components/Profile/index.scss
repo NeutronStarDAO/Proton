@@ -68,14 +68,14 @@
           align-items: center;
           justify-content: center;
           border-radius: 3.2rem;
-          background: #F0F4FF;
+          background: #F0E9FF;
           font-size: 2.5rem;
           padding: 0.5em 2.5rem;
           cursor: pointer;
         }
 
         .edit:hover {
-          background: #DAE0F7;
+          background: #DAD2EC;
         }
       }
 
@@ -92,6 +92,10 @@
                               "e f";
         gap: 1rem;
         column-gap: 5rem;
+
+        .label-link {
+          cursor: pointer;
+        }
 
         .label {
           display: flex;

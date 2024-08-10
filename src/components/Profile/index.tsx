@@ -144,7 +144,7 @@ const UserPanel = ({profile}: { profile?: profile_type }) => {
       {isOwner ? <span className={"edit"} onClick={() => setOpen(true)}>
         <Icon name={"edit"}/>
         Edit
-      </span> : <span style={{background: "#DAD2EC"}} className={"edit"} onClick={handleFollow}>
+      </span> : <span className={"edit"} onClick={handleFollow}>
         {isFollowed ? "Following" : "Follow"}
       </span>}
     </div>
@@ -157,8 +157,7 @@ const UserPanel = ({profile}: { profile?: profile_type }) => {
       <div className={"label"} style={{display: !!profile?.location ? "flex" : "none"}}>
         <Icon name={"location"}/> {profile?.location}
       </div>
-      <div className={"label"} style={{display: !!profile?.website ? "flex" : "none"}}>
-
+      <div className={"label label-link"} style={{display: !!profile?.website ? "flex" : "none"}}>
         <Icon name={"link"}/> {profile?.website}
       </div>
       <div className={"label"}>
