@@ -273,7 +273,7 @@ export const PostModal = ({open, setOpen}: { open: boolean, setOpen: Function })
   </>
 }
 
-export const maxSize = 2 * 1024 * 1024//2MB
+export const maxSize = 2 * 1024 * 1024 // 2MB
 const SelectPhoto = ({setFiles}: { setFiles: Function }) => {
 
   const onDrop = React.useCallback((files: File[]) => {

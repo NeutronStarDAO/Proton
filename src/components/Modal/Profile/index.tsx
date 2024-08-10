@@ -104,13 +104,13 @@ export const ProfileModal = ({open, setOpen, canClose}: { open: boolean, setOpen
       <Background setBackFile={setBackFile} profile={profile}/>
       <div style={{width: "100%", display: "flex"}}>
         <Avatar setAvatarFile={setAvatarFile} profile={profile}/>
-        <div style={{flex: "1", display: "flex", flexDirection: "column", justifyContent: "center", gap: "1rem"}}>
+        <div style={{flex: "1", display: "flex", flexDirection: "column", justifyContent: "center", gap: "1rem", marginLeft: "2rem"}}>
           <InfoItem onchange={onChange} t={"ID"} value={profile.handle} readOnly={!!profile.handle} flag={true}/>
-          <InfoItem onchange={onChange} t={"Name"} value={form.Name} placeholder={"your name"} flag={true}/>
+          <InfoItem onchange={onChange} t={"Name"} value={form.Name} placeholder={"Your name"} flag={true}/>
         </div>
       </div>
       <InfoItem onchange={onChange} t={"Bio"}
-                placeholder={"your biography"} value={form.Bio}
+                placeholder={"Your biography"} value={form.Bio}
                 flag={false}/>
       <InfoItem onchange={onChange} t={"Location"} flag={false} value={form.Location}/>
       <InfoItem onchange={onChange} t={"Network"} flag={false} value={form.Network}/>
@@ -195,7 +195,7 @@ const Background = ({
   const [previewImg, setPreviewImg] = useState("")
   const onDrop = React.useCallback((files: File[]) => {
     if (files.length === 0) {
-      return message.warning("file size is too large")
+      return message.warning("File size is too large")
     }
     getBase64(files[0]).then(e => {
       setPreviewImg(e)
