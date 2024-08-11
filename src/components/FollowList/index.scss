@@ -7,18 +7,18 @@
   overflow: auto;
   border-right: 1px solid #679BF8;
   border-left: 1px solid #679BF8;
-  gap: 2rem;
-
+  gap: 1rem;
+  font-family: "Fredoka", sans-serif;
 
   .user_card {
     width: 100%;
     padding: 2rem;
     display: flex;
     cursor: pointer;
+    border-radius: 1.7rem;
 
     &:hover {
       background: #F0F4FF;
-      border-radius: 3rem;
     }
 
     img {
@@ -41,7 +41,6 @@
       .user_info {
         display: flex;
         align-items: center;
-
       }
 
       .name, .following_button {
