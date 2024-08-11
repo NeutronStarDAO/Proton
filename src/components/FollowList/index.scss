@@ -7,18 +7,17 @@
   overflow: auto;
   border-right: 1px solid #679BF8;
   border-left: 1px solid #679BF8;
-  gap: 2rem;
-
+  gap: 1rem;
+  font-family: "Fredoka", sans-serif;
 
   .user_card {
     width: 100%;
     padding: 2rem;
     display: flex;
-
+    border-radius: 1.7rem;
 
     &:hover {
       background: #F0F4FF;
-      border-radius: 5rem;
     }
 
     img {
@@ -33,15 +32,25 @@
       align-items: center;
       justify-content: space-between;
       border-radius: 5rem;
+      height: 7rem;
 
       .user_info {
         display: flex;
         align-items: center;
-
       }
 
       .name {
         font-size: 2rem;
+
+        p {
+          margin: 0;
+          text-align: left;
+        }
+
+        p:first-child {
+          font-size: 2.5rem;
+          font-weight: 500;
+        }
       }
     }
 
