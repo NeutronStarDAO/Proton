@@ -62,7 +62,7 @@ const Logo = () => {
   const navigate = useNavigate();
 
   return <div onClick={() => navigate("/")} className={"logo"}>
-    <img src="/img_1.png" alt=""/>
+    <img style={{objectFit:"cover"}} src="/img_1.png" alt=""/>
   </div>
 }
 
@@ -74,7 +74,7 @@ export const UserInfo = () => {
 
   return <div className={"user_info"}>
     <div className={"info"}>
-      <img src={profile.avatar_url ? profile.avatar_url : "/img_1.png"} alt=""/>
+      <img style={{objectFit:"cover"}} src={profile.avatar_url ? profile.avatar_url : "/img_1.png"} alt=""/>
       <div style={{display: "flex", alignItems: "start", flexDirection: "column", justifyContent: "center"}}>
         <div className={"name"}>{profile.name ?? "Loading"}</div>
         <div className={"id"}>{shortenString(profile.handle ?? "", 10)}</div>

@@ -136,7 +136,7 @@ const UserPanel = ({profile}: { profile?: profile_type }) => {
   return <div className={"user_panel"}>
     <div className={"avatar_panel"}>
       <div className={"info"}>
-        <img src={profile && profile.avatar_url ? profile.avatar_url : "/img_1.png"} alt=""/>
+        <img style={{objectFit:"cover"}} src={profile && profile.avatar_url ? profile.avatar_url : "/img_1.png"} alt=""/>
         <div style={{display: "flex", alignItems: "start", flexDirection: "column", justifyContent: "center"}}>
           <div className={"name"}>{profile?.name}</div>
           <div className={"id"}>{shortenString(profile ? profile.handle : "", 16)}</div>

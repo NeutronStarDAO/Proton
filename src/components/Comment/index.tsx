@@ -49,7 +49,7 @@ const CommentCon = ({comment, profile}: { comment: comment_type, profile: Profil
   return <div className={"comment_main"}>
     <div className={"author"}>
       <Tooltip title={profile?.name}>
-        <img style={{borderRadius: "50%"}} className={"avatar"}
+        <img style={{borderRadius: "50%",objectFit:"cover"}} className={"avatar"}
              onClick={() => navigate(`/profile/${profile?.id.toString()}`)}
              src={profile?.avatar_url ? profile.avatar_url : "/img_1.png"} alt=""/>
       </Tooltip>

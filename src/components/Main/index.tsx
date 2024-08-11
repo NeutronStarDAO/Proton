@@ -247,7 +247,7 @@ export const Post = ({post, updateFunction, selectedID}: {
     <div style={{display: "flex", justifyContent: "space-between", alignItems: "center"}}>
       <div className={"author"}>
         <Tooltip title={profile?.name}>
-          <img style={{borderRadius: "50%"}} className={"avatar"}
+          <img style={{borderRadius: "50%", objectFit: "cover"}} className={"avatar"}
                onClick={(e) => {
                  e.stopPropagation()
                  navigate(`/profile/${principal.toString()}`)
@@ -291,12 +291,13 @@ export const Post = ({post, updateFunction, selectedID}: {
     </div>
     <div className={"tweet"}>
       {post.content}
-      <div className={"img_list"}>
+      <div className={"img_list"} style={{
+        gridTemplateColumns: post.photo_url.length === 1 ? "1fr" : "repeat(2, 1fr)",
+        height: post.photo_url.length === 0 ? "0" : "50rem",
+        minHeight: post.photo_url.length === 0 ? "0" : "50rem",
+      }}>
         {post.photo_url.map((v, k) => {
-          return <div key={k} style={{
-            backgroundImage: `url(${v})`,
-            // cursor: `url("/img.png"),auto`
-          }}/>
+          return <ImagePreview key={k} src={v}/>
         })}
       </div>
     </div>
@@ -356,3 +357,39 @@ export const Post = ({post, updateFunction, selectedID}: {
     </div>
   </div>
 }
+
+const ImagePreview = ({src}: { src: string }) => {
+
+  const [isFullScreen, setIsFullScreen] = useState(false);
+
+  const handleImageClick = () => {
+    setIsFullScreen(true);
+  };
+
+  const handleOverlayClick = () => {
+    setIsFullScreen(false);
+  };
+
+  return (
+    <>
+      <div className="image-container">
+        <img
+          src={src}
+          alt=""
+          onClick={handleImageClick}
+        />
+      </div>
+
+      {isFullScreen && (
+        <div className="image-overlay" onClick={handleOverlayClick}>
+          <img
+            src={src}
+            alt=""
+            className="full-screen-image"
+          />
+        </div>
+      )}
+    </>
+  );
+};
+

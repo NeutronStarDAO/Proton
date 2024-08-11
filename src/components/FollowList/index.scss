@@ -38,6 +38,11 @@
         margin: 0;
       }
 
+      p:first-child {
+        font-size: 2.5rem;
+        font-weight: 500;
+      }
+
       .user_info {
         display: flex;
         align-items: center;

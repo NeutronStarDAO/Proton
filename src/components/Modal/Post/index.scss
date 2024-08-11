@@ -40,26 +40,36 @@
 
     .post_img {
       height: 50rem;
+      min-height: 50rem;
       width: 100%;
-      display: flex;
-      flex-wrap: nowrap;
-      overflow-x: auto;
+      display: grid;
       padding: 1rem 0 1rem 0;
       margin-bottom: 1rem;
-      gap: 2rem;
+      gap: 1rem;
 
       div {
-        min-width: 45%;
-        height: 100%;
-        border-radius: 2rem;
-        background-size: contain;
-        background-position: center;
-        background-repeat: no-repeat;
-      }
-    }
+        position: relative;
 
-    .post_img div:only-child {
-      width: 100%;
+        img {
+          position: absolute;
+          top: 0;
+          left: 0;
+          object-fit: cover;
+          object-position: center;
+          width: 100%;
+          height: 100%;
+          min-height: 100%;
+          border-radius: 0.5rem;
+        }
+
+        span {
+          position: absolute;
+          top: 1rem;
+          right: 1rem;
+          cursor: pointer;
+        }
+
+      }
     }
   }
 
@@ -94,6 +104,7 @@
       position: absolute;
     }
   }
+
   .gray_button {
     display: flex;
     align-items: center;
@@ -107,6 +118,7 @@
     line-height: 3.5rem;
     cursor: no-drop;
   }
+
   .button_wrap {
     display: flex;
     width: 100%;

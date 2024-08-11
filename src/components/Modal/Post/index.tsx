@@ -27,6 +27,7 @@ export const PostModal = ({open, setOpen}: { open: boolean, setOpen: Function })
   const [api, contextHolder] = notification.useNotification();
   const ref = useRef(null)
   const [canSend, setCanSend] = useState(false)
+  const [hoverOne, setHoverOne] = useState(-1)
 
   const {contextSafe} = useGSAP({scope: ref})
 
@@ -224,6 +225,10 @@ export const PostModal = ({open, setOpen}: { open: boolean, setOpen: Function })
     textarea.rows = Math.ceil(newHeight / lineHeight);
   };
 
+  const deletePhoto = React.useCallback((index: number) => {
+    const newFiles = files.filter((_, k) => k !== index)
+    setFiles(newFiles)
+  }, [files])
 
   return <>
     {contextHolder}
@@ -231,7 +236,8 @@ export const PostModal = ({open, setOpen}: { open: boolean, setOpen: Function })
       <div className={"post_modal"}>
         <div className={"post_head"}>
           <div style={{display: "flex", alignItems: "center"}}>
-            <img style={{borderRadius: "50%"}} src={profile?.avatar_url ? profile.avatar_url : "/img_1.png"} alt=""/>
+            <img style={{borderRadius: "50%", objectFit: "cover"}}
+                 src={profile?.avatar_url ? profile.avatar_url : "/img_1.png"} alt=""/>
             <div style={{display: "flex", alignItems: "start", flexDirection: "column", justifyContent: "center"}}>
               <div className={"name"}>{profile?.name}</div>
               <div className={"id"}>{shortenString(profile.handle ?? "", 10)}</div>
@@ -245,11 +251,17 @@ export const PostModal = ({open, setOpen}: { open: boolean, setOpen: Function })
                    name=""
                    id="post_area"
                    cols={30}/>
-          {img.length > 0 && <div className={"post_img"}>
-            {img.map((v, k) => {
-              return <div style={{backgroundImage: `url(${v})`}}/>
-            })}
-          </div>}
+          {img.length > 0 &&
+            <div className={"post_img"} style={{gridTemplateColumns: img.length === 1 ? "1fr" : "repeat(2, 1fr)"}}>
+              {img.map((v, k) => {
+                return <div key={k} onMouseEnter={() => setHoverOne(k)} onMouseLeave={() => setHoverOne(-1)}>
+                  <img src={v} alt=""/>
+                  <span onClick={() => deletePhoto(k)} style={{display: hoverOne === k ? "flex" : "none"}}>
+                    <Icon name={"deletePhoto"}/>
+                  </span>
+                </div>
+              })}
+            </div>}
         </div>
         <div className={"post_foot"}>
           <SelectPhoto setFiles={setFiles}/>

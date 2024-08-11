@@ -1,7 +1,8 @@
 export type Name = "Home" | "Home_Click" | "Explore" | "Explore_Click" | "link" | "right" |
   "Wallet" | "Settings" | "Settings_Click" | "edit" | "location" | "email" | "calendar"
   | "search" | "like" | "comment" | "repost" | "user" | "tx" | "receive" | "theme" | "account"
-  | "picture" | "smile" | "like_click" | "more" | "trash" | "pin" | "dark_user" |"back"
+  | "picture" | "smile" | "like_click" | "more" | "trash" | "pin" | "dark_user" |"back"|"deletePhoto"
+|"deletePhotoHover"
 
 
 interface Props {
@@ -16,6 +17,20 @@ interface Props {
 
 const Icon = ({name, bg, color, width, height, spin, className}: Props) => {
   switch (name) {
+    case "deletePhotoHover":
+      return <svg width="3rem" height="3rem" viewBox="0 0 29 29" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path fill-rule="evenodd" clip-rule="evenodd"
+              d="M14.5 29C22.5081 29 29 22.5081 29 14.5C29 6.49187 22.5081 0 14.5 0C6.49187 0 0 6.49187 0 14.5C0 22.5081 6.49187 29 14.5 29ZM7.57944 21.4211C7.15474 20.9964 7.15474 20.3078 7.57944 19.8831L12.9623 14.5002L7.57944 9.11739C7.15474 8.6927 7.15474 8.00413 7.57944 7.57944C8.00413 7.15474 8.6927 7.15474 9.1174 7.57944L14.5002 12.9623L19.8831 7.57944C20.3078 7.15474 20.9964 7.15474 21.4211 7.57944C21.8457 8.00413 21.8457 8.6927 21.4211 9.11739L16.0382 14.5002L21.4211 19.8831C21.8457 20.3078 21.8457 20.9964 21.4211 21.4211C20.9964 21.8457 20.3078 21.8457 19.8831 21.4211L14.5002 16.0382L9.1174 21.4211C8.6927 21.8457 8.00413 21.8457 7.57944 21.4211Z"
+              fill="white"/>
+      </svg>
+
+    case "deletePhoto":
+      return <svg width="3rem" height="3rem" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path fill-rule="evenodd" clip-rule="evenodd"
+              d="M15 30C23.2843 30 30 23.2843 30 15C30 6.71573 23.2843 0 15 0C6.71573 0 0 6.71573 0 15C0 23.2843 6.71573 30 15 30ZM7.8408 22.1597C7.40146 21.7204 7.40146 21.0081 7.8408 20.5687L13.4093 15.0003L7.8408 9.43179C7.40146 8.99245 7.40146 8.28014 7.8408 7.8408C8.28014 7.40146 8.99245 7.40146 9.43179 7.8408L15.0003 13.4093L20.5687 7.8408C21.0081 7.40146 21.7204 7.40146 22.1597 7.8408C22.599 8.28014 22.599 8.99245 22.1597 9.43179L16.5912 15.0003L22.1597 20.5687C22.599 21.0081 22.599 21.7204 22.1597 22.1597C21.7204 22.5991 21.0081 22.5991 20.5687 22.1597L15.0003 16.5912L9.43179 22.1597C8.99245 22.599 8.28014 22.599 7.8408 22.1597Z"
+              fill="white"/>
+      </svg>
+
     case "back":
       return <svg width="3.9rem" height="3.1rem" viewBox="0 0 39 31" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M36.8679 15.589L1.82812 15.589M1.82812 15.589L14.9682 29.1781M1.82812 15.589L14.9682 2"
