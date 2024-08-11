@@ -94,7 +94,19 @@
       position: absolute;
     }
   }
-
+  .gray_button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 17rem;
+    width: 17rem;
+    background: gray;
+    padding: 0.8rem;
+    font-size: 2.5rem;
+    border-radius: 0.7rem;
+    line-height: 3.5rem;
+    cursor: no-drop;
+  }
   .button_wrap {
     display: flex;
     width: 100%;
@@ -293,6 +305,8 @@
         }
       }
     }
+
+
   }
 
 

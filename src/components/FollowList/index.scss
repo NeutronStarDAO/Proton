@@ -14,11 +14,11 @@
     width: 100%;
     padding: 2rem;
     display: flex;
-
+    cursor: pointer;
 
     &:hover {
       background: #F0F4FF;
-      border-radius: 5rem;
+      border-radius: 3rem;
     }
 
     img {
@@ -34,14 +34,31 @@
       justify-content: space-between;
       border-radius: 5rem;
 
+      p {
+        margin: 0;
+      }
+
       .user_info {
         display: flex;
         align-items: center;
 
       }
 
-      .name {
+      .name, .following_button {
         font-size: 2rem;
+        display: flex;
+        flex-direction: column;
+        align-items: start;
+      }
+
+      .following_button {
+        align-items: center;
+      }
+
+      .down_line {
+        width: 0;
+        height: 1px;
+        background: black;
       }
     }
 
@@ -49,6 +66,7 @@
       text-align: left;
       font-size: 2rem;
       width: 90%;
+      margin-top: 1.5rem;
     }
   }
 }

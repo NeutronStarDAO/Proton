@@ -3,8 +3,8 @@ import './index.scss';
 import {useGSAP} from "@gsap/react";
 import gsap from 'gsap';
 
-export const Modal = ({open, component, setOpen, canClose = true}: {
-  component: JSX.Element,
+export const Modal = ({open, children, setOpen, canClose = true}: {
+  children: JSX.Element,
   open: boolean,
   setOpen: Function,
   canClose?: boolean
@@ -24,10 +24,14 @@ export const Modal = ({open, component, setOpen, canClose = true}: {
 
   return (
     <>
-      <div className="modal_overlay" ref={ref} onClick={() => !canClose ? null : setOpen(false)}>
-        <div className="modal" onClick={e => e.stopPropagation()}>
+      <div className="modal_overlay" ref={ref} onClick={(e) => {
+        if (e.currentTarget === e.target && canClose) {
+          setOpen(false)
+        }
+      }}>
+        <div className="modal">
           <div>
-            {component}
+            {children}
           </div>
         </div>
       </div>

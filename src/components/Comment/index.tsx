@@ -9,6 +9,7 @@ import {Profile} from "../../declarations/user/user";
 import {Tooltip} from "antd";
 import {useNavigate} from "react-router-dom";
 import {getTime} from "../../utils/util";
+import {updateSelectPost} from "../../redux/features/SelectPost";
 
 export const Comment = ({comments}: { comments: comment_type[] }) => {
   const [profiles, setProfiles] = useState<Profile[]>([])
@@ -24,7 +25,12 @@ export const Comment = ({comments}: { comments: comment_type[] }) => {
 
   return <div className={"comment"}>
     <div className={"comment_wrap"}>
-      <div className={"title"}>Comment</div>
+      <div style={{width: "100%", textAlign: "start"}}>
+        <span style={{cursor: "pointer"}} onClick={() => updateSelectPost({})}>
+          <Icon name={"back"}/>
+        </span>
+      </div>
+      <div className={"title"} style={{padding: "0"}}>Comment</div>
       <div className={"comment_list"}>
         <div style={{width: "100%", height: "1px", background: "#679BF8"}}/>
         {comments.map((v, k) => {
@@ -40,13 +46,12 @@ const kk = [{label: "like", hoverColor: "rgba(249,24,128,0.6)"}, {
 }, {label: "repost", hoverColor: "rgb(0,186,124,0.6)"}]
 const CommentCon = ({comment, profile}: { comment: comment_type, profile: Profile }) => {
   const navigate = useNavigate()
-
   return <div className={"comment_main"}>
     <div className={"author"}>
       <Tooltip title={profile?.name}>
         <img style={{borderRadius: "50%"}} className={"avatar"}
              onClick={() => navigate(`/profile/${profile?.id.toString()}`)}
-             src={profile?.avatar_url ? profile.avatar_url : "./img_3.png"} alt=""/>
+             src={profile?.avatar_url ? profile.avatar_url : "/img_1.png"} alt=""/>
       </Tooltip>
       <div style={{display: "flex", flexDirection: "column", alignItems: "start", justifyContent: "center"}}>
         <div style={{fontSize: "2rem"}}>{profile?.name}</div>
@@ -63,7 +68,7 @@ const CommentCon = ({comment, profile}: { comment: comment_type, profile: Profil
             background: "#737373",
             borderRadius: "50%"
           }}/>
-          <div style={{color:"#737373"}}>
+          <div style={{color: "#737373"}}>
             {getTime(comment.created_at)}
           </div>
         </div>

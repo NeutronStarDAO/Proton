@@ -1,7 +1,7 @@
 export type Name = "Home" | "Home_Click" | "Explore" | "Explore_Click" | "link" | "right" |
   "Wallet" | "Settings" | "Settings_Click" | "edit" | "location" | "email" | "calendar"
   | "search" | "like" | "comment" | "repost" | "user" | "tx" | "receive" | "theme" | "account"
-  | "picture" | "smile" | "like_click" | "more" | "trash" | "pin" | "dark_user"
+  | "picture" | "smile" | "like_click" | "more" | "trash" | "pin" | "dark_user" |"back"
 
 
 interface Props {
@@ -16,6 +16,12 @@ interface Props {
 
 const Icon = ({name, bg, color, width, height, spin, className}: Props) => {
   switch (name) {
+    case "back":
+      return <svg width="3.9rem" height="3.1rem" viewBox="0 0 39 31" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M36.8679 15.589L1.82812 15.589M1.82812 15.589L14.9682 29.1781M1.82812 15.589L14.9682 2"
+              stroke="#1F1F1F" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
+      </svg>
+
     case "dark_user":
       return <svg width="3rem" height="3rem" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path fill-rule="evenodd" clip-rule="evenodd"

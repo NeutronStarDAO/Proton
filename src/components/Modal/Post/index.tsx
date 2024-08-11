@@ -26,6 +26,7 @@ export const PostModal = ({open, setOpen}: { open: boolean, setOpen: Function })
   const {userFeedCai, principal} = useAuth()
   const [api, contextHolder] = notification.useNotification();
   const ref = useRef(null)
+  const [canSend, setCanSend] = useState(false)
 
   const {contextSafe} = useGSAP({scope: ref})
 
@@ -150,8 +151,9 @@ export const PostModal = ({open, setOpen}: { open: boolean, setOpen: Function })
   }
 
   const send = async () => {
-    sendAnimate()
     if (!userFeedCai) return 0
+    if (text === "" && files.length === 0) return 0
+    sendAnimate()
     console.log(text)
     console.log(files)
     try {
@@ -191,6 +193,14 @@ export const PostModal = ({open, setOpen}: { open: boolean, setOpen: Function })
   }, [files])
 
   useEffect(() => {
+    if (text.length > 0 || files.length > 0) {
+      setCanSend(true)
+    } else {
+      setCanSend(false)
+    }
+  }, [text, files]);
+
+  useEffect(() => {
     try {
       adjustTextareaRows();
     } catch (e) {
@@ -214,64 +224,81 @@ export const PostModal = ({open, setOpen}: { open: boolean, setOpen: Function })
     textarea.rows = Math.ceil(newHeight / lineHeight);
   };
 
+
   return <>
     {contextHolder}
-    <Modal canClose={true} setOpen={setOpen} open={open} component={<div className={"post_modal"}>
-      <div className={"post_head"}>
-        <div style={{display: "flex", alignItems: "center"}}>
-          <img style={{borderRadius: "50%"}} src={profile?.avatar_url ? profile.avatar_url : "./img_5.png"} alt=""/>
-          <div style={{display: "flex", alignItems: "start", flexDirection: "column", justifyContent: "center"}}>
-            <div className={"name"}>{profile?.name}</div>
-            <div className={"id"}>{shortenString(profile.handle ?? "", 10)}</div>
+    <Modal canClose={true} setOpen={setOpen} open={open}>
+      <div className={"post_modal"}>
+        <div className={"post_head"}>
+          <div style={{display: "flex", alignItems: "center"}}>
+            <img style={{borderRadius: "50%"}} src={profile?.avatar_url ? profile.avatar_url : "/img_1.png"} alt=""/>
+            <div style={{display: "flex", alignItems: "start", flexDirection: "column", justifyContent: "center"}}>
+              <div className={"name"}>{profile?.name}</div>
+              <div className={"id"}>{shortenString(profile.handle ?? "", 10)}</div>
+            </div>
           </div>
         </div>
-      </div>
-      <div className={"post_body"}>
+        <div className={"post_body"}>
          <textarea style={{height: img.length > 0 ? "auto" : "15rem"}} ref={textareaRef} value={text}
                    onChange={(e) => setText(e.target.value)}
                    placeholder={"What’s happening?"}
                    name=""
                    id="post_area"
                    cols={30}/>
-        {img.length > 0 && <div className={"post_img"}>
-          {img.map((v, k) => {
-            return <div style={{backgroundImage: `url(${v})`}}/>
-          })}
-        </div>}
-      </div>
-      <div className={"post_foot"}>
-        <SelectPhoto setFiles={setFiles}/>
-        <div className={"smile"} onClick={() => setIsVisible(!isVisible)}>
-          <Icon name={"smile"}/>
+          {img.length > 0 && <div className={"post_img"}>
+            {img.map((v, k) => {
+              return <div style={{backgroundImage: `url(${v})`}}/>
+            })}
+          </div>}
         </div>
-        <div className={"picker"} style={{display: isVisible ? "block" : "none"}}>
-          <Picker navPosition={"top"} theme={"light"} searchPosition={"none"} skinTonePosition={"none"}
-                  onClickOutside={() => {
-                    if (isVisible) setIsVisible(false)
-                  }} previewPosition="none" date={data} onEmojiSelect={(e: any) => setText(text + e.native)}/>
+        <div className={"post_foot"}>
+          <SelectPhoto setFiles={setFiles}/>
+          <div className={"smile"} onClick={() => setIsVisible(!isVisible)}>
+            <Icon name={"smile"}/>
+          </div>
+          <div className={"picker"} style={{display: isVisible ? "block" : "none"}}>
+            <Picker navPosition={"top"} theme={"light"} searchPosition={"none"} skinTonePosition={"none"}
+                    onClickOutside={() => {
+                      if (isVisible) setIsVisible(false)
+                    }} previewPosition="none" date={data}
+                    onEmojiSelect={(e: any) => setText(text + e.native)}/>
+          </div>
         </div>
-      </div>
-      <div className={"button_wrap"}>
-        <button ref={ref} className="button" onClick={send}>
-          <span style={{color: "#4F67EB"}}>Send</span>
-          <span className="success">
+        <div className={"button_wrap"}>
+          {canSend ?
+            <>
+              <button ref={ref} className="button" onClick={send}>
+                <span style={{color: "#4F67EB"}}>Send</span>
+                <span className="success">
           <svg viewBox="0 0 13 13">
             <polyline points="3.75 9 7 12 13 5"></polyline>
-          </svg>Sent
-        </span>
-          <svg className="trails" viewBox="0 0 33 64">
-            <path d="M26,4 C28,13.3333333 29,22.6666667 29,32 C29,41.3333333 28,50.6666667 26,60"></path>
-            <path d="M6,4 C8,13.3333333 9,22.6666667 9,32 C9,41.3333333 8,50.6666667 6,60"></path>
           </svg>
-          <div className="plane">
-            <div className="left"></div>
-            <div className="right"></div>
-          </div>
-        </button>
+              Send
+        </span>
+                <svg className="trails" viewBox="0 0 33 64">
+                  <path d="M26,4 C28,13.3333333 29,22.6666667 29,32 C29,41.3333333 28,50.6666667 26,60"></path>
+                  <path d="M6,4 C8,13.3333333 9,22.6666667 9,32 C9,41.3333333 8,50.6666667 6,60"></path>
+                </svg>
+                <div className="plane">
+                  <div className="left"></div>
+                  <div className="right"></div>
+                </div>
+              </button>
+            </> :
+            <GrayButton/>
+          }
+        </div>
+
       </div>
-    </div>}/>
+    </Modal>
   </>
 }
+
+const GrayButton = React.memo(() => {
+  return <div className={"gray_button"}>
+    Send
+  </div>
+})
 
 export const maxSize = 2 * 1024 * 1024 // 2MB
 const SelectPhoto = ({setFiles}: { setFiles: Function }) => {
