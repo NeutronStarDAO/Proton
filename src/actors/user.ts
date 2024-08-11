@@ -105,6 +105,16 @@ class User {
     }
   }
 
+  async cancel_follow(who: Principal) {
+    const actor = await User.getActor()
+    try {
+      await actor.cancle_follow(who)
+    } catch (e) {
+      console.log("cancel_follow", e)
+      throw e
+    }
+  }
+
   async isFollowed(A: Principal, B: Principal) {//判断 A 是否是 B的粉丝
     const actor = await User.getActor()
     try {

@@ -70,7 +70,7 @@ export const ProfileModal = ({open, setOpen, canClose}: { open: boolean, setOpen
         back_img_url: res[0] ? res[0] : b_url ? b_url : "",
         handle: form.ID
       }
-      canClose ? await userApi.updateProfile(newProfile) : await userApi.createProfile(newProfile)
+      canClose ? userApi.updateProfile(newProfile).then(() => window.location.reload()) : await userApi.createProfile(newProfile)
       if (profile) updateProfile(newProfile)
     } catch (e) {
       api.error({
@@ -94,28 +94,38 @@ export const ProfileModal = ({open, setOpen, canClose}: { open: boolean, setOpen
 
   return <>
     {contextHolder}
-    <Modal setOpen={setOpen} open={open} canClose={canClose} component={<div className={"login_modal"}>
-      <div style={{display: "flex", justifyContent: "space-between", width: "100%", alignItems: "center"}}>
-        <div className={"title"}>
-          <Icon name={"edit"}/>
-          Edit Profile
+    <Modal setOpen={setOpen} open={open} canClose={canClose}>
+
+      <div className={"login_modal"}>
+        <div style={{display: "flex", justifyContent: "space-between", width: "100%", alignItems: "center"}}>
+          <div className={"title"}>
+            <Icon name={"edit"}/>
+            Edit Profile
+          </div>
         </div>
-      </div>
-      <Background setBackFile={setBackFile} profile={profile}/>
-      <div style={{width: "100%", display: "flex"}}>
-        <Avatar setAvatarFile={setAvatarFile} profile={profile}/>
-        <div style={{flex: "1", display: "flex", flexDirection: "column", justifyContent: "center", gap: "1rem", marginLeft: "2rem"}}>
-          <InfoItem onchange={onChange} t={"ID"} value={profile.handle} readOnly={!!profile.handle} flag={true}/>
-          <InfoItem onchange={onChange} t={"Name"} value={form.Name} placeholder={"Your name"} flag={true}/>
+        <Background setBackFile={setBackFile} profile={profile}/>
+        <div style={{width: "100%", display: "flex"}}>
+          <Avatar setAvatarFile={setAvatarFile} profile={profile}/>
+          <div style={{
+            flex: "1",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            gap: "1rem",
+            marginLeft: "2rem"
+          }}>
+            <InfoItem onchange={onChange} t={"ID"} value={profile.handle} readOnly={!!profile.handle} flag={true}/>
+            <InfoItem onchange={onChange} t={"Name"} value={form.Name} placeholder={"Your name"} flag={true}/>
+          </div>
         </div>
+        <InfoItem onchange={onChange} t={"Bio"}
+                  placeholder={"Your biography"} value={form.Bio}
+                  flag={false}/>
+        <InfoItem onchange={onChange} t={"Location"} flag={false} value={form.Location}/>
+        <InfoItem onchange={onChange} t={"Network"} flag={false} value={form.Network}/>
+        <Done done={done} setOpen={setOpen}/>
       </div>
-      <InfoItem onchange={onChange} t={"Bio"}
-                placeholder={"Your biography"} value={form.Bio}
-                flag={false}/>
-      <InfoItem onchange={onChange} t={"Location"} flag={false} value={form.Location}/>
-      <InfoItem onchange={onChange} t={"Network"} flag={false} value={form.Network}/>
-      <Done done={done} setOpen={setOpen}/>
-    </div>}/>
+    </Modal>
   </>
 }
 
@@ -175,7 +185,7 @@ const Avatar = ({
     <input {...getInputProps()} />
     <div className={"avatar"}>
       <img
-        src={previewImg ? previewImg : ("avatar_url" in profile) && profile.avatar_url ? profile.avatar_url : "./img_8.png"}
+        src={previewImg ? previewImg : ("avatar_url" in profile) && profile.avatar_url ? profile.avatar_url : "/img_8.png"}
         style={{
           height: !previewImg && !(("avatar_url" in profile) && profile.avatar_url) ? "50%" : "100%",
           width: !previewImg && !(("avatar_url" in profile) && profile.avatar_url) ? "50%" : "100%",
@@ -221,7 +231,7 @@ const Background = ({
         }}/>
         :
         <div className={"background"} style={{
-          background: "rgba(0, 0, 0, 0.3) url(./img_8.png) no-repeat center center ",
+          background: "rgba(0, 0, 0, 0.3) url(/img_8.png) no-repeat center center ",
         }}/>
       }
     </div>

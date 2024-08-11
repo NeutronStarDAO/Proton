@@ -62,7 +62,7 @@ const Logo = () => {
   const navigate = useNavigate();
 
   return <div onClick={() => navigate("/")} className={"logo"}>
-    <img src="./img_1.png" alt=""/>
+    <img src="/img_1.png" alt=""/>
   </div>
 }
 
@@ -74,14 +74,15 @@ export const UserInfo = () => {
 
   return <div className={"user_info"}>
     <div className={"info"}>
-      <img src={profile.avatar_url ? profile.avatar_url : "./img_5.png"} alt=""/>
+      <img src={profile.avatar_url ? profile.avatar_url : "/img_1.png"} alt=""/>
       <div style={{display: "flex", alignItems: "start", flexDirection: "column", justifyContent: "center"}}>
         <div className={"name"}>{profile.name ?? "Loading"}</div>
         <div className={"id"}>{shortenString(profile.handle ?? "", 10)}</div>
       </div>
     </div>
-    <div onClick={() => navigate(`/profile/${principal?.toString()}`)} className={"icon"}>
-      <Icon name={location.pathname.includes("profile")?"dark_user":"user"}/>
+    <div onClick={() => navigate(`/profile/${principal?.toString()}`)} className={"icon"}
+         style={{background: location.pathname.includes("profile") ? "#C4B1EE" : "#DAD2EC"}}>
+      <Icon name={location.pathname.includes("profile") ? "dark_user" : "user"}/>
       Profile
     </div>
   </div>

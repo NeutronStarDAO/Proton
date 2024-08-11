@@ -32,9 +32,9 @@ export const Profile = ({
 
     const feed_cid = profile.feed_canister[0]
     const feedApi = new Feed(feed_cid)
-    const res = await Promise.all([feedApi.getAllPost(Principal.from(id)), feedApi.getLatestFeed(Principal.from(id), 20)])
+    const res = await Promise.all([feedApi.getAllPost(Principal.from(id))])
 
-    setPosts([...res[0], ...res[1]])
+    setPosts([...res[0]])
   }
 
   useEffect(() => {
@@ -112,7 +112,9 @@ const UserPanel = ({profile}: { profile?: profile_type }) => {
   const handleFollow = async () => {
     if (!id) return
     if (isFollowed) {
-
+      userApi.cancel_follow(Principal.from(id)).then(() => {
+        isFollow()
+      })
     } else {
       userApi.follow(Principal.from(id)).then(() => {
         isFollow()
@@ -134,7 +136,7 @@ const UserPanel = ({profile}: { profile?: profile_type }) => {
   return <div className={"user_panel"}>
     <div className={"avatar_panel"}>
       <div className={"info"}>
-        <img src={profile && profile.avatar_url ? profile.avatar_url : "./img_5.png"} alt=""/>
+        <img src={profile && profile.avatar_url ? profile.avatar_url : "/img_1.png"} alt=""/>
         <div style={{display: "flex", alignItems: "start", flexDirection: "column", justifyContent: "center"}}>
           <div className={"name"}>{profile?.name}</div>
           <div className={"id"}>{shortenString(profile ? profile.handle : "", 16)}</div>
@@ -154,21 +156,21 @@ const UserPanel = ({profile}: { profile?: profile_type }) => {
     </div>
 
     <div className={"aa"} ref={ref}>
-      <div className={"label"} style={{display: !!profile?.location ? "flex" : "none"}}>
+      <div className={"label"} style={{visibility: !!profile?.location ? "visible" : "hidden"}}>
         <Icon name={"location"}/> {profile?.location}
       </div>
-      <div className={"label label-link"} style={{display: !!profile?.website ? "flex" : "none"}}>
+      <div className={"label label-link"} style={{visibility: !!profile?.website ? "visible" : "hidden"}}>
         <Icon name={"link"}/> {profile?.website}
       </div>
       <div className={"label"}>
-        <span className={"wrap"}>
-          <span className={"number"}>{followings}</span>
-          <div className={"follow"} onClick={() => nav(`/following/${id}`)} onMouseEnter={() => enter(".following")}
-               onMouseLeave={leave}>
-            Following
-            <div className={"down_line following"}/>
-          </div>
-        </span>
+          <span className={"wrap"}>
+            <span className={"number"}>{followings}</span>
+            <div className={"follow"} onClick={() => nav(`/following/${id}`)} onMouseEnter={() => enter(".following")}
+                 onMouseLeave={leave}>
+              Following
+              <div className={"down_line following"}/>
+            </div>
+          </span>
       </div>
       <div className={"label"}>
         <span className={"wrap"}>

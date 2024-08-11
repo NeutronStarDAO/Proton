@@ -14,6 +14,7 @@
     width: 100%;
     padding: 2rem;
     display: flex;
+    cursor: pointer;
     border-radius: 1.7rem;
 
     &:hover {
@@ -32,25 +33,31 @@
       align-items: center;
       justify-content: space-between;
       border-radius: 5rem;
-      height: 7rem;
+
+      p {
+        margin: 0;
+      }
 
       .user_info {
         display: flex;
         align-items: center;
       }
 
-      .name {
+      .name, .following_button {
         font-size: 2rem;
+        display: flex;
+        flex-direction: column;
+        align-items: start;
+      }
 
-        p {
-          margin: 0;
-          text-align: left;
-        }
+      .following_button {
+        align-items: center;
+      }
 
-        p:first-child {
-          font-size: 2.5rem;
-          font-weight: 500;
-        }
+      .down_line {
+        width: 0;
+        height: 1px;
+        background: black;
       }
     }
 
@@ -58,6 +65,7 @@
       text-align: left;
       font-size: 2rem;
       width: 90%;
+      margin-top: 1.5rem;
     }
   }
 }

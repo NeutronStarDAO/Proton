@@ -31,19 +31,19 @@ export const getTime = (nanoseconds: bigint) => {
   const diff = now - milliseconds
   const seconds = Math.floor(diff / 1000) //相差的秒数
 
-  if (seconds < 60) return seconds + "S" //小于一分钟
+  if (seconds < 60) return seconds + "s" //小于一分钟
 
   const minute = Math.floor(seconds / 60) // 相差的分钟数
 
-  if (minute < 60) return minute + "M" //小于一小时
+  if (minute < 60) return minute + "m" //小于一小时
 
   const hours = Math.floor(minute / 60) //相差的小时数
 
-  if (hours < 24) return hours + "H" //小于一天小时
+  if (hours < 24) return hours + "h" //小于一天小时
 
   const days = Math.floor(hours / 24) //天数
 
-  if (days < 3) return days + "D" //小于3天
+  if (days < 3) return days + "d" //小于3天
 
 
   return nanosecondsToDate(nanoseconds)

@@ -103,6 +103,7 @@ export const Post = ({post, updateFunction, selectedID}: {
   const postRef = useRef(null)
   const navigate = useNavigate()
   const [api, contextHolder] = notification.useNotification();
+  const [like, setLike] = useState(false)
 
   const isMy = useMemo(() => {
     if (!user_id) return false
@@ -131,6 +132,7 @@ export const Post = ({post, updateFunction, selectedID}: {
   }, [principal])
 
   const sendReply = async () => {
+    if (replyContent.length <= 0) return 0
     const feedApi = new Feed(post.feed_canister)
     try {
       setOpen(false)
@@ -155,6 +157,7 @@ export const Post = ({post, updateFunction, selectedID}: {
     }
     try {
       if (index === 0) {//like
+        setLike(true)
         await feedApi.createLike(post.post_id)
       } else if (index === 2) {//repost
         await feedApi.createRepost(post.post_id)
@@ -238,7 +241,8 @@ export const Post = ({post, updateFunction, selectedID}: {
 
 
   return <div ref={postRef} style={{background: selectedID === post.post_id ? "#F0F4FF" : ""}} className={"post_main"}
-              onClick={() => updateSelectPost(post)}>
+              onClick={() => updateSelectPost(post)}
+  >
     {contextHolder}
     <div style={{display: "flex", justifyContent: "space-between", alignItems: "center"}}>
       <div className={"author"}>
@@ -248,7 +252,7 @@ export const Post = ({post, updateFunction, selectedID}: {
                  e.stopPropagation()
                  navigate(`/profile/${principal.toString()}`)
                }}
-               src={profile?.avatar_url ? profile.avatar_url : "./img_3.png"} alt=""/>
+               src={profile?.avatar_url ? profile.avatar_url : "/img_1.png"} alt=""/>
         </Tooltip>
         <div style={{display: "flex", flexDirection: "column", alignItems: "start", justifyContent: "center"}}>
           <div style={{fontSize: "2.1rem", fontWeight: "500", fontFamily: "Fredoka, sans-serif"}}>{profile?.name}</div>
@@ -289,7 +293,10 @@ export const Post = ({post, updateFunction, selectedID}: {
       {post.content}
       <div className={"img_list"}>
         {post.photo_url.map((v, k) => {
-          return <div key={k} style={{backgroundImage: `url(${v})`}}/>
+          return <div key={k} style={{
+            backgroundImage: `url(${v})`,
+            // cursor: `url("/img.png"),auto`
+          }}/>
         })}
       </div>
     </div>
@@ -302,8 +309,8 @@ export const Post = ({post, updateFunction, selectedID}: {
             style={{color: arg.isLike || hoverOne === 0 ? "red" : "black"}}
             onMouseEnter={e => setHoverOne(0)}
             onMouseLeave={e => setHoverOne(-1)}>
-           <Icon name={arg.isLike || hoverOne === 0 ? "like_click" : "like"}/>
-        {post.like.length}
+           <Icon name={arg.isLike || hoverOne === 0 || like ? "like_click" : "like"}/>
+        {like ? post.like.length + 1 : post.like.length}
       </span>
 
       <span onClick={(e) => {
@@ -336,7 +343,13 @@ export const Post = ({post, updateFunction, selectedID}: {
       <textarea onChange={e => setReplyContent(e.target.value)} value={replyContent} name="" id="" rows={3}
                 placeholder={"Reply"}/>
 
-      <div onClick={sendReply}>
+      <div onClick={sendReply} style={(() => {
+        const canSend = replyContent.length > 0
+        if (!canSend)
+          return {
+            background: "gray", cursor: "no-drop"
+          }
+      })()}>
         Send
       </div>
 
