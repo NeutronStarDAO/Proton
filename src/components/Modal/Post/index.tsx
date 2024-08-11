@@ -227,7 +227,7 @@ export const PostModal = ({open, setOpen}: { open: boolean, setOpen: Function })
         </div>
       </div>
       <div className={"post_body"}>
-         <textarea style={{height: img.length > 0 ? "auto" : "14rem"}} ref={textareaRef} value={text}
+         <textarea style={{height: img.length > 0 ? "auto" : "15rem"}} ref={textareaRef} value={text}
                    onChange={(e) => setText(e.target.value)}
                    placeholder={"What’s happening?"}
                    name=""
@@ -255,7 +255,7 @@ export const PostModal = ({open, setOpen}: { open: boolean, setOpen: Function })
         <button ref={ref} className="button" onClick={send}>
           <span style={{color: "#4F67EB"}}>Send</span>
           <span className="success">
-          <svg viewBox="0 0 16 16">
+          <svg viewBox="0 0 13 13">
             <polyline points="3.75 9 7 12 13 5"></polyline>
           </svg>Sent
         </span>

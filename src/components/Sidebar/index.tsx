@@ -6,7 +6,7 @@ export const Sidebar = () => {
   return <div className={"sidebar_wrap"}>
     <div className={"search_bar"}>
       <Icon name={"search"}/>
-      <input placeholder={"Looking For?"} type="text"/>
+      <input placeholder={"Search"} type="text"/>
     </div>
     <div className="trends">
       <span style={{fontSize: "3.7rem"}}>Trends</span>
