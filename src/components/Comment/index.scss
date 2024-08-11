@@ -12,6 +12,14 @@
     align-items: center;
     gap: 2rem;
 
+    .comment_header {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: nowrap;
+      align-items: center;
+      gap: 2rem;
+    }
+
     .title {
       width: 100%;
       font-size: 3.7rem;

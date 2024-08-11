@@ -25,12 +25,12 @@ export const Comment = ({comments}: { comments: comment_type[] }) => {
 
   return <div className={"comment"}>
     <div className={"comment_wrap"}>
-      <div style={{width: "100%", textAlign: "start"}}>
+      <div className={"comment_header"} style={{width: "100%", textAlign: "start"}}>
         <span style={{cursor: "pointer"}} onClick={() => updateSelectPost({})}>
           <Icon name={"back"}/>
         </span>
+        <div className={"title"} style={{padding: "0"}}>Comment</div>
       </div>
-      <div className={"title"} style={{padding: "0"}}>Comment</div>
       <div className={"comment_list"}>
         <div style={{width: "100%", height: "1px", background: "#679BF8"}}/>
         {comments.map((v, k) => {
