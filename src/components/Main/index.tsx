@@ -252,7 +252,7 @@ export const Post = ({post, updateFunction, selectedID}: {
                  e.stopPropagation()
                  navigate(`/profile/${principal.toString()}`)
                }}
-               src={profile?.avatar_url ? profile.avatar_url : "/img_1.png"} alt=""/>
+               src={profile?.avatar_url ? profile.avatar_url : "/img_3.png"} alt=""/>
         </Tooltip>
         <div style={{display: "flex", flexDirection: "column", alignItems: "start", justifyContent: "center"}}>
           <div style={{fontSize: "2.1rem", fontWeight: "500", fontFamily: "Fredoka, sans-serif"}}>{profile?.name}</div>

@@ -20,30 +20,30 @@ export const Sidebar = () => {
       <span style={{fontSize: "3.7rem"}}>Popular Users</span>
       <div className={"user"}>
         <div style={{display: "flex", alignItems: 'center'}}>
-          <img style={{objectFit:"cover"}} src="/img_1.png" alt=""/>
+          <img style={{objectFit:"cover"}} src="/img_3.png" alt=""/>
           <div style={{display: "flex", flexDirection: 'column', alignItems: 'start'}}>
             <span style={{fontSize: "2.5rem"}}>Nash</span>
-            <span style={{fontSize: "2rem"}}>@nash.icp1234567 </span>
+            <span style={{fontSize: "2rem"}}>@nash.icp</span>
           </div>
         </div>
         <span style={{fontSize: '2.5rem'}}>Follow</span>
       </div>
       <div className={"user"}>
         <div style={{display: "flex", alignItems: 'center'}}>
-          <img src="/img_1.png" alt="" style={{objectFit:"cover"}}/>
+          <img style={{objectFit:"cover"}} src="/img_3.png" alt=""/>
           <div style={{display: "flex", flexDirection: 'column', alignItems: 'start'}}>
             <span style={{fontSize: "2.5rem"}}>Nash</span>
-            <span style={{fontSize: "2rem"}}>@nash.icp1234567 </span>
+            <span style={{fontSize: "2rem"}}>@nash.icp</span>
           </div>
         </div>
         <span style={{fontSize: '2.5rem'}}>Follow</span>
       </div>
       <div className={"user"}>
         <div style={{display: "flex", alignItems: 'center'}}>
-          <img style={{objectFit:"cover"}} src="/img_1.png" alt=""/>
+          <img style={{objectFit:"cover"}} src="/img_3.png" alt=""/>
           <div style={{display: "flex", flexDirection: 'column', alignItems: 'start'}}>
             <span style={{fontSize: "2.5rem"}}>Nash</span>
-            <span style={{fontSize: "2rem"}}>@nash.icp1234567 </span>
+            <span style={{fontSize: "2rem"}}>@nash.icp</span>
           </div>
         </div>
         <span style={{fontSize: '2.5rem'}}>Follow</span>
