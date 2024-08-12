@@ -1,8 +1,8 @@
 import "./index.scss"
 
-import React, {MouseEventHandler, useEffect, useState} from "react"
+import React, {MouseEventHandler, useEffect, useRef, useState} from "react"
 import {Modal} from "../index";
-import Icon from "../../../Icons/Icon";
+import Icon, {Name} from "../../../Icons/Icon";
 import {useAuth} from "../../../utils/useAuth";
 import {useDropzone} from "react-dropzone";
 import {maxSize} from "../Post";
@@ -13,7 +13,9 @@ import {updateProfile, useProfileStore} from "../../../redux";
 import {CloseOutlined} from "@ant-design/icons";
 import {Profile} from "../../../declarations/user/user";
 import {getBase64} from "../../../utils/util";
-import {Done} from "./Done";
+import {Done, UnDone} from "./Done";
+import {useGSAP} from "@gsap/react";
+import gsap from "gsap";
 
 type form_type = {
   ID: string,
@@ -28,8 +30,8 @@ export const ProfileModal = ({open, setOpen, canClose}: { open: boolean, setOpen
   const [avatarFile, setAvatarFile] = useState<File>()
   const [api, contextHolder] = notification.useNotification();
   const profile = useProfileStore()
-
-  const [form, setForm] = useState<form_type>({
+  const [index, setIndex] = useState(0)
+  const [form1, setForm1] = useState<form_type>({
     ID: "",
     Name: "",
     Bio: "",
@@ -37,40 +39,66 @@ export const ProfileModal = ({open, setOpen, canClose}: { open: boolean, setOpen
     Network: "",
   })
   const onChange = (title: keyof form_type, e: any) => {
-    const form_1 = form
-    form_1[title] = e.target.value
-    setForm(form_1)
+    setForm1(prevForm => ({
+      ...prevForm,
+      [title]: e.target.value
+    }));
+  };
+
+  useEffect(() => {
+    if (form1.ID.length > 0) {
+      const handler = setTimeout(() => {
+        check().then()
+      }, 1000); // 防抖延迟
+      return () => {
+        clearTimeout(handler);
+      };
+    } else setIndex(0)
+  }, [form1.ID]);
+
+  const check = async () => {
+    const res = await userApi.is_handle_available("@" + form1.ID)
+    console.log(res)
+    if (res) {
+      setIndex(2)
+    } else {
+      setIndex(1)
+    }
   }
 
   const done = async () => {
     if (!principal || !userFeedCai) return 0
+    if (index !== 2) return 0
     try {
       const a_url = avatarFile ? await getBase64(avatarFile) : profile.avatar_url ? profile.avatar_url : ""
       const b_url = backFile ? await getBase64(backFile) : profile.back_img_url ? profile.back_img_url : ""
       updateProfile({
         id: principal,
         avatar_url: a_url,
-        name: form.Name,
-        location: form.Location,
-        biography: form.Bio,
-        website: form.Network,
+        name: form1.Name,
+        location: form1.Location,
+        biography: form1.Bio,
+        website: form1.Network,
         feed_canister: [userFeedCai],
         back_img_url: b_url,
-        handle: form.ID
+        handle: form1.ID
       })
       const res = await aApi.upload_photo([backFile ?? new File([], ""), avatarFile ?? new File([], "")])
       const newProfile: Profile = {
         id: principal,
         avatar_url: res[1] ? res[1] : a_url ? a_url : "",
-        name: form.Name,
-        location: form.Location,
-        biography: form.Bio,
-        website: form.Network,
+        name: form1.Name,
+        location: form1.Location,
+        biography: form1.Bio,
+        website: form1.Network,
         feed_canister: [userFeedCai],
         back_img_url: res[0] ? res[0] : b_url ? b_url : "",
-        handle: form.ID
+        handle: form1.ID
       }
-      canClose ? userApi.updateProfile(newProfile).then(() => window.location.reload()) : await userApi.createProfile(newProfile)
+      canClose ? userApi.updateProfile(newProfile).then(() => window.location.reload()) : await userApi.createProfile({
+        ...newProfile,
+        handle: "@" + newProfile.handle
+      })
       if (profile) updateProfile(newProfile)
     } catch (e) {
       api.error({
@@ -83,7 +111,7 @@ export const ProfileModal = ({open, setOpen, canClose}: { open: boolean, setOpen
   }
 
   useEffect(() => {
-    setForm({
+    setForm1({
       ID: profile.handle ? profile.handle : "",
       Name: profile.name ? profile.name : "",
       Bio: profile.biography ? profile.biography : "",
@@ -114,37 +142,70 @@ export const ProfileModal = ({open, setOpen, canClose}: { open: boolean, setOpen
             gap: "1rem",
             marginLeft: "2rem"
           }}>
-            <InfoItem onchange={onChange} t={"ID"} value={profile.handle} readOnly={!!profile.handle} flag={true}/>
-            <InfoItem onchange={onChange} t={"Name"} value={form.Name} placeholder={"Your name"} flag={true}/>
+            <InfoItem onchange={onChange} canClose={canClose} t={"ID"} index={index} value={profile.handle}
+                      readOnly={!!profile.handle}
+                      flag={true}/>
+            <InfoItem onchange={onChange} t={"Name"} value={form1.Name} placeholder={"Your name"} flag={true}/>
           </div>
         </div>
         <InfoItem onchange={onChange} t={"Bio"}
-                  placeholder={"Your biography"} value={form.Bio}
+                  placeholder={"Your biography"} value={form1.Bio}
                   flag={false}/>
-        <InfoItem onchange={onChange} t={"Location"} flag={false} value={form.Location}/>
-        <InfoItem onchange={onChange} t={"Network"} flag={false} value={form.Network}/>
-        <Done done={done} setOpen={setOpen}/>
+        <InfoItem onchange={onChange} t={"Location"} flag={false} value={form1.Location}/>
+        <InfoItem onchange={onChange} t={"Network"} flag={false} value={form1.Network}/>
+        {index !== 2 || form1.Name.length <= 0 ? <UnDone/> : <Done done={done} setOpen={setOpen}/>}
       </div>
     </Modal>
   </>
 }
 
+const info = [
+  {
+    icon: "info",
+    backgroundColor: "#BBD3FF",
+    text: "Creating Globally Unique ID"
+  },
+  {
+    icon: "red_info",
+    backgroundColor: "#FFD6DD",
+    text: "That ID has been taken"
+  },
+  {
+    icon: "green_info",
+    backgroundColor: "#A0F3B3",
+    text: "This ID is available."
+  }
+]
 const InfoItem = ({
                     t,
                     value,
                     flag,
-                    placeholder, onchange, readOnly
+                    placeholder, onchange, readOnly, index, canClose
                   }: {
   t: keyof form_type,
   value?: string,
-  flag: boolean,
-  placeholder?: string, readOnly?: boolean,
+  flag: boolean, canClose?: boolean,
+  placeholder?: string, readOnly?: boolean, index?: number
   onchange: (arg0: keyof form_type, e: any) => void
 }) => {
 
   return <div className={"item_wrap"}
-              style={{flexDirection: flag ? "row" : "column", alignItems: flag ? "center" : "start"}}>
-    <div style={{fontWeight: "500", width: "14%", display: "flex"}}>{t}</div>
+              style={{
+                flexDirection: flag ? "row" : "column",
+                alignItems: flag ? "center" : "start",
+                position: "relative"
+              }}>
+    <div style={{fontWeight: "500", width: "14%", display: "flex",marginRight:"1rem"}}>
+      <span
+        style={{
+          color: "#f87d7d",
+          display: t === "ID" || t === "Name" ? "flex" : "none",
+          alignItems: "center"
+        }}>*
+      </span>
+      {t}
+    </div>
+    {t === "ID" && !canClose && <TipInfo index={index === undefined ? 0 : index}/>}
     {t === "Bio" ? <textarea onChange={(e) => onchange(t, e)} defaultValue={value} placeholder={placeholder} name=""
                              id=""></textarea> :
       <input onChange={(e) => onchange(t, e)} defaultValue={value} readOnly={readOnly} placeholder={placeholder}
@@ -153,6 +214,28 @@ const InfoItem = ({
 
   </div>
 }
+
+const TipInfo = React.memo(({index}: { index: number }) => {
+  const ref = useRef(null)
+  const {contextSafe} = useGSAP({scope: ref})
+
+  const enter = contextSafe(() => {
+    gsap.to(ref.current, {backgroundColor: info[index].backgroundColor, duration: 0.2})
+    gsap.to(".text", {autoAlpha: 1, duration: 0.2, display: "flex"})
+  })
+
+  const leave = contextSafe(() => {
+    gsap.to(ref.current, {backgroundColor: "#E0E6F9", duration: 0.2})
+    gsap.to(".text", {autoAlpha: 0, duration: 0.2, display: "none"})
+  })
+
+  return <div ref={ref} className={"info_tip"}>
+    <span className={"text"}>{info[index].text}</span>
+    <div style={{display: "flex", alignItems: "center"}} onMouseEnter={enter}
+         onMouseLeave={leave}><Icon
+      name={info[index].icon as Name}/></div>
+  </div>
+})
 
 
 const Avatar = ({
@@ -189,7 +272,8 @@ const Avatar = ({
         style={{
           height: !previewImg && !(("avatar_url" in profile) && profile.avatar_url) ? "50%" : "100%",
           width: !previewImg && !(("avatar_url" in profile) && profile.avatar_url) ? "50%" : "100%",
-          borderRadius: "50%"
+          borderRadius: "50%",
+          objectFit: "cover"
         }} alt=""/>
     </div>
   </div>

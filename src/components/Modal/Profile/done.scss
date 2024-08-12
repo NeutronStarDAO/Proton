@@ -1,4 +1,4 @@
-.done_button {
+.done_button, .undone_button {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -128,6 +128,37 @@
     }
   }
 
+}
+
+.undone_button {
+  cursor: no-drop;
+  span {
+    &:nth-child(2) {
+      left: calc(50% - 1.5rem);
+      top: calc(50% - 1.5rem);
+      fill: #E5DAFD;
+      transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+      &:hover {
+        transform: none !important;
+      }
+    }
+  }
+
+  &:hover {
+    box-shadow: none !important;;
+
+  }
+
+  &:hover span svg:nth-child(2) {
+    transform: none !important;
+
+  }
+
+  &:hover span svg:nth-child(3) {
+    transform: none !important;
+
+  }
 }
 
 .loading {

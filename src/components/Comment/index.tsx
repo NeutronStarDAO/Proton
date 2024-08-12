@@ -22,6 +22,7 @@ export const Comment = ({comments}: { comments: comment_type[] }) => {
       })
     }
   }, [comments])
+  console.log(comments)
 
   return <div className={"comment"}>
     <div className={"comment_wrap"}>
@@ -74,9 +75,9 @@ const CommentCon = ({comment, profile}: { comment: comment_type, profile: Profil
         </div>
       </div>
     </div>
-    <div className={"tweet"}>
+    <pre className={"tweet"}>
       {comment.content}
-    </div>
+    </pre>
     <div className={"post_bottom"}>
       {kk.map((v, k) => {
         return <span key={k}>

@@ -95,6 +95,7 @@ class User {
       throw e
     }
   }
+
   async follow(who: Principal) {
     const actor = await User.getActor()
     try {
@@ -111,6 +112,16 @@ class User {
       await actor.cancle_follow(who)
     } catch (e) {
       console.log("cancel_follow", e)
+      throw e
+    }
+  }
+
+  async is_handle_available(handle: string) {
+    const actor = await User.getActor()
+    try {
+      return await actor.is_handle_available(handle) as boolean
+    } catch (e) {
+      console.log("is_handle_available", e)
       throw e
     }
   }

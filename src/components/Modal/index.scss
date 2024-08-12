@@ -10,54 +10,76 @@
   background-color: rgba(0, 0, 0, 0.7);
   z-index: 1000;
 
-.modal {
-  width: 93.8rem;
-  background-color: #F0F4FF;
-  padding: 2rem 4rem;
-  border-radius: 2rem;
-  font-size: 3rem;
-
-  .item_wrap {
-    width: 100%;
-    display: flex;
-    align-items: center;
+  .modal {
+    width: 93.8rem;
+    background-color: #F0F4FF;
+    padding: 2rem 4rem;
     border-radius: 2rem;
-    background: #E0E6F9;
-    padding: 0.5rem 2rem;
-    text-align: start;
-
-    input {
-      height: 4rem;
-      width: 100%;
-    }
-
-    textarea{
-      height: 7rem;
-      width: 100%;
-      resize: none;
-    }
-
-    input,textarea{
-      border:none;
-      background: inherit;
-      outline: none;
-      font-size: 2.5rem;
-    }
-  }
-
-  .done {
-    width: 100%;
-    padding: 1.8rem;
-    border-radius: 2rem;
-    background: #E5DAFD;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     font-size: 3rem;
-    font-weight: bold;
-    cursor: pointer;
-  }
 
-}
+    .item_wrap {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      border-radius: 2rem;
+      background: #E0E6F9;
+      padding: 0.5rem 2rem;
+      text-align: start;
+
+      input {
+        height: 4rem;
+        width: 100%;
+      }
+
+      textarea {
+        height: 7rem;
+        width: 100%;
+        resize: none;
+      }
+
+      input, textarea {
+        border: none;
+        background: inherit;
+        outline: none;
+        font-size: 2.5rem;
+      }
+
+      .info_tip {
+        top: 50%;
+        height: 100%;
+        transform: translate(0, -50%);
+        right: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: absolute;
+        background: #E0E6F9;
+        gap: 2rem;
+        font-size: 2rem;
+        border-radius: 2.5rem;
+        padding: 0 2rem;
+
+        .text {
+          visibility: hidden;
+          opacity: 0;
+        }
+      }
+
+    }
+
+    .done {
+      width: 100%;
+      padding: 1.8rem;
+      border-radius: 2rem;
+      background: #E5DAFD;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3rem;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+  }
 
 }

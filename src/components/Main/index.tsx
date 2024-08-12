@@ -279,7 +279,7 @@ export const Post = ({post, updateFunction, selectedID}: {
             <Icon name={"more"}/>
           </div>
         </div>
-        <div className={"dropdown_wrap"} style={{display: showMore ? "flex" : "none"}}>
+        <div className={"dropdown_wrap"} style={{display: showMore ? "flex" : "none",zIndex:'100'}}>
           <div style={{cursor: "no-drop"}}>
             <Icon name={"pin"}/>Pin
           </div>
@@ -290,7 +290,9 @@ export const Post = ({post, updateFunction, selectedID}: {
       </div>
     </div>
     <div className={"tweet"}>
-      {post.content}
+      <pre>
+        {post.content}
+      </pre>
       <div className={"img_list"} style={{
         gridTemplateColumns: post.photo_url.length === 1 ? "1fr" : "repeat(2, 1fr)",
         height: post.photo_url.length === 0 ? "0" : "50rem",
