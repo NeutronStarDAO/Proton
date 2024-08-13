@@ -77,7 +77,7 @@ const UserCard = React.memo(({profile, isOwner, isFollowerList, init}: {
   const navigate = useNavigate()
 
   return <div ref={ref} className={"user_card"} onClick={() => navigate(`/profile/${profile.id.toString()}`)}>
-    <img style={{objectFit:"cover"}} src={profile.avatar_url ? profile.avatar_url : "/img_1.png"} alt=""/>
+    <img style={{objectFit:"cover"}} src={profile.avatar_url ? profile.avatar_url : "/img_3.png"} alt=""/>
     <div style={{width:"100%"}}>
       <div className={"card_head"}>
         <div className={"user_info"}>

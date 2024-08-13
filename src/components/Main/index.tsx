@@ -281,7 +281,7 @@ export const Post = ({post, updateFunction, selectedID}: {
         </div>
         <div className={"dropdown_wrap"} style={{display: showMore ? "flex" : "none",zIndex:'100'}}>
           <div style={{cursor: "no-drop"}}>
-            <Icon name={"pin"}/>Pin
+            <Icon name={"pin"}/> Pin
           </div>
           <div onClick={deletePost} style={{display: isMy ? "flex" : "none"}}>
             <Icon name={"trash"}/>Delete

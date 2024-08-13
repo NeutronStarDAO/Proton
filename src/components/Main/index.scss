@@ -29,7 +29,6 @@
   padding: 2rem 2rem 1rem 2rem;
   flex-direction: column;
 
-
   .author {
     display: flex;
     gap: 1rem;
@@ -88,6 +87,10 @@
     line-height: 3rem;
     margin-bottom: 2rem;
 
+    pre {
+      white-space: pre-wrap;
+    }
+
     .img_list {
       display: grid;
       gap: 1rem;
@@ -129,7 +132,6 @@
           cursor: zoom-out;
         }
       }
-
 
 
     }
