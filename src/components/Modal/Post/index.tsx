@@ -264,7 +264,7 @@ export const PostModal = ({open, setOpen}: { open: boolean, setOpen: Function })
             </div>}
         </div>
         <div className={"post_foot"}>
-          <SelectPhoto setFiles={setFiles}/>
+          <SelectPhoto files1={files} setFiles={setFiles}/>
           <div className={"smile"} onClick={() => setIsVisible(!isVisible)}>
             <Icon name={"smile"}/>
           </div>
@@ -313,13 +313,14 @@ const GrayButton = React.memo(() => {
 })
 
 export const maxSize = 2 * 1024 * 1024 // 2MB
-const SelectPhoto = ({setFiles}: { setFiles: Function }) => {
+const SelectPhoto = ({setFiles, files1}: { setFiles: Function, files1: File[] }) => {
 
   const onDrop = React.useCallback((files: File[]) => {
-    if (files.length > 4) return message.error("Select up to four images")
+    const newFiles = [...files1, ...files]
+    if (newFiles.length > 4) return message.error("Select up to four images")
 
-    setFiles(files)
-  }, [])
+    setFiles(newFiles)
+  }, [files1])
 
   const {getRootProps, getInputProps} = useDropzone({
     onDrop, multiple: true, accept: {

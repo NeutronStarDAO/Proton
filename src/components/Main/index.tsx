@@ -48,11 +48,11 @@ export const Main = ({scrollContainerRef}: { scrollContainerRef: React.MutableRe
   const getHomeData = async () => {
     if (!userFeedCai || !principal) return 0
     const feedApi = new Feed(userFeedCai)
-    await Promise.all([feedApi.getAllPost(principal), feedApi.getLatestFeed(principal, 20)])
+    await Promise.all([feedApi.getAllPost(principal), feedApi.getLatestFeed(principal, 100)])
   }
 
   const getExploreData = async () => {
-    const res = await rootPostApi.get_buckets_latest_feed(30)
+    const res = await rootPostApi.get_buckets_latest_feed(100)
     setData(res)
   }
 
