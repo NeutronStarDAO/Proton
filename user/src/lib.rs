@@ -18,7 +18,8 @@ struct Profile {
     location: String,
     back_img_url: String,
     avatar_url: String,
-    feed_canister: Option<Principal>
+    feed_canister: Option<Principal>,
+    created_at: Option<u64>
 }
 
 impl Storable for Profile {
@@ -54,6 +55,34 @@ thread_local! {
             MEMORY_MANAGER.with(|m| m.borrow().get(MemoryId::new(2))),
         )
     );
+}
+
+#[ic_cdk::post_upgrade]
+fn post_upgrade() {
+    let entries = PROFILE_MAP.with(|map| {
+        let entries: Vec<(Principal, Profile)> = map.borrow().iter().collect();
+        entries
+    });
+
+    let now = ic_cdk::api::time();
+
+    for (_, profile) in entries {
+        let new_profile = Profile {
+            id: profile.id,
+            handle: profile.handle,
+            name: profile.name,
+            biography: profile.biography,
+            website: profile.website,
+            location: profile.location,
+            back_img_url: profile.back_img_url,
+            avatar_url: profile.avatar_url,
+            feed_canister: profile.feed_canister,
+            created_at: Some(now)
+        };
+        PROFILE_MAP.with(|map| {
+            map.borrow_mut().insert(profile.id, new_profile)
+        });
+    }
 }
 
 #[ic_cdk::update]
@@ -220,7 +249,8 @@ fn update_handle(new_handle: String) -> bool {
         location: old_profile.location,
         back_img_url: old_profile.back_img_url,
         avatar_url: old_profile.avatar_url,
-        feed_canister: old_profile.feed_canister
+        feed_canister: old_profile.feed_canister,
+        created_at: old_profile.created_at
     };
 
     HANDLE_MAP.with(|map| map.borrow_mut().remove(&old_profile.handle));

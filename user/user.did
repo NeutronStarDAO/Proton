@@ -22,6 +22,7 @@ type Profile = record {
   avatar_url : text;
   name : text;
   biography : text;
+  created_at : opt nat64;
   website : text;
   feed_canister : opt principal;
   handle : text;
