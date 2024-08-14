@@ -13,6 +13,7 @@ import {Sidebar} from "./components/Sidebar";
 import {useSelectPostStore} from "./redux/features/SelectPost";
 import {ProfileModal} from "./components/Modal/Profile";
 import {FollowList} from "./components/FollowList";
+import {Wallet} from "./components/Wallet";
 
 function App() {
 

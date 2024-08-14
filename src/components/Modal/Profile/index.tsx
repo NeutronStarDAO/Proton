@@ -16,6 +16,7 @@ import {getBase64} from "../../../utils/util";
 import {Done, UnDone} from "./Done";
 import {useGSAP} from "@gsap/react";
 import gsap from "gsap";
+import {Dropdown} from "./Dropdown";
 
 type form_type = {
   ID: string,
@@ -38,6 +39,8 @@ export const ProfileModal = ({open, setOpen, canClose}: { open: boolean, setOpen
     Location: "",
     Network: "",
   })
+  const [protocol, setProtocol] = useState("https://")
+
   const onChange = (title: keyof form_type, e: any) => {
     setForm1(prevForm => ({
       ...prevForm,
@@ -58,7 +61,6 @@ export const ProfileModal = ({open, setOpen, canClose}: { open: boolean, setOpen
 
   const check = async () => {
     const res = await userApi.is_handle_available("@" + form1.ID)
-    console.log(res)
     if (res) {
       setIndex(2)
     } else {
@@ -78,7 +80,7 @@ export const ProfileModal = ({open, setOpen, canClose}: { open: boolean, setOpen
         name: form1.Name,
         location: form1.Location,
         biography: form1.Bio,
-        website: form1.Network,
+        website: form1.Network.length > 0 ? protocol + form1.Network : form1.Network,
         feed_canister: [userFeedCai],
         back_img_url: b_url,
         handle: form1.ID
@@ -90,7 +92,7 @@ export const ProfileModal = ({open, setOpen, canClose}: { open: boolean, setOpen
         name: form1.Name,
         location: form1.Location,
         biography: form1.Bio,
-        website: form1.Network,
+        website: form1.Network.length > 0 ? protocol + form1.Network : form1.Network,
         feed_canister: [userFeedCai],
         back_img_url: res[0] ? res[0] : b_url ? b_url : "",
         handle: form1.ID
@@ -111,12 +113,17 @@ export const ProfileModal = ({open, setOpen, canClose}: { open: boolean, setOpen
   }
 
   useEffect(() => {
+    let network = ""
+    if (profile.website) {
+      network = profile.website.split("://")[1]
+      setProtocol(profile.website.split("://")[0]+"://")
+    }
     setForm1({
       ID: profile.handle ? profile.handle : "",
       Name: profile.name ? profile.name : "",
       Bio: profile.biography ? profile.biography : "",
       Location: profile.location ? profile.location : "",
-      Network: profile.website ? profile.website : ""
+      Network: network
     })
   }, [open]);
 
@@ -151,8 +158,9 @@ export const ProfileModal = ({open, setOpen, canClose}: { open: boolean, setOpen
         <InfoItem onchange={onChange} t={"Bio"}
                   placeholder={"Your biography"} value={form1.Bio}
                   flag={false}/>
+        <InfoItem onchange={onChange} protocol={protocol} setProtocol={setProtocol} t={"Network"} flag={false}
+                  value={form1.Network}/>
         <InfoItem onchange={onChange} t={"Location"} flag={false} value={form1.Location}/>
-        <InfoItem onchange={onChange} t={"Network"} flag={false} value={form1.Network}/>
         {index !== 2 || form1.Name.length <= 0 ? <UnDone/> : <Done done={done} setOpen={setOpen}/>}
       </div>
     </Modal>
@@ -180,12 +188,12 @@ const InfoItem = ({
                     t,
                     value,
                     flag,
-                    placeholder, onchange, readOnly, index, canClose
+                    placeholder, onchange, readOnly, index, canClose, setProtocol, protocol
                   }: {
   t: keyof form_type,
   value?: string,
   flag: boolean, canClose?: boolean,
-  placeholder?: string, readOnly?: boolean, index?: number
+  placeholder?: string, readOnly?: boolean, index?: number, setProtocol?: Function, protocol?: string
   onchange: (arg0: keyof form_type, e: any) => void
 }) => {
 
@@ -195,7 +203,7 @@ const InfoItem = ({
                 alignItems: flag ? "center" : "start",
                 position: "relative"
               }}>
-    <div style={{fontWeight: "500", width: "14%", display: "flex",marginRight:"1rem"}}>
+    <div style={{fontWeight: "500", width: "14%", display: "flex", marginRight: "1rem"}}>
       <span
         style={{
           color: "#f87d7d",
@@ -205,13 +213,20 @@ const InfoItem = ({
       </span>
       {t}
     </div>
-    {t === "ID" && !canClose && <TipInfo index={index === undefined ? 0 : index}/>}
-    {t === "Bio" ? <textarea onChange={(e) => onchange(t, e)} defaultValue={value} placeholder={placeholder} name=""
-                             id=""></textarea> :
-      <input onChange={(e) => onchange(t, e)} defaultValue={value} readOnly={readOnly} placeholder={placeholder}
-             type="text"/>
-    }
-
+    {(() => {
+      if (t === "ID" && !canClose) return <TipInfo index={index === undefined ? 0 : index}/>
+      if (t === "Bio") return <textarea onChange={(e) => onchange(t, e)} defaultValue={value} placeholder={placeholder}
+                                        name=""
+                                        id=""></textarea>
+      if (t === "Network") return <div style={{display: 'flex', width: "100%", alignItems: "center", gap: "1rem"}}>
+        <Dropdown item={protocol} dropdownList={["https://", "http://"]} setItem={setProtocol}/>
+        <input style={{border: "0.2rem solid #c374d8", borderRadius: "0.5rem"}} onChange={(e) => onchange(t, e)}
+               defaultValue={value} readOnly={readOnly} placeholder={placeholder}
+               type="text"/>
+      </div>
+      return <input onChange={(e) => onchange(t, e)} defaultValue={value} readOnly={readOnly} placeholder={placeholder}
+                    type="text"/>
+    })()}
   </div>
 }
 

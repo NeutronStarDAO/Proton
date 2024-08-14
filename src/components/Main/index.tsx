@@ -8,7 +8,7 @@ import {Empty, notification, Spin, Tooltip} from "antd";
 import {useAuth} from "../../utils/useAuth";
 import Feed from "../../actors/feed";
 import {rootPostApi} from "../../actors/root_bucket";
-import {useAllDataStore} from "../../redux";
+import {updateAllData, useAllDataStore} from "../../redux";
 import {userApi} from "../../actors/user";
 import {Profile} from "../../declarations/user/user";
 import {shortenString} from "../Sider";
@@ -22,11 +22,14 @@ export const Main = ({scrollContainerRef}: { scrollContainerRef: React.MutableRe
   const [data, setData] = useState<postType[]>()
   const {userFeedCai, isAuth, principal} = useAuth()
   const {allPost, allFeed} = useAllDataStore()
+  const [profiles, setProfiles] = useState<Profile[]>([])
   const selectPost = useSelectPostStore()
 
   const HomeData = React.useMemo(() => {
     if (!allFeed || !allPost) return undefined
-    return postSort([...allFeed, ...allPost])
+    const a = postSort([...allFeed, ...allPost])
+    userApi.batchGetProfile(a.map(v => v.user)).then(e => setProfiles(e))
+    return a
   }, [allFeed, allPost])
 
 
@@ -36,6 +39,9 @@ export const Main = ({scrollContainerRef}: { scrollContainerRef: React.MutableRe
   }
 
   const Title = React.useMemo(() => {
+    setData(undefined)
+    setProfiles([])
+    updateAllData({allFeed: undefined, allPost: undefined})
     if (location.pathname === "/explore") return "Explore"
     return "Home"
   }, [location])
@@ -54,7 +60,13 @@ export const Main = ({scrollContainerRef}: { scrollContainerRef: React.MutableRe
   const getExploreData = async () => {
     const res = await rootPostApi.get_buckets_latest_feed(100)
     setData(res)
+
   }
+
+  useEffect(() => {
+    if (data)
+      userApi.batchGetProfile(data.map(v => v.user)).then(e => setProfiles(e))
+  }, [data]);
 
   useEffect(() => {
     if (Title == "Home") {
@@ -69,7 +81,8 @@ export const Main = ({scrollContainerRef}: { scrollContainerRef: React.MutableRe
       <div className={"title"}>{Title}</div>
       {data ? data.length === 0 ? <Empty style={{width: "100%"}}/>
         : data.map((v, k) => {
-          return <Post selectedID={"post_id" in selectPost ? selectPost.post_id : ""} updateFunction={getExploreData}
+          return <Post profile={profiles[k]} selectedID={"post_id" in selectPost ? selectPost.post_id : ""}
+                       updateFunction={getExploreData}
                        post={v}/>
         }) : <Spin spinning={true} style={{width: "100%"}}/>}
     </div>
@@ -79,18 +92,18 @@ export const Main = ({scrollContainerRef}: { scrollContainerRef: React.MutableRe
     <div className={"title"}>{Title}</div>
     {HomeData ? HomeData.length === 0 ? <Empty style={{width: "100%"}}/>
       : HomeData.map((v, k) => {
-        return <Post selectedID={"post_id" in selectPost ? selectPost.post_id : ""} updateFunction={getHomeData}
+        return <Post profile={profiles[k]} selectedID={"post_id" in selectPost ? selectPost.post_id : ""}
+                     updateFunction={getHomeData}
                      post={v}/>
       }) : <Spin spinning={true} style={{width: "100%"}}/>}
   </div>
 }
 
-export const Post = ({post, updateFunction, selectedID}: {
+export const Post = ({post, updateFunction, selectedID, profile}: {
   post: postType,
   updateFunction: Function,
-  selectedID: string
+  selectedID: string, profile?: Profile
 }) => {
-  const [profile, setProfile] = useState<Profile>()
   const principal = post.user
   const {principal: user_id} = useAuth()
   const [hoverOne, setHoverOne] = useState(-1)
@@ -104,11 +117,12 @@ export const Post = ({post, updateFunction, selectedID}: {
   const navigate = useNavigate()
   const [api, contextHolder] = notification.useNotification();
   const [like, setLike] = useState(false)
-
   const isMy = useMemo(() => {
     if (!user_id) return false
     return user_id.toText() === principal.toText()
   }, [user_id, principal])
+  const [isLoad, setIsLoad] = useState(false)
+  const [avatar, setAvatar] = useState("")
 
   const arg = useMemo(() => {
     const res = {
@@ -122,14 +136,6 @@ export const Post = ({post, updateFunction, selectedID}: {
     res.isRepost = isIn(user_id.toString(), post.repost.map(v => v.user.toText()))
     return res
   }, [post, user_id])
-
-  const getProfile = async () => {
-    const res = await userApi.getProfile(principal)
-    setProfile(res)
-  }
-  useEffect(() => {
-    getProfile()
-  }, [principal])
 
   const sendReply = async () => {
     if (replyContent.length <= 0) return 0
@@ -224,6 +230,13 @@ export const Post = ({post, updateFunction, selectedID}: {
     }
   }, [selectPost]);
 
+  useEffect(() => {
+    if (profile) {
+      if (profile.avatar_url) setAvatar(profile.avatar_url)
+      else setAvatar("/img_3.png")
+    }
+  }, [profile])
+
   const deletePost = async () => {
     const feedApi = new Feed(post.feed_canister)
     try {
@@ -240,26 +253,41 @@ export const Post = ({post, updateFunction, selectedID}: {
   }
 
 
+  const load = () => {
+
+    setIsLoad(true)
+  }
+
   return <div ref={postRef} style={{background: selectedID === post.post_id ? "#F0F4FF" : ""}} className={"post_main"}
               onClick={() => updateSelectPost(post)}
   >
     {contextHolder}
     <div style={{display: "flex", justifyContent: "space-between", alignItems: "center"}}>
       <div className={"author"}>
-        <Tooltip title={profile?.name}>
-          <img style={{borderRadius: "50%", objectFit: "cover"}} className={"avatar"}
-               onClick={(e) => {
-                 e.stopPropagation()
-                 navigate(`/profile/${principal.toString()}`)
-               }}
-               src={profile?.avatar_url ? profile.avatar_url : "/img_3.png"} alt=""/>
-        </Tooltip>
+        <div style={{position: "relative"}}>
+          <Tooltip title={profile?.name}>
+            <img className={"avatar"}
+                 onClick={(e) => {
+                   e.stopPropagation()
+                   navigate(`/profile/${principal.toString()}`)
+                 }}
+                 src={avatar} alt="" onLoad={load}/>
+          </Tooltip>
+          <div className="skeleton skeleton-avatar" style={{display: !isLoad ? "block" : "none"}}/>
+        </div>
         <div style={{display: "flex", flexDirection: "column", alignItems: "start", justifyContent: "center"}}>
-          <div style={{fontSize: "2.1rem", fontWeight: "500", fontFamily: "Fredoka, sans-serif"}}>{profile?.name}</div>
+          {profile ? <div
+              style={{fontSize: "2.1rem", fontWeight: "500", fontFamily: "Fredoka, sans-serif"}}>{profile.name}</div> :
+            <div className="skeleton skeleton-title"/>
+          }
           <div style={{display: "flex", alignItems: "center", fontSize: "2rem", color: "#6F7073", gap: "1rem"}}>
-            <div>{profile ? shortenString(profile.handle, 10) : ""}</div>
+
+            {profile ? <div>{profile ? shortenString(profile.handle, 10) : ""}</div> :
+              <div className="skeleton skeleton-text"></div>
+            }
             <span style={{
               width: "0.5rem",
+              minWidth: "0.5rem",
               height: "0.5rem",
               background: "#6F7073",
               borderRadius: "50%"
@@ -279,7 +307,7 @@ export const Post = ({post, updateFunction, selectedID}: {
             <Icon name={"more"}/>
           </div>
         </div>
-        <div className={"dropdown_wrap"} style={{display: showMore ? "flex" : "none",zIndex:'100'}}>
+        <div className={"dropdown_wrap"} style={{display: showMore ? "flex" : "none", zIndex: '100'}}>
           <div style={{cursor: "no-drop"}}>
             <Icon name={"pin"}/> Pin
           </div>

@@ -44,7 +44,9 @@ export const Comment = ({comments}: { comments: comment_type[] }) => {
 const kk = [{label: "like", hoverColor: "rgba(249,24,128,0.6)"}, {
   label: "comment",
   hoverColor: "#1C9BEF"
-}, {label: "repost", hoverColor: "rgb(0,186,124,0.6)"}]
+},
+  // {label: "repost", hoverColor: "rgb(0,186,124,0.6)"}
+]
 const CommentCon = ({comment, profile}: { comment: comment_type, profile: Profile }) => {
   const navigate = useNavigate()
   return <div className={"comment_main"}>

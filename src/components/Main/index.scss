@@ -29,6 +29,15 @@
   padding: 2rem 2rem 1rem 2rem;
   flex-direction: column;
 
+  .ant-skeleton-title, .ant-skeleton-paragraph {
+    margin: 0 !important;
+  }
+
+  .ant-skeleton-title {
+    margin-bottom: 1rem !important;
+    width: 5rem !important;
+  }
+
   .author {
     display: flex;
     gap: 1rem;
@@ -38,6 +47,7 @@
       width: 5.3rem;
       height: 5.3rem;
       border-radius: 50%;
+      object-fit: cover;
     }
   }
 
@@ -88,7 +98,6 @@
     margin-bottom: 2rem;
 
 
-
     .img_list {
       display: grid;
       gap: 1rem;
@@ -112,6 +121,7 @@
 
         }
       }
+
       .image-overlay {
         position: fixed;
         top: 0;
@@ -189,6 +199,8 @@
     }
 
   }
+
+
 }
 
 

@@ -82,6 +82,8 @@ const UserPanel = ({profile}: { profile?: profile_type }) => {
   const ref = useRef(null)
   const tl = useRef<any>()
   const nav = useNavigate()
+  const [load, setLoad] = useState(false)
+  const [avatar, setAvatar] = useState<string>("")
   const isOwner = React.useMemo(() => {
     return id === principal?.toText()
   }, [id, principal])
@@ -133,13 +135,27 @@ const UserPanel = ({profile}: { profile?: profile_type }) => {
     tl.current.reverse()
   })
 
+  useEffect(() => {
+    if (profile) {
+      if (profile.avatar_url) setAvatar(profile.avatar_url)
+      else setAvatar("/img_3.png")
+    }
+  }, [profile]);
+
   return <div className={"user_panel"}>
     <div className={"avatar_panel"}>
       <div className={"info"}>
-        <img style={{objectFit:"cover"}} src={profile && profile.avatar_url ? profile.avatar_url : "/img_3.png"} alt=""/>
+        <div style={{position: "relative"}}>
+          <img src={avatar} alt="" onLoad={() => setLoad(true)}/>
+          <div className="skeleton skeleton-avatar"
+               style={{display: !load ? "block" : "none", width: "10.9rem", height: "10.9rem"}}/>
+        </div>
         <div style={{display: "flex", alignItems: "start", flexDirection: "column", justifyContent: "center"}}>
-          <div className={"name"}>{profile?.name}</div>
-          <div className={"id"}>{shortenString(profile ? profile.handle : "", 16)}</div>
+          {profile?.name ? <div className={"name"}>{profile?.name}</div> :
+            <div className="skeleton skeleton-title" style={{height: "3rem"}}/>}
+
+          {profile?.handle ? <div className={"id"}>{shortenString(profile ? profile.handle : "", 16)}</div> :
+            <div className="skeleton skeleton-text" style={{height: "2rem", marginTop: "2rem"}}/>}
         </div>
       </div>
       <ProfileModal setOpen={setOpen} open={open} canClose={true}/>
@@ -150,18 +166,21 @@ const UserPanel = ({profile}: { profile?: profile_type }) => {
         {isFollowed ? "Following" : "Follow"}
       </span>}
     </div>
-
-    <div className={"des"}>
+    {profile?.biography ? <div className={"des"}>
       {profile?.biography}
-    </div>
+    </div> : <div className="skeleton skeleton-text" style={{height: "2rem", width: "10rem"}}/>}
+
 
     <div className={"aa"} ref={ref}>
-      <div className={"label"} style={{visibility: !!profile?.location ? "visible" : "hidden"}}>
+
+      {profile?.location ? <div className={"label"} style={{visibility: !!profile?.location ? "visible" : "hidden"}}>
         <Icon name={"location"}/> {profile?.location}
-      </div>
-      <div className={"label label-link"} style={{visibility: !!profile?.website ? "visible" : "hidden"}}>
+      </div> : <div className="skeleton skeleton-text" style={{height: "2rem", width: "5rem"}}/>}
+
+      {profile?.website ? <div onClick={() => window.open(profile?.website)} className={"label label-link"}
+                               style={{visibility: !!profile?.website ? "visible" : "hidden"}}>
         <Icon name={"link"}/> {profile?.website}
-      </div>
+      </div> : <div className="skeleton skeleton-text" style={{height: "2rem", width: "5rem"}}/>}
       <div className={"label"}>
           <span className={"wrap"}>
             <span className={"number"}>{followings}</span>

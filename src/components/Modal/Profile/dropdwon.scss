@@ -1,0 +1,28 @@
+.dropdown {
+  position: relative;
+  .dropbtn {
+    padding-left:  1rem;
+    border: 0.2rem solid #c374d8;
+    border-radius: 0.5rem;
+    cursor: pointer;
+  }
+
+  .dropdown-content {
+    min-width: 100%;
+    position: absolute;
+    background-color: #DAD2EC;
+    border-radius: 1rem;
+    z-index: 100;
+
+    div {
+      padding: 0 1rem;
+      cursor: pointer;
+    }
+
+    div:hover {
+      background-color: #c2daff;
+      border-radius: 0.5rem;
+    }
+  }
+
+}

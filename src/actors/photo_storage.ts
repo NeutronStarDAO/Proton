@@ -42,14 +42,11 @@ class storage {
             allPromises.push(actor.upload_photo(data))
           }
         }
-        console.log(allPromises)
         const res = (await Promise.all(allPromises)) as bigint[]
-        console.log(res)
         const urls = res.map((v: any) => {
           if (v === "") return ""
           return `http://${photo_storage_cid}.raw.icp0.io/${Number(v)}`
         })
-        console.log(urls)
         return resolve(urls)
       } catch (e) {
         reject(e)
