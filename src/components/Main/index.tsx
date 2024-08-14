@@ -156,10 +156,10 @@ export const Post = ({post, updateFunction, selectedID}: {
       return
     }
     try {
-      if (index === 0) {//like
+      if (index === 0) { // like
         setLike(true)
         await feedApi.createLike(post.post_id)
-      } else if (index === 2) {//repost
+      } else if (index === 2) { // repost
         await feedApi.createRepost(post.post_id)
       }
       updateFunction()
@@ -240,7 +240,7 @@ export const Post = ({post, updateFunction, selectedID}: {
   }
 
 
-  return <div ref={postRef} style={{background: selectedID === post.post_id ? "#F0F4FF" : ""}} className={"post_main"}
+  return <div ref={postRef} style={{background: selectedID === post.post_id ? "#F7F9FF" : ""}} className={"post_main"}
               onClick={() => updateSelectPost(post)}
   >
     {contextHolder}

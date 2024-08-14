@@ -9,7 +9,7 @@ export const Sidebar = () => {
       <input placeholder={"Search"} type="text"/>
     </div>
     <div className="trends">
-      <span style={{fontSize: "3.7rem"}}>Trends</span>
+      <span style={{fontSize: "3.3rem"}}>Trends</span>
       <span>#Feature</span>
       <span>#To</span>
       <span>#Be</span>
@@ -17,7 +17,7 @@ export const Sidebar = () => {
       <span>#Soon</span>
     </div>
     <div className="popular scroll_main">
-      <span style={{fontSize: "3.7rem"}}>Popular Users</span>
+      <span style={{fontSize: "3.3rem"}}>Popular Users</span>
       <div className={"user"}>
         <div style={{display: "flex", alignItems: 'center'}}>
           <img style={{objectFit:"cover"}} src="/img_3.png" alt=""/>

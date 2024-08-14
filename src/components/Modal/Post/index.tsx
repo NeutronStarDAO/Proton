@@ -245,7 +245,7 @@ export const PostModal = ({open, setOpen}: { open: boolean, setOpen: Function })
           </div>
         </div>
         <div className={"post_body"}>
-         <textarea style={{height: img.length > 0 ? "auto" : "15rem"}} ref={textareaRef} value={text}
+         <textarea style={{height: img.length > 0 ? "auto" : "20rem"}} ref={textareaRef} value={text}
                    onChange={(e) => setText(e.target.value)}
                    placeholder={"What’s happening?"}
                    name=""

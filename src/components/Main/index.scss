@@ -3,31 +3,27 @@
   display: flex;
   flex-direction: column;
   align-items: start;
-  padding: 2rem;
   overflow: auto;
-  border-right: 1px solid #679BF8;
-  border-left: 1px solid #679BF8;
-  gap: 2rem;
+  border-right: 1px solid #79aaff;
+  border-left: 1px solid #79aaff;
 
   .title {
     font-size: 3.7rem;
     font-family: "Fredoka", sans-serif;
-    padding-bottom: 1rem;
-    padding-top: 1rem;
+    padding-bottom: 2rem;
+    padding-top: 3rem;
+    padding-left: 2rem;
   }
-}
-
-.post_main:hover {
-  background: #F0F4FF;
 }
 
 .post_main {
   width: 100%;
-  border-radius: 2rem;
   display: flex;
   cursor: pointer;
-  padding: 2rem 2rem 1rem 2rem;
+  padding: 2rem;
+  border-bottom: 1px rgb(197, 217, 251) solid;
   flex-direction: column;
+  transition: 0.5s ease;
 
   .author {
     display: flex;
@@ -87,8 +83,6 @@
     line-height: 3rem;
     margin-bottom: 2rem;
 
-
-
     .img_list {
       display: grid;
       gap: 1rem;
@@ -109,7 +103,6 @@
           border-radius: 0.5rem;
           cursor: zoom-in;
           transition: transform 0.3s ease;
-
         }
       }
       .image-overlay {
@@ -131,7 +124,6 @@
         }
       }
 
-
     }
   }
 
@@ -150,7 +142,6 @@
       gap: 1rem;
     }
 
-
   }
 
   .reply_wrap {
@@ -163,7 +154,8 @@
     background: #D7E4FF;
     border-radius: 2rem;
     padding: 1rem 1rem 1rem 2rem;
-
+    transition: transform 0.5s ease;
+    transform: translateY(0);
 
     textarea {
       width: 100%;

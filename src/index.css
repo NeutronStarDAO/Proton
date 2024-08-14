@@ -20,9 +20,9 @@ code {
 pre {
     margin: 0;
     padding: 0;
-    font-family:fredoka;
+    font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "Noto Color Emoji Compat", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
     white-space: pre-wrap;
-
+    margin-bottom: 1rem;
 }
 
 * {
