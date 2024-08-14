@@ -162,10 +162,10 @@ export const Post = ({post, updateFunction, selectedID, profile}: {
       return
     }
     try {
-      if (index === 0) {//like
+      if (index === 0) { // like
         setLike(true)
         await feedApi.createLike(post.post_id)
-      } else if (index === 2) {//repost
+      } else if (index === 2) { // repost
         await feedApi.createRepost(post.post_id)
       }
       updateFunction()
