@@ -427,7 +427,11 @@ async fn batch_receive_feed(
             bucket, 
             "get_post", 
             (post_id.clone(), )
-        ).await.unwrap().0.unwrap();
+        ).await.unwrap().0;
+
+        if let None = new_post {
+            continue;
+        }
 
         let user_map = FEED_MAP.with(|map| {
             map.borrow().get(&user)
@@ -437,13 +441,13 @@ async fn batch_receive_feed(
             None => {
                 // 被通知者第一次收到 feed 推流
                 let mut user_map = FeedHashMap(HashMap::new());
-                user_map.0.insert(post_id.clone(), new_post);
+                user_map.0.insert(post_id.clone(), new_post.unwrap());
                 FEED_MAP.with(|map| {
                     map.borrow_mut().insert(user, user_map);
                 })
             },
             Some(mut user_map) => {
-                user_map.0.insert(post_id.clone(), new_post);
+                user_map.0.insert(post_id.clone(), new_post.unwrap());
                 FEED_MAP.with(|map| {
                     map.borrow_mut().insert(user, user_map);
                 });
