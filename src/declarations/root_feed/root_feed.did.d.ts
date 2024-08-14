@@ -34,11 +34,27 @@ export interface QueryStats {
 }
 export interface _SERVICE {
   'create_feed_canister' : ActorMethod<[], Principal>,
+  'get_all_feed_canister' : ActorMethod<[], Array<Principal>>,
+  'get_available_feed_canister_index' : ActorMethod<[], bigint>,
+  'get_feed_canister_index' : ActorMethod<[], bigint>,
+  'get_feed_canister_users_number_entries' : ActorMethod<
+    [],
+    Array<[Principal, bigint]>
+  >,
   'get_feed_wasm' : ActorMethod<[], Uint8Array | number[]>,
+  'get_root_bucket' : ActorMethod<[], Principal>,
+  'get_user_actor' : ActorMethod<[], Principal>,
   'get_user_feed_canister' : ActorMethod<[Principal], [] | [Principal]>,
+  'get_user_feed_canister_entries' : ActorMethod<
+    [],
+    Array<[Principal, Principal]>
+  >,
   'init_fetch_actor' : ActorMethod<[Principal], undefined>,
   'init_user_feed' : ActorMethod<[], Principal>,
+  'set_root_bucket' : ActorMethod<[Principal], boolean>,
+  'set_user_actor' : ActorMethod<[Principal], boolean>,
   'status' : ActorMethod<[], CanisterStatusResponse>,
+  'update_feed_canister_controller' : ActorMethod<[Principal], boolean>,
   'update_feed_wasm' : ActorMethod<[Uint8Array | number[], bigint], boolean>,
 }
 export declare const idlFactory: IDL.InterfaceFactory;

@@ -37,6 +37,9 @@ service : (principal, principal) -> {
   get_root_bucket : () -> (principal) query;
   get_user_actor : () -> (principal) query;
   get_user_feed_canister : (principal) -> (opt principal) query;
+  get_user_feed_canister_entries : () -> (
+      vec record { principal; principal },
+    ) query;
   init_fetch_actor : (principal) -> ();
   init_user_feed : () -> (principal);
   set_root_bucket : (principal) -> (bool);

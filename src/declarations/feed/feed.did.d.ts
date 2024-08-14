@@ -65,7 +65,11 @@ export interface _SERVICE {
   'get_feed_number' : ActorMethod<[Principal], bigint>,
   'get_latest_feed' : ActorMethod<[Principal, bigint], Array<Post>>,
   'get_post' : ActorMethod<[string], [] | [Post]>,
+  'get_post_fetch' : ActorMethod<[], Principal>,
+  'get_post_index' : ActorMethod<[], bigint>,
   'get_post_number' : ActorMethod<[Principal], bigint>,
+  'get_root_bucket' : ActorMethod<[], Principal>,
+  'get_user_actor' : ActorMethod<[], Principal>,
   'status' : ActorMethod<[], CanisterStatusResponse>,
 }
 export declare const idlFactory: IDL.InterfaceFactory;

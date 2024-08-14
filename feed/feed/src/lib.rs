@@ -487,6 +487,11 @@ async fn check_available_bucket() -> bool {
 }
 
 #[ic_cdk::query]
+fn get_post_index() -> u64 {
+    POST_INDEX.with(|post_index| post_index.borrow().get().clone())
+}
+
+#[ic_cdk::query]
 fn get_bucket() -> Option<Principal> {
     BUCKET.with(|pr| {
         if pr.borrow().get().clone() == Principal::anonymous() {
@@ -625,6 +630,21 @@ fn get_all_latest_feed(
     }
 
     result
+}
+
+#[ic_cdk::query]
+fn get_root_bucket() -> Principal {
+    ROOT_BUCKET.with(|root_bucket| root_bucket.borrow().get().clone())
+}
+
+#[ic_cdk::query]
+fn get_post_fetch() -> Principal {
+    POST_FETCH_ACTOR.with(|post_fetch| post_fetch.borrow().get().clone())
+}
+
+#[ic_cdk::query]
+fn get_user_actor() -> Principal {
+    USER_ACTOR.with(|user| user.borrow().get().clone())
 }
 
 fn get_post_id(canister: &Principal, user: &Principal, index: u64) -> String {

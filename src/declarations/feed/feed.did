@@ -54,6 +54,10 @@ service : (principal, principal, principal) -> {
   get_feed_number : (principal) -> (nat64) query;
   get_latest_feed : (principal, nat64) -> (vec Post) query;
   get_post : (text) -> (opt Post) query;
+  get_post_fetch : () -> (principal) query;
+  get_post_index : () -> (nat64) query;
   get_post_number : (principal) -> (nat64) query;
+  get_root_bucket : () -> (principal) query;
+  get_user_actor : () -> (principal) query;
   status : () -> (CanisterStatusResponse);
 }

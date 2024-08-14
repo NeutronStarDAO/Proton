@@ -237,6 +237,19 @@ fn get_all_feed_canister() -> Vec<Principal> {
 }
 
 #[ic_cdk::query]
+fn get_user_feed_canister_entries() -> Vec<(Principal, Principal)> {
+    USER_FEED_CANISTER.with(|map| {
+        let mut entries = Vec::new();
+
+        for (user, feed) in map.borrow().iter() {
+            entries.push((user, feed))
+        }
+
+        entries
+    })
+}
+
+#[ic_cdk::query]
 fn get_feed_canister_users_number_entries() -> Vec<(Principal, u64)> {
     FEED_CANISTER_USERS_NUMBER.with(|map| {
         let mut entries = Vec::new();
@@ -308,23 +321,26 @@ async fn update_feed_canister_controller(
         return false;
     }
 
-    let canister_id = ic_cdk::api::id();
     let controllers = vec![ic_cdk::api::id(), controller];
 
-    ic_cdk::api::management_canister::main::update_settings(
-        ic_cdk::api::management_canister::main::UpdateSettingsArgument {
-            canister_id: canister_id,
-            settings: CanisterSettings {
-                controllers: Some(controllers),
-                compute_allocation: None,
-                memory_allocation: None,
-                freezing_threshold: None,
-                reserved_cycles_limit: None,
-                wasm_memory_limit: None,
-                log_visibility: None
+    let feed_canister_vec = get_all_feed_canister();
+
+    for feed_canister in feed_canister_vec {
+        ic_cdk::api::management_canister::main::update_settings(
+            ic_cdk::api::management_canister::main::UpdateSettingsArgument {
+                canister_id: feed_canister,
+                settings: CanisterSettings {
+                    controllers: Some(controllers.clone()),
+                    compute_allocation: None,
+                    memory_allocation: None,
+                    freezing_threshold: None,
+                    reserved_cycles_limit: None,
+                    wasm_memory_limit: None,
+                    log_visibility: None
+                }
             }
-        }
-    ).await.unwrap();
+        ).await.unwrap();
+    }
 
     true
 }

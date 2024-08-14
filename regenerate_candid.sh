@@ -15,3 +15,5 @@ candid-extractor target/wasm32-unknown-unknown/release/root_fetch.wasm > fetch/r
 candid-extractor target/wasm32-unknown-unknown/release/user.wasm > user/user.did
 
 candid-extractor target/wasm32-unknown-unknown/release/photo_storage.wasm > storage/photo_storage/photo_storage.did
+
+dfx generate
