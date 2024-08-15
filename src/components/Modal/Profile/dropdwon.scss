@@ -1,9 +1,10 @@
 .dropdown {
   position: relative;
+
   .dropbtn {
-    padding-left:  1rem;
-    border: 0.2rem solid #c374d8;
-    border-radius: 0.5rem;
+    padding: 0 1rem;
+    border: 0.2rem solid rgb(214 195 255);
+    border-radius: 1.5rem;
     cursor: pointer;
   }
 

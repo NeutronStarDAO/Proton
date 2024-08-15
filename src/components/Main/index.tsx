@@ -254,7 +254,6 @@ export const Post = ({post, updateFunction, selectedID, profile}: {
 
 
   const load = () => {
-
     setIsLoad(true)
   }
 
@@ -282,7 +281,7 @@ export const Post = ({post, updateFunction, selectedID, profile}: {
           }
           <div style={{display: "flex", alignItems: "center", fontSize: "2rem", color: "#6F7073", gap: "1rem"}}>
 
-            {profile ? <div>{profile ? shortenString(profile.handle, 10) : ""}</div> :
+            {profile ? <div>{profile ? shortenString(profile.handle, 25) : ""}</div> :
               <div className="skeleton skeleton-text"></div>
             }
             <span style={{
@@ -371,8 +370,12 @@ export const Post = ({post, updateFunction, selectedID, profile}: {
     <div onClick={e => {
       e.stopPropagation()
     }} ref={specifiedElementRef} style={{display: open ? "flex" : "none"}} className={"reply_wrap"}>
-      <textarea onChange={e => setReplyContent(e.target.value)} value={replyContent} name="" id="" rows={3}
-                placeholder={"Reply"}/>
+      <textarea onChange={e => setReplyContent(e.target.value)}
+        value={replyContent}
+        name=""
+        id=""
+        rows={3}
+        placeholder={"Reply"}/>
 
       <div onClick={sendReply} style={(() => {
         const canSend = replyContent.length > 0

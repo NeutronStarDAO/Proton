@@ -113,3 +113,49 @@
   }
 }
 
+// Mobile upper right corner button
+.toggle_button {
+  display: none;
+  width: 6rem;
+  height: 6rem;
+  position: fixed;
+  top: 2rem;
+  right: 2rem;
+  z-index: 3;
+  padding: 1rem;
+  background-color: #428EFF;
+  color: white;
+  font-size: 3rem;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+// Mobile overlay layer
+.overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1;
+}
+
+@media screen and (max-width: 500px) {
+  .side_wrap {
+    display: none;
+  }
+  .side_wrap_open {
+    display: flex;
+    position: absolute;
+    z-index: 2;
+    background-color: #F8F5FF;
+  }
+  .toggle_button {
+    display: block;
+  }
+  .overlay.active {
+    display: block;
+  }
+}
