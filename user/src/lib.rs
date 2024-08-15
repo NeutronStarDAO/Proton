@@ -203,9 +203,22 @@ fn create_profile(profile: Profile) -> bool {
         return false;
     }
 
-    HANDLE_MAP.with(|map| map.borrow_mut().insert(profile.handle.clone(), profile.id));
+    let profile_with_time = Profile {
+        id: profile.id,
+        handle: profile.handle.clone(),
+        name: profile.name,
+        biography: profile.biography,
+        website: profile.website,
+        location: profile.location,
+        back_img_url: profile.back_img_url,
+        avatar_url: profile.avatar_url,
+        feed_canister: profile.feed_canister,
+        created_at: Some(ic_cdk::api::time())
+    };
 
-    PROFILE_MAP.with(|map| map.borrow_mut().insert(profile.id, profile));
+    HANDLE_MAP.with(|map| map.borrow_mut().insert(profile.handle, profile.id));
+
+    PROFILE_MAP.with(|map| map.borrow_mut().insert(profile.id, profile_with_time));
 
     true
 }
@@ -216,7 +229,20 @@ fn update_profile(profile: Profile) {
     let old_profile = PROFILE_MAP.with(|map| map.borrow().get(&profile.id)).unwrap();
     assert!(old_profile.handle == profile.handle);
 
-    PROFILE_MAP.with(|map| map.borrow_mut().insert(profile.id, profile));
+    let profile_with_time = Profile {
+        id: profile.id,
+        handle: profile.handle.clone(),
+        name: profile.name,
+        biography: profile.biography,
+        website: profile.website,
+        location: profile.location,
+        back_img_url: profile.back_img_url,
+        avatar_url: profile.avatar_url,
+        feed_canister: profile.feed_canister,
+        created_at: old_profile.created_at
+    };
+
+    PROFILE_MAP.with(|map| map.borrow_mut().insert(profile.id, profile_with_time));
 }
 
 #[ic_cdk::query]
@@ -271,8 +297,29 @@ fn batch_get_profile(user_ids: Vec<Principal>) -> Vec<Profile> {
     let mut profiles = Vec::new();
     for user in user_ids {
         PROFILE_MAP.with(|map| {
-            if let Some(profile) = map.borrow().get(&user) {
-                profiles.push(profile);
+            match map.borrow().get(&user) {
+                Some(profile) => {
+                    profiles.push(profile);
+                },
+                None => {
+                    let now: u64 = ic_cdk::api::time();
+                    
+                    let pr_handle: String =  user.to_text().chars().take(4).collect();
+                    let user_handle: String = format!("User-{}{}", pr_handle, (now % 10).to_string());
+
+                    profiles.push(Profile {
+                        id: user,
+                        handle: user_handle.clone(),
+                        name: user_handle,
+                        biography: String::from(""),
+                        website: String::from(""),
+                        location: String::from(""),
+                        back_img_url: String::from(""),
+                        avatar_url: String::from(""),
+                        feed_canister: None,
+                        created_at: Some(now)
+                    })
+                }   
             }
         })
     }
