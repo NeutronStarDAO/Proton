@@ -83,3 +83,10 @@
   }
 
 }
+
+@media screen and (max-width: 500px) {
+  .modal_overlay .modal {
+    padding: 2rem 2rem;
+    margin: 1rem;
+  }
+}
