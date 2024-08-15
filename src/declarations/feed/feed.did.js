@@ -70,7 +70,11 @@ export const idlFactory = ({ IDL }) => {
         ['query'],
       ),
     'get_post' : IDL.Func([IDL.Text], [IDL.Opt(Post)], ['query']),
+    'get_post_fetch' : IDL.Func([], [IDL.Principal], ['query']),
+    'get_post_index' : IDL.Func([], [IDL.Nat64], ['query']),
     'get_post_number' : IDL.Func([IDL.Principal], [IDL.Nat64], ['query']),
+    'get_root_bucket' : IDL.Func([], [IDL.Principal], ['query']),
+    'get_user_actor' : IDL.Func([], [IDL.Principal], ['query']),
     'status' : IDL.Func([], [CanisterStatusResponse], []),
   });
 };

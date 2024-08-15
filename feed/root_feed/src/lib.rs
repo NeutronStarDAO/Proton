@@ -52,21 +52,21 @@ thread_local! {
 
     static ROOT_BUCKET: RefCell<StableCell<Principal, Memory>> = RefCell::new(
         StableCell::init(
-            MEMORY_MANAGER.with(|m| m.borrow().get(MemoryId::new(3))), 
+            MEMORY_MANAGER.with(|m| m.borrow().get(MemoryId::new(5))), 
             Principal::anonymous()
         ).unwrap() 
     );
 
     static USER_ACTOR: RefCell<StableCell<Principal, Memory>> = RefCell::new(
         StableCell::init(
-            MEMORY_MANAGER.with(|m| m.borrow().get(MemoryId::new(4))), 
+            MEMORY_MANAGER.with(|m| m.borrow().get(MemoryId::new(6))), 
             Principal::anonymous()
         ).unwrap() 
     );
 
     static POST_FETCH_ACTOR: RefCell<StableCell<Principal, Memory>> = RefCell::new(
         StableCell::init(
-            MEMORY_MANAGER.with(|m| m.borrow().get(MemoryId::new(5))), 
+            MEMORY_MANAGER.with(|m| m.borrow().get(MemoryId::new(7))), 
             Principal::anonymous()
         ).unwrap() 
     );
@@ -215,11 +215,134 @@ fn get_user_feed_canister(user: Principal) -> Option<Principal> {
     })
 }
 
+#[ic_cdk::query]
+fn get_feed_canister_index() -> u64 {
+    FEED_CANISTER_INDEX.with(|index| index.borrow().get().clone())
+}
+
+#[ic_cdk::query]
+fn get_available_feed_canister_index() -> u64 {
+    AVAILABLE_FEED_CANISTER_INDEX.with(|index| index.borrow().get().clone())
+}
+
+#[ic_cdk::query] 
+fn get_all_feed_canister() -> Vec<Principal> {
+    FEED_CANISTER_MAP.with(|map| {
+        let mut feed_canister_list = Vec::new();
+        for (_, feed_canister) in map.borrow().iter() {
+            feed_canister_list.push(feed_canister)
+        }
+        feed_canister_list
+    })
+}
+
+#[ic_cdk::query]
+fn get_user_feed_canister_entries() -> Vec<(Principal, Principal)> {
+    USER_FEED_CANISTER.with(|map| {
+        let mut entries = Vec::new();
+
+        for (user, feed) in map.borrow().iter() {
+            entries.push((user, feed))
+        }
+
+        entries
+    })
+}
+
+#[ic_cdk::query]
+fn get_feed_canister_users_number_entries() -> Vec<(Principal, u64)> {
+    FEED_CANISTER_USERS_NUMBER.with(|map| {
+        let mut entries = Vec::new();
+
+        for (feed, number) in map.borrow().iter() {
+            entries.push((feed, number))
+        }
+
+        entries
+    })
+}
+
+#[ic_cdk::query]
+fn get_root_bucket() -> Principal {
+    ROOT_BUCKET.with(|root_bucket| root_bucket.borrow().get().clone())
+}
+
+#[ic_cdk::query]
+fn get_user_actor() -> Principal {
+    USER_ACTOR.with(|user_actor| user_actor.borrow().get().clone())
+}
+
+#[ic_cdk::update]
+async fn set_root_bucket(canister: Principal) -> bool {
+    if !is_controller(&ic_cdk::caller()).await {
+        return false;
+    }
+
+    ROOT_BUCKET.with(|root_bucket| root_bucket.borrow_mut().set(canister).unwrap());
+
+    true
+}
+
+#[ic_cdk::update]
+async fn set_user_actor(canister: Principal) -> bool {
+    if !is_controller(&ic_cdk::caller()).await {
+        return false;
+    }
+
+    USER_ACTOR.with(|user_actor| user_actor.borrow_mut().set(canister).unwrap());
+
+    true
+}
+
 #[ic_cdk::update]
 async fn status() -> CanisterStatusResponse {
     ic_cdk::api::management_canister::main::canister_status(CanisterIdRecord {
         canister_id: ic_cdk::api::id()
     }).await.unwrap().0
+}
+
+
+async fn is_controller(user: &Principal) -> bool {
+    let status = status().await;
+    let controllers = status.settings.controllers;
+
+    if !controllers.contains(user) {
+        return false;
+    }
+
+    true
+}
+
+#[ic_cdk::update]
+async fn update_feed_canister_controller(
+    controller: Principal
+) -> bool {
+    if !is_controller(&ic_cdk::caller()).await {
+        return false;
+    }
+
+    let controllers = vec![ic_cdk::api::id(), controller];
+
+    let feed_canister_vec = get_all_feed_canister();
+
+    for feed_canister in feed_canister_vec {
+        ic_cdk::api::management_canister::main::update_settings(
+            ic_cdk::api::management_canister::main::UpdateSettingsArgument {
+                canister_id: feed_canister,
+                settings: CanisterSettings {
+                    controllers: Some(controllers.clone()),
+                    compute_allocation: None,
+                    memory_allocation: None,
+                    freezing_threshold: None,
+                    reserved_cycles_limit: None,
+                    wasm_memory_limit: None,
+                    log_visibility: None
+                }
+            }
+        ).await.unwrap();
+    }
+
+    true
 }
 
 // Enable Candid export

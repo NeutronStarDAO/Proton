@@ -4,6 +4,7 @@ export const idlFactory = ({ IDL }) => {
     'avatar_url' : IDL.Text,
     'name' : IDL.Text,
     'biography' : IDL.Text,
+    'created_at' : IDL.Opt(IDL.Nat64),
     'website' : IDL.Text,
     'feed_canister' : IDL.Opt(IDL.Principal),
     'handle' : IDL.Text,

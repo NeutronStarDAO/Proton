@@ -27,10 +27,24 @@ type QueryStats = record {
 };
 service : (principal, principal) -> {
   create_feed_canister : () -> (principal);
+  get_all_feed_canister : () -> (vec principal) query;
+  get_available_feed_canister_index : () -> (nat64) query;
+  get_feed_canister_index : () -> (nat64) query;
+  get_feed_canister_users_number_entries : () -> (
+      vec record { principal; nat64 },
+    ) query;
   get_feed_wasm : () -> (blob) query;
+  get_root_bucket : () -> (principal) query;
+  get_user_actor : () -> (principal) query;
   get_user_feed_canister : (principal) -> (opt principal) query;
+  get_user_feed_canister_entries : () -> (
+      vec record { principal; principal },
+    ) query;
   init_fetch_actor : (principal) -> ();
   init_user_feed : () -> (principal);
+  set_root_bucket : (principal) -> (bool);
+  set_user_actor : (principal) -> (bool);
   status : () -> (CanisterStatusResponse);
+  update_feed_canister_controller : (principal) -> (bool);
   update_feed_wasm : (blob, nat64) -> (bool);
 }

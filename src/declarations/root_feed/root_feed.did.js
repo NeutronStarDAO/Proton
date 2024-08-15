@@ -35,15 +35,37 @@ export const idlFactory = ({ IDL }) => {
   });
   return IDL.Service({
     'create_feed_canister' : IDL.Func([], [IDL.Principal], []),
+    'get_all_feed_canister' : IDL.Func([], [IDL.Vec(IDL.Principal)], ['query']),
+    'get_available_feed_canister_index' : IDL.Func([], [IDL.Nat64], ['query']),
+    'get_feed_canister_index' : IDL.Func([], [IDL.Nat64], ['query']),
+    'get_feed_canister_users_number_entries' : IDL.Func(
+        [],
+        [IDL.Vec(IDL.Tuple(IDL.Principal, IDL.Nat64))],
+        ['query'],
+      ),
     'get_feed_wasm' : IDL.Func([], [IDL.Vec(IDL.Nat8)], ['query']),
+    'get_root_bucket' : IDL.Func([], [IDL.Principal], ['query']),
+    'get_user_actor' : IDL.Func([], [IDL.Principal], ['query']),
     'get_user_feed_canister' : IDL.Func(
         [IDL.Principal],
         [IDL.Opt(IDL.Principal)],
         ['query'],
       ),
+    'get_user_feed_canister_entries' : IDL.Func(
+        [],
+        [IDL.Vec(IDL.Tuple(IDL.Principal, IDL.Principal))],
+        ['query'],
+      ),
     'init_fetch_actor' : IDL.Func([IDL.Principal], [], []),
     'init_user_feed' : IDL.Func([], [IDL.Principal], []),
+    'set_root_bucket' : IDL.Func([IDL.Principal], [IDL.Bool], []),
+    'set_user_actor' : IDL.Func([IDL.Principal], [IDL.Bool], []),
     'status' : IDL.Func([], [CanisterStatusResponse], []),
+    'update_feed_canister_controller' : IDL.Func(
+        [IDL.Principal],
+        [IDL.Bool],
+        [],
+      ),
     'update_feed_wasm' : IDL.Func(
         [IDL.Vec(IDL.Nat8), IDL.Nat64],
         [IDL.Bool],

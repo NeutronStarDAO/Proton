@@ -28,6 +28,7 @@ export interface Profile {
   'avatar_url' : string,
   'name' : string,
   'biography' : string,
+  'created_at' : [] | [bigint],
   'website' : string,
   'feed_canister' : [] | [Principal],
   'handle' : string,

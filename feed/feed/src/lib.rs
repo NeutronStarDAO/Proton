@@ -427,7 +427,11 @@ async fn batch_receive_feed(
             bucket, 
             "get_post", 
             (post_id.clone(), )
-        ).await.unwrap().0.unwrap();
+        ).await.unwrap().0;
+
+        if let None = new_post {
+            continue;
+        }
 
         let user_map = FEED_MAP.with(|map| {
             map.borrow().get(&user)
@@ -437,13 +441,13 @@ async fn batch_receive_feed(
             None => {
                 // 被通知者第一次收到 feed 推流
                 let mut user_map = FeedHashMap(HashMap::new());
-                user_map.0.insert(post_id.clone(), new_post);
+                user_map.0.insert(post_id.clone(), new_post.unwrap());
                 FEED_MAP.with(|map| {
                     map.borrow_mut().insert(user, user_map);
                 })
             },
             Some(mut user_map) => {
-                user_map.0.insert(post_id.clone(), new_post);
+                user_map.0.insert(post_id.clone(), new_post.unwrap());
                 FEED_MAP.with(|map| {
                     map.borrow_mut().insert(user, user_map);
                 });
@@ -480,6 +484,11 @@ async fn check_available_bucket() -> bool {
     let availeable_bucket = call_result.unwrap();
     BUCKET.with(|bucket| bucket.borrow_mut().set(availeable_bucket).unwrap());
     true
+}
+
+#[ic_cdk::query]
+fn get_post_index() -> u64 {
+    POST_INDEX.with(|post_index| post_index.borrow().get().clone())
 }
 
 #[ic_cdk::query]
@@ -621,6 +630,21 @@ fn get_all_latest_feed(
     }
 
     result
+}
+
+#[ic_cdk::query]
+fn get_root_bucket() -> Principal {
+    ROOT_BUCKET.with(|root_bucket| root_bucket.borrow().get().clone())
+}
+
+#[ic_cdk::query]
+fn get_post_fetch() -> Principal {
+    POST_FETCH_ACTOR.with(|post_fetch| post_fetch.borrow().get().clone())
+}
+
+#[ic_cdk::query]
+fn get_user_actor() -> Principal {
+    USER_ACTOR.with(|user| user.borrow().get().clone())
 }
 
 fn get_post_id(canister: &Principal, user: &Principal, index: u64) -> String {
