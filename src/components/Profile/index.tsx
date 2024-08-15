@@ -50,7 +50,7 @@ export const Profile = ({
 
   return <div className={"profile_main"}>
     <div className={"title"} style={{cursor: "pointer"}} onClick={() => scrollToTop()}>Profile</div>
-    <div ref={scrollContainerRef} style={{overflow: "scroll", width: "100%", flex: "1"}}>
+    <div ref={scrollContainerRef} style={{ width: "100%", flex: "1"}}>
       <div className={"background"} style={{
         backgroundImage: `url(${profile?.back_img_url})`,
         backgroundSize: "cover",
@@ -166,18 +166,18 @@ const UserPanel = ({profile}: { profile?: profile_type }) => {
         {isFollowed ? "Following" : "Follow"}
       </span>}
     </div>
-    {profile?.biography ? <div className={"des"}>
+    {profile ? <div className={"des"}>
       {profile?.biography}
     </div> : <div className="skeleton skeleton-text" style={{height: "2rem", width: "10rem"}}/>}
 
 
     <div className={"aa"} ref={ref}>
 
-      {profile?.location ? <div className={"label"} style={{visibility: !!profile?.location ? "visible" : "hidden"}}>
+      {profile ? <div className={"label"} style={{visibility: !!profile?.location ? "visible" : "hidden"}}>
         <Icon name={"location"}/> {profile?.location}
       </div> : <div className="skeleton skeleton-text" style={{height: "2rem", width: "5rem"}}/>}
 
-      {profile?.website ? <div onClick={() => window.open(profile?.website)} className={"label label-link"}
+      {profile ? <div onClick={() => window.open(profile?.website)} className={"label label-link"}
                                style={{visibility: !!profile?.website ? "visible" : "hidden"}}>
         <Icon name={"link"}/> {profile?.website}
       </div> : <div className="skeleton skeleton-text" style={{height: "2rem", width: "5rem"}}/>}

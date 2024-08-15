@@ -83,7 +83,8 @@ export const ProfileModal = ({open, setOpen, canClose}: { open: boolean, setOpen
         website: form1.Network.length > 0 ? protocol + form1.Network : form1.Network,
         feed_canister: [userFeedCai],
         back_img_url: b_url,
-        handle: form1.ID
+        handle: form1.ID,
+        created_at: []
       })
       const res = await aApi.upload_photo([backFile ?? new File([], ""), avatarFile ?? new File([], "")])
       const newProfile: Profile = {
@@ -95,7 +96,8 @@ export const ProfileModal = ({open, setOpen, canClose}: { open: boolean, setOpen
         website: form1.Network.length > 0 ? protocol + form1.Network : form1.Network,
         feed_canister: [userFeedCai],
         back_img_url: res[0] ? res[0] : b_url ? b_url : "",
-        handle: form1.ID
+        handle: form1.ID,
+        created_at: []
       }
       canClose ? userApi.updateProfile(newProfile).then(() => window.location.reload()) : await userApi.createProfile({
         ...newProfile,
@@ -116,7 +118,7 @@ export const ProfileModal = ({open, setOpen, canClose}: { open: boolean, setOpen
     let network = ""
     if (profile.website) {
       network = profile.website.split("://")[1]
-      setProtocol(profile.website.split("://")[0]+"://")
+      setProtocol(profile.website.split("://")[0] + "://")
     }
     setForm1({
       ID: profile.handle ? profile.handle : "",
@@ -220,7 +222,8 @@ const InfoItem = ({
                                         id=""></textarea>
       if (t === "Network") return <div style={{display: "flex", width: "100%", alignItems: "center", gap: "1rem"}}>
         <Dropdown item={protocol} dropdownList={["https://", "http://"]} setItem={setProtocol}/>
-        <input style={{border: "0.2rem solid rgb(214 195 255)", borderRadius: "1.5rem"}} onChange={(e) => onchange(t, e)}
+        <input style={{border: "0.2rem solid rgb(214 195 255)", borderRadius: "1.5rem"}}
+               onChange={(e) => onchange(t, e)}
                defaultValue={value} readOnly={readOnly} placeholder={placeholder}
                type="text"/>
       </div>

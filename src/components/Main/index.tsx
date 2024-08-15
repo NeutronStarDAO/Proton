@@ -81,7 +81,7 @@ export const Main = ({scrollContainerRef}: { scrollContainerRef: React.MutableRe
       <div className={"title"}>{Title}</div>
       {data ? data.length === 0 ? <Empty style={{width: "100%"}}/>
         : data.map((v, k) => {
-          return <Post profile={profiles[k]} selectedID={"post_id" in selectPost ? selectPost.post_id : ""}
+          return <Post key={k} profile={profiles[k]} selectedID={"post_id" in selectPost ? selectPost.post_id : ""}
                        updateFunction={getExploreData}
                        post={v}/>
         }) : <Spin spinning={true} style={{width: "100%"}}/>}
@@ -92,7 +92,7 @@ export const Main = ({scrollContainerRef}: { scrollContainerRef: React.MutableRe
     <div className={"title"}>{Title}</div>
     {HomeData ? HomeData.length === 0 ? <Empty style={{width: "100%"}}/>
       : HomeData.map((v, k) => {
-        return <Post profile={profiles[k]} selectedID={"post_id" in selectPost ? selectPost.post_id : ""}
+        return <Post key={k} profile={profiles[k]} selectedID={"post_id" in selectPost ? selectPost.post_id : ""}
                      updateFunction={getHomeData}
                      post={v}/>
       }) : <Spin spinning={true} style={{width: "100%"}}/>}
@@ -280,9 +280,8 @@ export const Post = ({post, updateFunction, selectedID, profile}: {
             <div className="skeleton skeleton-title"/>
           }
           <div style={{display: "flex", alignItems: "center", fontSize: "2rem", color: "#6F7073", gap: "1rem"}}>
-
             {profile ? <div>{profile ? shortenString(profile.handle, 25) : ""}</div> :
-              <div className="skeleton skeleton-text"></div>
+              <div className="skeleton skeleton-text"/>
             }
             <span style={{
               width: "0.5rem",
@@ -371,11 +370,11 @@ export const Post = ({post, updateFunction, selectedID, profile}: {
       e.stopPropagation()
     }} ref={specifiedElementRef} style={{display: open ? "flex" : "none"}} className={"reply_wrap"}>
       <textarea onChange={e => setReplyContent(e.target.value)}
-        value={replyContent}
-        name=""
-        id=""
-        rows={3}
-        placeholder={"Reply"}/>
+                value={replyContent}
+                name=""
+                id=""
+                rows={3}
+                placeholder={"Reply"}/>
 
       <div onClick={sendReply} style={(() => {
         const canSend = replyContent.length > 0
