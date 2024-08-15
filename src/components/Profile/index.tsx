@@ -16,6 +16,7 @@ import {useAuth} from "../../utils/useAuth";
 import {useGSAP} from "@gsap/react";
 import gsap from 'gsap';
 import {useSelectPostStore} from "../../redux/features/SelectPost";
+import {nanosecondsToDate} from "../../utils/util";
 
 export const Profile = ({
                           scrollContainerRef,
@@ -50,7 +51,7 @@ export const Profile = ({
 
   return <div className={"profile_main"}>
     <div className={"title"} style={{cursor: "pointer"}} onClick={() => scrollToTop()}>Profile</div>
-    <div ref={scrollContainerRef} style={{ width: "100%", flex: "1"}}>
+    <div ref={scrollContainerRef} style={{width: "100%", flex: "1"}}>
       <div className={"background"} style={{
         backgroundImage: `url(${profile?.back_img_url})`,
         backgroundSize: "cover",
@@ -178,9 +179,18 @@ const UserPanel = ({profile}: { profile?: profile_type }) => {
       </div> : <div className="skeleton skeleton-text" style={{height: "2rem", width: "5rem"}}/>}
 
       {profile ? <div onClick={() => window.open(profile?.website)} className={"label label-link"}
-                               style={{visibility: !!profile?.website ? "visible" : "hidden"}}>
+                      style={{visibility: !!profile?.website ? "visible" : "hidden"}}>
         <Icon name={"link"}/> {profile?.website}
       </div> : <div className="skeleton skeleton-text" style={{height: "2rem", width: "5rem"}}/>}
+
+      {profile ? <div className={"label"} style={{visibility: !!profile?.location ? "visible" : "hidden"}}>
+        <Icon name={"join_time"}/> {profile.created_at[0] ?"Joined "+ nanosecondsToDate(profile.created_at[0]) : ''}
+
+      </div> : <div className="skeleton skeleton-text" style={{height: "2rem", width: "5rem"}}/>}
+      <div className={"label"} style={{visibility: "hidden"}}>
+        <Icon name={"location"}/> {profile?.location}
+      </div>
+
       <div className={"label"}>
           <span className={"wrap"}>
             <span className={"number"}>{followings}</span>
