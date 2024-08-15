@@ -14,6 +14,7 @@ import {useSelectPostStore} from "./redux/features/SelectPost";
 import {ProfileModal} from "./components/Modal/Profile";
 import {FollowList} from "./components/FollowList";
 import {Wallet} from "./components/Wallet";
+import {Principal} from "@dfinity/principal";
 
 function App() {
 
@@ -25,7 +26,6 @@ function App() {
   useEffect(() => {
     if (principal && isAuth) {
       userApi.getProfile(principal).then(e => {
-        console.log(e)
         if (e) {
           updateProfile(e)
           setOpen(false)

@@ -33,7 +33,6 @@ export const Profile = ({
     const feed_cid = profile.feed_canister[0]
     const feedApi = new Feed(feed_cid)
     const res = await Promise.all([feedApi.getAllPost(Principal.from(id))])
-
     setPosts([...res[0]])
   }
 
@@ -61,8 +60,9 @@ export const Profile = ({
         <UserPanel profile={profile}/>
         {
           posts ? posts.map((v, k) => {
-            return <Post selectedID={"post_id" in selectPost ? selectPost.post_id : ""} post={v} updateFunction={() => {
-            }} key={k}/>
+            return <Post profile={profile} selectedID={"post_id" in selectPost ? selectPost.post_id : ""} post={v}
+                         updateFunction={() => {
+                         }} key={k}/>
           }) : <Spin spinning={true} style={{width: "100%"}}/>
         }
       </div>
