@@ -58,9 +58,10 @@ const CommentCon = ({comment, profile}: { comment: comment_type, profile: Profil
       </Tooltip>
       <div style={{display: "flex", flexDirection: "column", alignItems: "start", justifyContent: "center"}}>
         <div style={{fontSize: "2rem"}}>{profile?.name}</div>
-        <div style={{display: "flex", alignItems: "center", fontSize: "1.5rem", color: "#737373", gap: "1rem"}}>
+        <div style={{display: "flex", alignItems: "center", fontSize: "1.5rem", gap: "1rem"}}>
           <div style={{
-            fontSize: "2rem",
+            fontSize: "1.7rem",
+            fontWeight: "500",
             color: "rgba(0,0,0,0.5)"
           }}>
             {profile ? shortenString(profile.handle.toString(), 10) : ""}
@@ -68,10 +69,10 @@ const CommentCon = ({comment, profile}: { comment: comment_type, profile: Profil
           <span style={{
             width: "0.5rem",
             height: "0.5rem",
-            background: "#737373",
+            background: "rgba(0,0,0,0.5)",
             borderRadius: "50%"
           }}/>
-          <div style={{color: "#737373"}}>
+          <div style={{fontWeight: "500", color: "rgba(0,0,0,0.5)"}}>
             {getTime(comment.created_at)}
           </div>
         </div>

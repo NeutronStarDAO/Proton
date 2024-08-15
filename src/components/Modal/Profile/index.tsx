@@ -218,9 +218,9 @@ const InfoItem = ({
       if (t === "Bio") return <textarea onChange={(e) => onchange(t, e)} defaultValue={value} placeholder={placeholder}
                                         name=""
                                         id=""></textarea>
-      if (t === "Network") return <div style={{display: 'flex', width: "100%", alignItems: "center", gap: "1rem"}}>
+      if (t === "Network") return <div style={{display: "flex", width: "100%", alignItems: "center", gap: "1rem"}}>
         <Dropdown item={protocol} dropdownList={["https://", "http://"]} setItem={setProtocol}/>
-        <input style={{border: "0.2rem solid #c374d8", borderRadius: "0.5rem"}} onChange={(e) => onchange(t, e)}
+        <input style={{border: "0.2rem solid rgb(214 195 255)", borderRadius: "1.5rem"}} onChange={(e) => onchange(t, e)}
                defaultValue={value} readOnly={readOnly} placeholder={placeholder}
                type="text"/>
       </div>

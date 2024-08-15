@@ -23,7 +23,7 @@
   padding: 2rem;
   border-bottom: 1px rgb(197, 217, 251) solid;
   flex-direction: column;
-  transition: 0.5s ease;
+  transition: 0.7s ease;
 
   .author {
     display: flex;
@@ -105,9 +105,9 @@
           border-radius: 0.5rem;
           cursor: zoom-in;
           transition: transform 0.3s ease;
-
         }
       }
+      
       .image-overlay {
         position: fixed;
         top: 0;
@@ -149,6 +149,18 @@
 
   }
 
+  @keyframes slideDown {
+    from {
+      max-height: 0;
+      opacity: 0;
+    }
+
+    to {
+      max-height: 22rem;
+      opacity: 1;
+    }
+  }
+
   .reply_wrap {
     width: 100%;
     display: flex;
@@ -159,8 +171,7 @@
     background: #D7E4FF;
     border-radius: 2rem;
     padding: 1rem 1rem 1rem 2rem;
-    transition: transform 0.5s ease;
-    transform: translateY(0);
+    animation: slideDown 0.5s linear;
 
     textarea {
       width: 100%;
@@ -188,4 +199,12 @@
   }
 }
 
-
+@media screen and (max-width: 500px) {
+  html {
+    font-size: 7.03125px !important;
+  }
+  .main_wrap {
+    border-right: 0;
+    border-left: 0;
+  }
+}
