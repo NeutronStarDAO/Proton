@@ -107,4 +107,3 @@ export const UserInfo = () => {
 
 export const shortenString = (str: string, maxLength: number) => str.length > maxLength ? `${str.slice(0, 3)}...${str.slice(-(maxLength - 3))}` : str;
 
-
