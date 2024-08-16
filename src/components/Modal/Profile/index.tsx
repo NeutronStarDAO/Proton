@@ -225,8 +225,7 @@ const InfoItem = ({
               defaultValue={value} 
               readOnly={readOnly} 
               placeholder={placeholder} 
-              type="text"
-            />
+              type="text"/>
           </>
         )
       }
