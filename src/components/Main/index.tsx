@@ -252,12 +252,11 @@ export const Post = ({post, updateFunction, selectedID, profile}: {
     }
   }
 
-
   const load = () => {
     setIsLoad(true)
   }
 
-  return <div ref={postRef} style={{background: selectedID === post.post_id ? "#F0F4FF" : ""}} className={"post_main"}
+  return <div ref={postRef} style={{background: selectedID === post.post_id ? "rgb(239 239 250 / 60%)" : ""}} className={"post_main"}
               onClick={() => updateSelectPost(post)}
   >
     {contextHolder}
@@ -279,18 +278,18 @@ export const Post = ({post, updateFunction, selectedID, profile}: {
               style={{fontSize: "2.1rem", fontWeight: "500", fontFamily: "Fredoka, sans-serif"}}>{profile.name}</div> :
             <div className="skeleton skeleton-title"/>
           }
-          <div style={{display: "flex", alignItems: "center", fontSize: "2rem", color: "#6F7073", gap: "1rem"}}>
-            {profile ? <div>{profile ? shortenString(profile.handle, 25) : ""}</div> :
+          <div style={{display: "flex", alignItems: "center", fontSize: "2rem", gap: "1rem"}}>
+            {profile ? <div style={{color: "rgb(123 150 219)"}}>{profile ? shortenString(profile.handle, 25) : ""}</div> :
               <div className="skeleton skeleton-text"/>
             }
             <span style={{
               width: "0.5rem",
               minWidth: "0.5rem",
               height: "0.5rem",
-              background: "#6F7073",
+              background: "rgb(123 150 219)",
               borderRadius: "50%"
             }}/>
-            <div style={{color: "#6F7073"}}>
+            <div style={{color: "rgb(123 150 219)"}}>
               {arg.time}
             </div>
           </div>
@@ -325,7 +324,7 @@ export const Post = ({post, updateFunction, selectedID, profile}: {
         minHeight: post.photo_url.length === 0 ? "0" : "50rem",
       }}>
         {post.photo_url.map((v, k) => {
-          return <ImagePreview key={k} src={v}/>
+          return <ImagePreview key={k} src={v} imageCount={post.photo_url.length} />
         })}
       </div>
     </div>
@@ -390,7 +389,7 @@ export const Post = ({post, updateFunction, selectedID, profile}: {
   </div>
 }
 
-const ImagePreview = ({src}: { src: string }) => {
+const ImagePreview = ({ src, imageCount }: { src: string, imageCount: number }) => {
 
   const [isFullScreen, setIsFullScreen] = useState(false);
 
@@ -409,6 +408,7 @@ const ImagePreview = ({src}: { src: string }) => {
           src={src}
           alt=""
           onClick={handleImageClick}
+          style={{ width: imageCount === 1 ? 'auto' : '100%' }}
         />
       </div>
 
