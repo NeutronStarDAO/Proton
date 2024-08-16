@@ -57,41 +57,10 @@ thread_local! {
     );
 }
 
-#[ic_cdk::post_upgrade]
-fn post_upgrade() {
-    let users = vec![
-        Principal::from_text("hzua4-6p23n-bkjrl-iw2u2-zgjjt-mulgp-mg5i3-gtjje-ozs5e-sne3r-5ae").unwrap(),
-        Principal::from_text("azfp6-zxete-ebh2q-zwpim-6yd37-mohin-r42lz-5nbya-csitj-oqjpc-nae").unwrap(),
-        Principal::from_text("npbtf-k4jsu-ncony-d7lvq-dzoip-lxukw-6wrs2-ekdes-57crt-qpafe-4qe").unwrap()
-    ];
-
-    let now = ic_cdk::api::time();
-
-    for user in users {
-        let pr_handle: String =  user.to_text().chars().take(4).collect();
-        let user_handle: String = format!("User-{}{}", pr_handle, (now % 10).to_string());
-
-        let profile = Profile {
-            id: user,
-            handle: user_handle.clone(),
-            name: user_handle,
-            biography: String::from(""),
-            website: String::from(""),
-            location: String::from(""),
-            back_img_url: String::from(""),
-            avatar_url: String::from(""),
-            feed_canister: None,
-            created_at: Some(now)
-        };
-
-        PROFILE_MAP.with(|map| {
-            map.borrow_mut().insert(profile.id, profile)
-        });
-    }
-}
-
 #[ic_cdk::update]
 fn follow(to: Principal) {
+    assert!(ic_cdk::caller() != Principal::anonymous());
+
     let from = ic_cdk::caller();
     let is_followed = FOLLOW_LIST.with(|list| {
         for (_from, _to) in list.borrow().iter() {
@@ -110,6 +79,8 @@ fn follow(to: Principal) {
 
 #[ic_cdk::update]
 fn cancle_follow(to: Principal) {
+    assert!(ic_cdk::caller() != Principal::anonymous());
+
     let from = ic_cdk::caller();
 
     let mut follow_list = Vec::new();
@@ -203,6 +174,8 @@ fn get_follower_number(user: Principal) -> u64 {
 
 #[ic_cdk::update]
 fn create_profile(profile: Profile) -> bool {
+    assert!(ic_cdk::caller() != Principal::anonymous());
+
     assert!(ic_cdk::caller() == profile.id);
     if !_is_handle_available(&profile.handle) {
         return false;
@@ -230,6 +203,8 @@ fn create_profile(profile: Profile) -> bool {
 
 #[ic_cdk::update]
 fn update_profile(profile: Profile) {
+    assert!(ic_cdk::caller() != Principal::anonymous());
+
     assert!(ic_cdk::caller() == profile.id);
     let old_profile = PROFILE_MAP.with(|map| map.borrow().get(&profile.id)).unwrap();
     assert!(old_profile.handle == profile.handle);
@@ -266,6 +241,8 @@ fn _is_handle_available(handle: &String) -> bool {
 
 #[ic_cdk::update]
 fn update_handle(new_handle: String) -> bool {
+    assert!(ic_cdk::caller() != Principal::anonymous());
+    
     if !_is_handle_available(&new_handle) {
         return false;
     };

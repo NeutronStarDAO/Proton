@@ -117,6 +117,8 @@ fn init(
 
 #[ic_cdk::update]
 async fn create_post(content: String, photo_url: Vec<String>) -> String {
+    assert!(ic_cdk::caller() != Principal::anonymous());
+
     // get available bucket
     let mut bucket_id = get_bucket();
     if let None = bucket_id {
@@ -196,6 +198,8 @@ async fn create_post(content: String, photo_url: Vec<String>) -> String {
 
 #[ic_cdk::update]
 async fn create_repost(post_id: String) -> bool {
+    assert!(ic_cdk::caller() != Principal::anonymous());
+
     let (bucket, _, _) = check_post_id(&post_id);
     let caller = ic_cdk::caller();
 
@@ -247,6 +251,8 @@ async fn create_repost(post_id: String) -> bool {
 
 #[ic_cdk::update]
 async fn create_comment(post_id: String, content: String) -> bool {
+    assert!(ic_cdk::caller() != Principal::anonymous());
+
     let (bucket, _, _) = check_post_id(&post_id);
     let caller = ic_cdk::caller();
 
@@ -299,6 +305,8 @@ async fn create_comment(post_id: String, content: String) -> bool {
 
 #[ic_cdk::update]
 async fn create_like(post_id: String) -> bool {
+    assert!(ic_cdk::caller() != Principal::anonymous());
+
     let (bucket, _, _) = check_post_id(&post_id);
     let caller = ic_cdk::caller();
 
@@ -355,6 +363,8 @@ async fn create_like(post_id: String) -> bool {
 
 #[ic_cdk::update]
 async fn delete_post(post_id: String) -> bool {
+    assert!(ic_cdk::caller() != Principal::anonymous());
+
     let (bucket, _, _) = check_post_id(&post_id);
 
     let post = ARCHIEVE_POST_MAP.with(|map| {
@@ -416,6 +426,8 @@ async fn batch_receive_feed(
     user: Principal,
     post_id_array: Vec<String>
 ) {
+    assert!(ic_cdk::caller() != Principal::anonymous());
+
     for post_id in post_id_array {
         let (bucket, post_creator, _) = check_post_id(&post_id);
 
@@ -461,6 +473,8 @@ fn batch_delete_feed(
     user: Principal, 
     post_id_array: Vec<String>
 ) {
+    assert!(ic_cdk::caller() != Principal::anonymous());
+    
     let mut user_map = FEED_MAP.with(|map| {
         map.borrow().get(&user)
     }).unwrap();
