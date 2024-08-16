@@ -3,11 +3,12 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  overflow: scroll;
+  overflow: hidden;
   min-height: 100%;
   justify-content: space-between;
   padding-bottom: 2rem;
   font-family: "Fredoka", sans-serif;
+  transition: 0.7s ease;
 
   .logo {
     padding-left: 3rem;
@@ -142,19 +143,35 @@
   z-index: 1;
 }
 
+@keyframes slideRight {
+  from {
+    opacity: 0.5;
+    transform: translateX(-100%);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
 @media screen and (max-width: 500px) {
   .side_wrap {
     display: none;
   }
+
   .side_wrap_open {
     display: flex;
     position: absolute;
     z-index: 2;
     background-color: #F8F5FF;
+    animation: slideRight 0.2s ease-out;
   }
+
   .toggle_button {
     display: block;
   }
+
   .overlay.active {
     display: block;
   }

@@ -4,15 +4,19 @@
   flex-direction: column;
   align-items: start;
   overflow: auto;
-  border-right: 1px solid #79aaff;
+  overflow-x: hidden;
   border-left: 1px solid #79aaff;
 
   .title {
+    display: flex;
+    width: 100%;
+    align-items: start;
     font-size: 3.7rem;
     font-family: "Fredoka", sans-serif;
     padding-bottom: 2rem;
     padding-top: 3rem;
     padding-left: 2rem;
+    border-right: 1px solid #79aaff;
   }
 }
 
@@ -21,6 +25,7 @@
   display: flex;
   cursor: pointer;
   padding: 2rem;
+  border-right: 1px solid #79aaff;
   border-bottom: 1px rgb(197, 217, 251) solid;
   flex-direction: column;
   transition: 0.7s ease;
@@ -203,8 +208,17 @@
   html {
     font-size: 7.03125px !important;
   }
+
   .main_wrap {
     border-right: 0;
     border-left: 0;
+    
+    .title {
+      border-right: 0;
+    }
+  }
+
+  .post_main {
+    border-right: 0;
   }
 }

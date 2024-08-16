@@ -98,3 +98,24 @@
     }
   }
 }
+
+@keyframes slideLeft {
+  from {
+    opacity: 0.5;
+    transform: translateX(100%);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@media screen and (max-width: 500px) {
+  .comment {
+    width: 100%;
+    position: fixed;
+    background-color: #fff;
+    animation: slideLeft 0.2s linear;
+  }
+}

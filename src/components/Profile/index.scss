@@ -6,7 +6,6 @@
   align-items: start;
   padding: 3rem 0;
   overflow: auto;
-  border-right: 1px solid #679BF8;
   border-left: 1px solid #679BF8;
 
   .title {
@@ -18,7 +17,7 @@
     height: 18.8rem;
     width: 100%;
     background: #F0F4FF;
-    margin-bottom: 1rem;
+    padding-bottom: 1rem;
   }
 
   .profile_body {
@@ -26,7 +25,6 @@
     display: flex;
     flex-direction: column;
     align-items: start;
-    gap: 2rem;
 
     .user_panel {
       display: flex;
@@ -34,7 +32,7 @@
       flex-direction: column;
       align-items: start;
       padding: 0 3rem;
-      gap: 1rem;
+      border-right: 1px solid #679BF8;
 
       .avatar_panel {
         width: 100%;
@@ -129,18 +127,34 @@
           }
         }
       }
-
-
     }
   }
 }
 
 @media screen and (max-width: 500px) {
+  
   .profile_main {
     border-right: 0;
     border-left: 0;
+    
+    .profile_body {
+
+      .user_panel {
+        padding: 0 2rem;
+        
+        .avatar_panel .info .name {
+          font-size: 3rem;
+        }
+
+        .aa {
+          column-gap: 0;
+        }
+      }
+    }
+    
+    .background {
+      margin: 1rem 0;
+    }
   }
-  .profile_main .profile_body .user_panel .avatar_panel .info .name {
-    font-size: 3rem;
-  }
+
 }

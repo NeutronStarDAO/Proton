@@ -205,7 +205,7 @@ const InfoItem = ({
                 alignItems: flag ? "center" : "start",
                 position: "relative"
               }}>
-    <div style={{fontWeight: "500", width: "14%", display: "flex", marginRight: "1rem"}}>
+    <div className={"id_and_name_prof_mod"} style={{fontWeight: "500", width: "14%", display: "flex", marginRight: "1rem"}}>
       <span
         style={{
           color: "#f87d7d",
@@ -216,7 +216,20 @@ const InfoItem = ({
       {t}
     </div>
     {(() => {
-      if (t === "ID" && !canClose) return <TipInfo index={index === undefined ? 0 : index}/>
+      if (t === "ID") {
+        return (
+          <>
+            { !canClose && <TipInfo index={index === undefined ? 0 : index}/> }
+            <input 
+              onChange={(e) => onchange(t, e)} 
+              defaultValue={value} 
+              readOnly={readOnly} 
+              placeholder={placeholder} 
+              type="text"
+            />
+          </>
+        )
+      }
       if (t === "Bio") return <textarea onChange={(e) => onchange(t, e)} defaultValue={value} placeholder={placeholder}
                                         name=""
                                         id=""></textarea>

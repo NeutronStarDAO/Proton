@@ -318,7 +318,6 @@
       }
     }
 
-
   }
 
 
@@ -346,5 +345,10 @@
     background: #F0F4FF;
   }
 
+}
 
+@media screen and (max-width: 500px) {
+  .smile {
+    display: none;
+  }
 }

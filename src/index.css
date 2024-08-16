@@ -32,26 +32,28 @@ pre {
 
 ::-webkit-scrollbar {
     width: 7px; /* 宽度 */
-    height: 6px; /* 高度 */
+    height: 7px; /* 高度 */
 }
-
 
 ::-webkit-scrollbar-track {
     border-radius: 3px;
-    background: white;
+    background: rgba(0, 0, 0, 0);
     height: 50%;
 }
 
 /* 滚动条滑块 */
 ::-webkit-scrollbar-thumb {
     border-radius: 3px;
-    background: white;
-    height: 2px;
-
+    background: rgba(0, 0, 0, 0);
 }
 
 :hover::-webkit-scrollbar-thumb {
     border-radius: 3px;
-    background: rgba(0, 0, 0, 0.12);
-    height: 20px;
+    background: rgba(0, 0, 0, 0.15);
+}
+
+@media screen and (max-width: 500px) {
+    ::-webkit-scrollbar {
+        width: 0;
+    }
 }

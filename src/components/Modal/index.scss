@@ -86,7 +86,11 @@
 
 @media screen and (max-width: 500px) {
   .modal_overlay .modal {
-    padding: 2rem 2rem;
+    padding: 1rem 1rem;
     margin: 1rem;
+  }
+
+  .modal_overlay .modal .item_wrap .info_tip {
+    gap: 0;
   }
 }
