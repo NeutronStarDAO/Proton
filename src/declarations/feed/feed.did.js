@@ -61,9 +61,24 @@ export const idlFactory = ({ IDL }) => {
     'create_repost' : IDL.Func([IDL.Text], [IDL.Bool], []),
     'delete_post' : IDL.Func([IDL.Text], [IDL.Bool], []),
     'get_all_latest_feed' : IDL.Func([IDL.Nat64], [IDL.Vec(Post)], ['query']),
+    'get_all_latest_feed_by_length' : IDL.Func(
+        [IDL.Nat64, IDL.Nat64],
+        [IDL.Vec(Post)],
+        ['query'],
+      ),
     'get_all_post' : IDL.Func([IDL.Principal], [IDL.Vec(Post)], ['query']),
     'get_bucket' : IDL.Func([], [IDL.Opt(IDL.Principal)], ['query']),
     'get_feed_number' : IDL.Func([IDL.Principal], [IDL.Nat64], ['query']),
+    'get_home_feed' : IDL.Func(
+        [IDL.Principal, IDL.Nat64],
+        [IDL.Vec(Post)],
+        ['query'],
+      ),
+    'get_home_feed_by_length' : IDL.Func(
+        [IDL.Principal, IDL.Nat64, IDL.Nat64],
+        [IDL.Vec(Post)],
+        ['query'],
+      ),
     'get_latest_feed' : IDL.Func(
         [IDL.Principal, IDL.Nat64],
         [IDL.Vec(Post)],

@@ -49,9 +49,12 @@ service : (principal, principal, principal) -> {
   create_repost : (text) -> (bool);
   delete_post : (text) -> (bool);
   get_all_latest_feed : (nat64) -> (vec Post) query;
+  get_all_latest_feed_by_length : (nat64, nat64) -> (vec Post) query;
   get_all_post : (principal) -> (vec Post) query;
   get_bucket : () -> (opt principal) query;
   get_feed_number : (principal) -> (nat64) query;
+  get_home_feed : (principal, nat64) -> (vec Post) query;
+  get_home_feed_by_length : (principal, nat64, nat64) -> (vec Post) query;
   get_latest_feed : (principal, nat64) -> (vec Post) query;
   get_post : (text) -> (opt Post) query;
   get_post_fetch : () -> (principal) query;

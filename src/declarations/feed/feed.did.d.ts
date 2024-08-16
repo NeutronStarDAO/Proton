@@ -60,9 +60,15 @@ export interface _SERVICE {
   'create_repost' : ActorMethod<[string], boolean>,
   'delete_post' : ActorMethod<[string], boolean>,
   'get_all_latest_feed' : ActorMethod<[bigint], Array<Post>>,
+  'get_all_latest_feed_by_length' : ActorMethod<[bigint, bigint], Array<Post>>,
   'get_all_post' : ActorMethod<[Principal], Array<Post>>,
   'get_bucket' : ActorMethod<[], [] | [Principal]>,
   'get_feed_number' : ActorMethod<[Principal], bigint>,
+  'get_home_feed' : ActorMethod<[Principal, bigint], Array<Post>>,
+  'get_home_feed_by_length' : ActorMethod<
+    [Principal, bigint, bigint],
+    Array<Post>
+  >,
   'get_latest_feed' : ActorMethod<[Principal, bigint], Array<Post>>,
   'get_post' : ActorMethod<[string], [] | [Post]>,
   'get_post_fetch' : ActorMethod<[], Principal>,

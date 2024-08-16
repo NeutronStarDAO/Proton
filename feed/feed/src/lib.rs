@@ -604,6 +604,174 @@ fn get_latest_feed(
 }
 
 #[ic_cdk::query]
+fn get_home_feed(
+    user: Principal,
+    n: u64
+) -> Vec<Post> {
+    let user_post = {
+        let user_map = POST_MAP.with(|map| {
+            map.borrow().get(&user)
+        });
+        
+        match user_map {
+            None => {
+                Vec::new()
+            },
+            Some(user_map) => {
+                let mut post_vec: Vec<Post> = user_map.0.values().cloned().collect();
+    
+                post_vec.sort_by(|a, b| {
+                    a.created_at.partial_cmp(&b.created_at).unwrap()
+                });
+            
+                let mut sorted_post_vec = Vec::new();
+            
+                for post in post_vec.iter().rev() {
+                    sorted_post_vec.push(post.clone())
+                }
+            
+                sorted_post_vec
+            }
+        }
+    };
+
+    let mut user_feed = {
+        let user_map = FEED_MAP.with(|map| {
+            map.borrow().get(&user)
+        });
+    
+        match user_map {
+            None => {
+                Vec::new()
+            },
+            Some(user_map) => {
+                let mut feed_vec: Vec<Post> = user_map.0.values().cloned().collect();
+    
+                feed_vec.sort_by(|a, b| {
+                    a.created_at.partial_cmp(&b.created_at).unwrap()
+                });
+            
+                let mut result: Vec<Post> = Vec::new();
+                let mut i = 0;
+                for feed in feed_vec.iter().rev() {
+                    if i >= n {
+                        break;
+                    }
+                    result.push(feed.clone());
+                    i += 1;
+                }
+            
+                result
+            }
+        }
+    };
+
+    let mut home_feed = user_post;
+
+    home_feed.append(&mut user_feed);
+
+    home_feed.sort_by(|a, b| {
+        a.created_at.partial_cmp(&b.created_at).unwrap()
+    });
+
+    let mut result = Vec::new();
+    let mut i = 0;
+    for feed in home_feed.iter().rev() {
+        if i >= n {
+            break;
+        }
+        result.push(feed.clone());
+        i += 1;
+    }
+
+    result
+}
+
+#[ic_cdk::query]
+fn get_home_feed_by_length(
+    user: Principal,
+    start: u64,
+    length: u64
+) -> Vec<Post> {
+    let user_post = {
+        let user_map = POST_MAP.with(|map| {
+            map.borrow().get(&user)
+        });
+        
+        match user_map {
+            None => {
+                Vec::new()
+            },
+            Some(user_map) => {
+                let mut post_vec: Vec<Post> = user_map.0.values().cloned().collect();
+    
+                post_vec.sort_by(|a, b| {
+                    a.created_at.partial_cmp(&b.created_at).unwrap()
+                });
+            
+                let mut sorted_post_vec = Vec::new();
+            
+                for post in post_vec.iter().rev() {
+                    sorted_post_vec.push(post.clone())
+                }
+            
+                sorted_post_vec
+            }
+        }
+    };
+
+    let mut user_feed = {
+        let user_map = FEED_MAP.with(|map| {
+            map.borrow().get(&user)
+        });
+    
+        match user_map {
+            None => {
+                Vec::new()
+            },
+            Some(user_map) => {
+                let mut feed_vec: Vec<Post> = user_map.0.values().cloned().collect();
+    
+                feed_vec.sort_by(|a, b| {
+                    a.created_at.partial_cmp(&b.created_at).unwrap()
+                });
+
+                let mut sorted_feed_vec = Vec::new();
+            
+                for feed in feed_vec.iter().rev() {
+                    sorted_feed_vec.push(feed.clone())
+                }
+            
+                sorted_feed_vec
+            }
+        }
+    };
+
+    let mut home_feed = user_post;
+
+    home_feed.append(&mut user_feed);
+
+    home_feed.sort_by(|a, b| {
+        a.created_at.partial_cmp(&b.created_at).unwrap()
+    });
+
+    let mut result = Vec::new();
+    let mut i = 0;
+    let end = start + length - 1;
+    for feed in home_feed.iter().rev() {
+        if i > end {
+            break;
+        }
+        if i >= start {
+            result.push(feed.clone());
+        }
+        i += 1;
+    }
+
+    result
+}
+
+#[ic_cdk::query]
 fn get_all_latest_feed(
     n: u64
 ) -> Vec<Post> {
@@ -626,6 +794,40 @@ fn get_all_latest_feed(
             break;
         }
         result.push(feed.clone());
+        i += 1;
+    }
+
+    result
+}
+
+
+#[ic_cdk::query]
+fn get_all_latest_feed_by_length(
+    start: u64,
+    length: u64
+) -> Vec<Post> {
+    let mut feed_vec: Vec<Post> = ARCHIEVE_POST_MAP.with(|map| {
+        let mut feed_vec: Vec<Post> = Vec::new();
+        for (_, feed) in map.borrow().iter() {
+            feed_vec.push(feed)
+        };
+        feed_vec
+    });
+
+    feed_vec.sort_by(|a, b| {
+        a.created_at.partial_cmp(&b.created_at).unwrap()
+    });
+
+    let mut result: Vec<Post> = Vec::new();
+    let mut i = 0;
+    let end = start + length - 1;
+    for feed in feed_vec.iter().rev() {
+        if i > end {
+            break;
+        }
+        if i >= start {
+            result.push(feed.clone());
+        }
         i += 1;
     }
 
