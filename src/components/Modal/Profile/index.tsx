@@ -141,9 +141,9 @@ export const ProfileModal = ({open, setOpen, canClose}: { open: boolean, setOpen
           </div>
         </div>
         <Background setBackFile={setBackFile} profile={profile}/>
-        <div style={{width: "100%", display: "flex"}}>
+        <div className={"img_and_name_prof_mod"} style={{width: "100%", display: "flex"}}>
           <Avatar setAvatarFile={setAvatarFile} profile={profile}/>
-          <div style={{
+          <div className={"img_and_name_prof_mod_div"} style={{
             flex: "1",
             display: "flex",
             flexDirection: "column",

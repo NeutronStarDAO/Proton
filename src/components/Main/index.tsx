@@ -279,17 +279,17 @@ export const Post = ({post, updateFunction, selectedID, profile}: {
             <div className="skeleton skeleton-title"/>
           }
           <div style={{display: "flex", alignItems: "center", fontSize: "2rem", gap: "1rem"}}>
-            {profile ? <div style={{color: "rgb(123 150 219)"}}>{profile ? shortenString(profile.handle, 25) : ""}</div> :
+            {profile ? <div style={{color: "rgb(132 137 168)"}}>{profile ? shortenString(profile.handle, 25) : ""}</div> :
               <div className="skeleton skeleton-text"/>
             }
             <span style={{
               width: "0.5rem",
               minWidth: "0.5rem",
               height: "0.5rem",
-              background: "rgb(123 150 219)",
+              background: "rgb(132 137 168)",
               borderRadius: "50%"
             }}/>
-            <div style={{color: "rgb(123 150 219)"}}>
+            <div style={{color: "rgb(132 137 168)"}}>
               {arg.time}
             </div>
           </div>
