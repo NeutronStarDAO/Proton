@@ -50,7 +50,7 @@ export const Profile = ({
   }, [id])
 
   return <div className={"profile_main"}>
-    <div className={"title"} style={{cursor: "pointer"}} onClick={() => scrollToTop()}>Profile</div>
+    <div className={"profile_title"} style={{cursor: "pointer"}} onClick={() => scrollToTop()}>Profile</div>
     <div ref={scrollContainerRef} style={{width: "100%", flex: "1"}}>
       <div className={"background"} style={{
         backgroundImage: `url(${profile?.back_img_url})`,
