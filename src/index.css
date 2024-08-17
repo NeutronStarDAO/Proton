@@ -49,8 +49,7 @@ pre {
 @media screen and (max-width: 500px) {
 
     pre {
-        letter-spacing: normal;
-        word-spacing: -1px !important;
+        word-spacing: -14px;
     }
 
     ::-webkit-scrollbar {
