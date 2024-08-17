@@ -118,6 +118,12 @@
     background-color: #fff;
     animation: slideLeft 0.2s linear;
   }
+  
+  @media (prefers-color-scheme: dark) {
+    .comment {
+      background-color: #23233c;
+    }
+  }
 }
 
 @media (prefers-color-scheme: dark) {

@@ -48,8 +48,10 @@ pre {
 
 @media screen and (max-width: 500px) {
 
-    pre {
-        word-spacing: -14px;
+    @supports (-webkit-appearance:none) {
+        pre {
+            word-spacing: -14px;
+        }
     }
 
     ::-webkit-scrollbar {
