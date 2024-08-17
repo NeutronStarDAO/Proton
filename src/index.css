@@ -32,8 +32,8 @@ pre {
 }
 
 ::-webkit-scrollbar {
-    width: 7px; /* 宽度 */
-    height: 7px; /* 高度 */
+    width: 7px;
+    height: 7px;
 }
 
 ::-webkit-scrollbar-track {
@@ -42,7 +42,6 @@ pre {
     height: 50%;
 }
 
-/* 滚动条滑块 */
 ::-webkit-scrollbar-thumb {
     border-radius: 3px;
     background: rgba(0, 0, 0, 0);
@@ -54,6 +53,7 @@ pre {
 }
 
 @media screen and (max-width: 500px) {
+
     ::-webkit-scrollbar {
         width: 0;
     }
