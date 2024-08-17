@@ -68,5 +68,11 @@
       margin-left: 0 !important;
     }
   }
+}
 
+
+@media (prefers-color-scheme: dark) {
+  .login_modal div {
+    color: black;
+  }
 }

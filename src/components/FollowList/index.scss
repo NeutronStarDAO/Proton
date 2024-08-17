@@ -75,4 +75,17 @@
   }
 }
 
+@media (prefers-color-scheme: dark) {
 
+  .follow_main .user_card:hover {
+    background: #a8b3d3;
+  }
+
+  .follow_main .user_card:hover div p {
+    color: black;
+  }
+
+  .follow_main .user_card:hover div {
+    color: black;
+  }
+}
