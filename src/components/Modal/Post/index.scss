@@ -352,3 +352,14 @@
     display: none;
   }
 }
+
+@media (prefers-color-scheme: dark) {
+
+  .post_modal .post_head div {
+    color: black;
+  }
+
+  .post_modal .post_body textarea {
+    color: #000;
+  }
+}

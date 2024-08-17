@@ -96,3 +96,15 @@
     font-size: 1.7rem;
   }
 }
+
+@media (prefers-color-scheme: dark) {
+  
+  .modal_overlay .modal {
+    background-color: #70738e;
+
+    textarea::placeholder {
+      color: #dadada;
+      opacity: 0.7;
+    }
+  }
+}
