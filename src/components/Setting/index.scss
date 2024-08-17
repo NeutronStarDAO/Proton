@@ -44,3 +44,9 @@
     }
   }
 }
+
+@media (prefers-color-scheme: dark) {
+  .setting_main .setting_item .setting_button span:hover {
+    color: black;
+  }
+}

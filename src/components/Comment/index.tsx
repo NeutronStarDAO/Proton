@@ -56,7 +56,7 @@ const CommentCon = ({comment, profile}: { comment: comment_type, profile: Profil
              onClick={() => navigate(`/profile/${profile?.id.toString()}`)}
              src={profile?.avatar_url ? profile.avatar_url : "/img_3.png"} alt=""/>
       </Tooltip>
-      <div style={{display: "flex", flexDirection: "column", alignItems: "start", justifyContent: "center"}}>
+      <div className="com_user_info" style={{display: "flex", flexDirection: "column", alignItems: "start", justifyContent: "center"}}>
         <div style={{fontSize: "2rem"}}>{profile?.name}</div>
         <div style={{display: "flex", alignItems: "center", fontSize: "1.5rem", gap: "1rem"}}>
           <div style={{

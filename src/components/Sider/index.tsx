@@ -41,14 +41,13 @@ export const Side = ({ scrollToTop }: { scrollToTop: Function }) => {
                 scrollToTop()
               }} key={k} className="item">
               <Icon name={isClick ? `${v}_Click` as Name : v as Name} />&nbsp;{v === "Home" ?
-                <Tooltip title={v === "Home" && !isAuth ? "Please login first" : ""}>{v}</Tooltip> : <div>{v}</div>}
+                <Tooltip title={v === "Home" && !isAuth ? "Please login first" : ""}>{v}</Tooltip> : <div className="sider_btn_word">{v}</div>}
             </div>
           })}
           <PostModal setOpen={setOpen} open={open} />
           <Tooltip title={isAuth ? "" : "Please login first"}>
             <div className={"post_button"}
               style={{
-                background: isAuth ? "#428EFF" : "gray",
                 justifyContent: "center",
                 padding: "0",
                 cursor: isAuth ? "pointer" : "no-drop"

@@ -20,6 +20,10 @@
   }
 }
 
+.selected_post {
+  background-color: rgb(239 239 250 / 60%);
+}
+
 .post_main {
   width: 100%;
   display: flex;
@@ -41,6 +45,14 @@
       border-radius: 50%;
       object-fit: cover;
     }
+  }
+
+  .post_dot {
+    width: 0.5rem;
+    min-width: 0.5rem;
+    height: 0.5rem;
+    background: rgb(132 137 168);
+    border-radius: 50%;
   }
 
   .more_wrap {
@@ -218,5 +230,16 @@
 
   .post_main {
     border-right: 0;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+
+  .selected_post {
+    background-color: rgba(81, 81, 102, 0.6);
+  }
+
+  .post_main .more_wrap {
+    background: #d7e4ff;
   }
 }

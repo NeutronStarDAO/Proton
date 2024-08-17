@@ -119,3 +119,14 @@
     animation: slideLeft 0.2s linear;
   }
 }
+
+@media (prefers-color-scheme: dark) {
+
+  .comment_main .author .com_user_info div {
+      color: #b9c9de !important;
+    }
+
+  .comment_main .author div span {
+    background-color: rgb(132, 137, 168) !important;
+  }
+}

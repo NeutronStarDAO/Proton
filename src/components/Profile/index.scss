@@ -4,7 +4,7 @@
   display: flex;
   flex-direction: column;
   align-items: start;
-  padding: 3rem 0;
+  padding: 3rem 0 0 0;
   overflow: auto;
   border-left: 1px solid #679BF8;
 
@@ -89,7 +89,7 @@
                               "c d"
                               "e f";
         gap: 1rem;
-        column-gap: 5rem;
+        column-gap: 2rem;
 
         .label-link {
           cursor: pointer;
@@ -157,4 +157,16 @@
     }
   }
 
+}
+
+@media (prefers-color-scheme: dark) {
+
+  .profile_main .profile_body .user_panel .avatar_panel .edit {
+    color: black;
+  }
+
+  .post_main .dropdown_wrap div {
+    color: black;
+  }
+  
 }

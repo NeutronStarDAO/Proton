@@ -58,3 +58,18 @@ pre {
         width: 0;
     }
 }
+
+@media (prefers-color-scheme: dark) {
+
+    html {
+        background-color: #23233c;
+    }
+
+    * {
+        color: #b9c9de;
+    }
+    
+    :hover::-webkit-scrollbar-thumb {
+        background: rgba(166, 166, 166, 0.5);
+    }
+}

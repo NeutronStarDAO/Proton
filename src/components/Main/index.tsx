@@ -256,7 +256,7 @@ export const Post = ({post, updateFunction, selectedID, profile}: {
     setIsLoad(true)
   }
 
-  return <div ref={postRef} style={{background: selectedID === post.post_id ? "rgb(239 239 250 / 60%)" : ""}} className={"post_main"}
+  return <div ref={postRef} className={`post_main ${selectedID === post.post_id ? "selected_post" : ""}`}
               onClick={() => updateSelectPost(post)}
   >
     {contextHolder}
@@ -282,13 +282,7 @@ export const Post = ({post, updateFunction, selectedID, profile}: {
             {profile ? <div style={{color: "rgb(132 137 168)"}}>{profile ? shortenString(profile.handle, 25) : ""}</div> :
               <div className="skeleton skeleton-text"/>
             }
-            <span style={{
-              width: "0.5rem",
-              minWidth: "0.5rem",
-              height: "0.5rem",
-              background: "rgb(132 137 168)",
-              borderRadius: "50%"
-            }}/>
+            <span className="post_dot"/>
             <div style={{color: "rgb(132 137 168)"}}>
               {arg.time}
             </div>

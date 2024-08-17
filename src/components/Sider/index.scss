@@ -32,7 +32,6 @@
     width: 27.7rem;
     gap: 2rem;
 
-
     .item, .post_button {
       width: 100%;
       font-size: 2.7rem;
@@ -174,5 +173,37 @@
 
   .overlay.active {
     display: block;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+
+  .side_wrap .side_items span {
+    color: #2b3854;
+  }
+
+  .side_wrap .side_items .item {
+    background-color: #7673a9;
+  }
+
+  .side_wrap .side_items .item .sider_btn_word {
+    color: #2b3854;
+  }
+
+  .side_wrap .side_items .post_button {
+    background: #7673a9;
+    color: #2b3854;
+  }
+
+  .side_wrap .user_info {
+    background: #6a5f85;
+
+    .name, .id {
+      color: #0d0916;
+    }
+
+    .icon {
+      color: #0d0916;
+    }
   }
 }
