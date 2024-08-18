@@ -215,9 +215,6 @@
 }
 
 @media screen and (max-width: 500px) {
-  html {
-    font-size: 7.03125px !important;
-  }
 
   .main_wrap {
     border-right: 0;
@@ -230,6 +227,10 @@
 
   .post_main {
     border-right: 0;
+    
+    .post_bottom {
+      width: 50%;
+    }
   }
 }
 
@@ -245,5 +246,5 @@
 
   .post_main .reply_wrap textarea {
     color: black;
-}
+  }
 }

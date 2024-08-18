@@ -47,6 +47,10 @@ pre {
 }
 
 @media screen and (max-width: 500px) {
+      
+    html {
+        font-size: 7px !important;
+    }
 
     ::-webkit-scrollbar {
         width: 0;
@@ -55,6 +59,7 @@ pre {
 }
 
 @media (prefers-color-scheme: dark) {
+
     html {
         background-color: #23233c;
     }

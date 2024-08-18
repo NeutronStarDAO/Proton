@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import "./index.scss"
+import "./index.scss";
 import Icon, { Name } from "../../Icons/Icon";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../utils/useAuth";
@@ -16,11 +16,11 @@ export const Side = ({ scrollToTop }: { scrollToTop: Function }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
 
   const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen);
+    setIsSidebarOpen(!isSidebarOpen)
   };
 
   const closeSidebar = () => {
-    setIsSidebarOpen(false);
+    setIsSidebarOpen(false)
   };
 
   return <>
@@ -39,6 +39,7 @@ export const Side = ({ scrollToTop }: { scrollToTop: Function }) => {
                 if (!(v === "Home" && !isAuth))
                   navigate(`/${v.toLowerCase()}`);
                 scrollToTop()
+                closeSidebar()
               }} key={k} className="item">
               <Icon name={isClick ? `${v}_Click` as Name : v as Name} />&nbsp;{v === "Home" ?
                 <Tooltip title={v === "Home" && !isAuth ? "Please login first" : ""}>{v}</Tooltip> : <div className="sider_btn_word">{v}</div>}
@@ -58,7 +59,7 @@ export const Side = ({ scrollToTop }: { scrollToTop: Function }) => {
         </div>
       </div>
       {
-        isAuth ? <UserInfo />
+        isAuth ? <UserInfo closeSidebar={closeSidebar} />
           : <div className="side_bottom" onClick={() => logIn?.()}>
             👋 Hi, login
           </div>
@@ -82,8 +83,8 @@ const Logo = () => {
   </div>
 }
 
-export const UserInfo = () => {
-  const navigate = useNavigate();
+export const UserInfo = ({ closeSidebar }: { closeSidebar: Function }) => {
+  const navigate = useNavigate()
   const profile = useProfileStore()
   const { principal } = useAuth()
   const location = useLocation()
@@ -96,7 +97,11 @@ export const UserInfo = () => {
         <div className={"id"}>{shortenString(profile.handle ?? "", 10)}</div>
       </div>
     </div>
-    <div onClick={() => navigate(`/profile/${principal?.toString()}`)} className={"icon"}
+    <div onClick={() => {
+      navigate(`/profile/${principal?.toString()}`)
+      closeSidebar()
+      }}
+      className={"icon"}
       style={{ background: location.pathname.includes("profile") ? "#C4B1EE" : "#DAD2EC" }}>
       <Icon name={location.pathname.includes("profile") ? "dark_user" : "user"} />
       Profile
