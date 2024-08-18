@@ -42,7 +42,7 @@ export const Comment = ({comments}: { comments: comment_type[] }) => {
       </div>
 
       <div className="close_comment_button" style={{cursor: "pointer"}} onClick={() => updateSelectPost({})}>
-          X
+          ✕
       </div>
     </div>
   </>

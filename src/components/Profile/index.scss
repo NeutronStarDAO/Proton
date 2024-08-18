@@ -89,13 +89,15 @@
       }
 
       .aa {
-        display: grid;
-        grid-template-areas:  "a b"
-                              "c d"
-                              "e f";
+        display: flex;
         gap: 1rem;
-        column-gap: 2rem;
+        column-gap: 3rem;
         justify-items: start;
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-items: center;
+        align-content: center;
+        justify-content: flex-start;
 
         .label-link {
           cursor: pointer;
@@ -106,41 +108,35 @@
           align-items: center;
           gap: 1rem;
           font-size: 2.1rem;
+    
+            .wrap {
+              display: flex;
+              align-items: center;
+    
+              .follow {
+                cursor: pointer;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                margin-right: 3rem;
+              }
+    
+              .down_line {
+                background: black;
+                height: 1px;
+              }
+            }
+    
+            .number {
+              font-size: 2.7rem;
+              font-family: Arial, Helvetica, sans-serif;
+              color: #297EFF;
+              font-weight: bold;
+              margin-right: 1rem;
+            }
+          }
         }
       }
-
-      .label_follow {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-        font-size: 2.1rem;
-
-        .wrap {
-          display: flex;
-          align-items: center;
-
-          .follow {
-            cursor: pointer;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-          }
-
-          .down_line {
-            background: black;
-            height: 1px;
-          }
-        }
-
-        .number {
-          font-size: 2.7rem;
-          font-family: Arial, Helvetica, sans-serif;
-          color: #297EFF;
-          font-weight: bold;
-          margin-right: 1rem;
-        }
-      }
-    }
   }
 }
 
@@ -162,7 +158,7 @@
 
         .aa {
           display: flex;
-          gap: 0;
+          gap: 0.9rem;
           flex-direction: row;
           flex-wrap: wrap;
 

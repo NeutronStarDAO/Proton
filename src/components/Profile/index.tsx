@@ -190,9 +190,8 @@ const UserPanel = ({profile}: { profile?: profile_type }) => {
       <div className={"label"} style={{display: "none"}}>
         <Icon name={"location"}/> {profile?.location}
       </div>
-    </div>
-
-    <div className={"label_follow"}>
+      
+      <div className={"label"}>
         <span className={"wrap"}>
           <span className={"number"}>{followings}</span>
           <div className={"follow"} onClick={() => nav(`/following/${id}`)} onMouseEnter={() => enter(".following")}
@@ -211,5 +210,8 @@ const UserPanel = ({profile}: { profile?: profile_type }) => {
           </div>
         </span>
       </div>
+    </div>
+
+    
   </div>
 }
