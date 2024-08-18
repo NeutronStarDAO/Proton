@@ -174,34 +174,34 @@ const UserPanel = ({profile}: { profile?: profile_type }) => {
 
     <div className={"aa"} ref={ref}>
 
-      {profile ? <div className={"label"} style={{visibility: !!profile?.location ? "visible" : "hidden"}}>
+      {profile ? <div className={"label"} style={{display: !!profile?.location ? "block" : "none"}}>
         <Icon name={"location"}/> {profile?.location}
+      </div> : <div className="skeleton skeleton-text" style={{height: "2rem", width: "5rem"}}/>}
+
+      {profile ? <div className={"label"} style={{display: !!profile?.location ? "block" : "none"}}>
+        <Icon name={"join_time"}/> {profile.created_at[0] ?"Joined "+ nanosecondsToDate(profile.created_at[0]) : ''}
       </div> : <div className="skeleton skeleton-text" style={{height: "2rem", width: "5rem"}}/>}
 
       {profile ? <div onClick={() => window.open(profile?.website)} className={"label label-link"}
-                      style={{visibility: !!profile?.website ? "visible" : "hidden"}}>
+                      style={{display: !!profile?.website ? "block" : "none"}}>
         <Icon name={"link"}/> {profile?.website}
       </div> : <div className="skeleton skeleton-text" style={{height: "2rem", width: "5rem"}}/>}
 
-      {profile ? <div className={"label"} style={{visibility: !!profile?.location ? "visible" : "hidden"}}>
-        <Icon name={"join_time"}/> {profile.created_at[0] ?"Joined "+ nanosecondsToDate(profile.created_at[0]) : ''}
-
-      </div> : <div className="skeleton skeleton-text" style={{height: "2rem", width: "5rem"}}/>}
-      <div className={"label"} style={{visibility: "hidden"}}>
+      <div className={"label"} style={{display: "none"}}>
         <Icon name={"location"}/> {profile?.location}
       </div>
+    </div>
 
-      <div className={"label"}>
-          <span className={"wrap"}>
-            <span className={"number"}>{followings}</span>
-            <div className={"follow"} onClick={() => nav(`/following/${id}`)} onMouseEnter={() => enter(".following")}
-                 onMouseLeave={leave}>
-              Following
-              <div className={"down_line following"}/>
-            </div>
-          </span>
-      </div>
-      <div className={"label"}>
+    <div className={"label_follow"}>
+        <span className={"wrap"}>
+          <span className={"number"}>{followings}</span>
+          <div className={"follow"} onClick={() => nav(`/following/${id}`)} onMouseEnter={() => enter(".following")}
+                onMouseLeave={leave}>
+            Following
+            <div className={"down_line following"}/>
+          </div>
+        </span>
+
         <span className={"wrap"}>
           <span className={"number"}>{followers}</span>
           <div className={"follow "} onClick={() => nav(`/followers/${id}`)} onMouseEnter={() => enter(".follower")}
@@ -211,6 +211,5 @@ const UserPanel = ({profile}: { profile?: profile_type }) => {
           </div>
         </span>
       </div>
-    </div>
   </div>
 }

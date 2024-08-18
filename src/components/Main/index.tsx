@@ -387,11 +387,13 @@ const ImagePreview = ({ src, imageCount }: { src: string, imageCount: number }) 
 
   const [isFullScreen, setIsFullScreen] = useState(false);
 
-  const handleImageClick = () => {
+  const handleImageClick = (e: React.MouseEvent<HTMLImageElement>) => {
+    e.stopPropagation();
     setIsFullScreen(true);
   };
 
-  const handleOverlayClick = () => {
+  const handleOverlayClick = (e: React.MouseEvent<HTMLImageElement>) => {
+    e.stopPropagation();
     setIsFullScreen(false);
   };
 

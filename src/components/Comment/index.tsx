@@ -24,22 +24,28 @@ export const Comment = ({comments}: { comments: comment_type[] }) => {
   }, [comments])
   console.log(comments)
 
-  return <div className={"comment"}>
-    <div className={"comment_wrap"}>
-      <div className={"comment_header"} style={{width: "100%", textAlign: "start"}}>
-        <span style={{cursor: "pointer"}} onClick={() => updateSelectPost({})}>
-          <Icon name={"back"}/>
-        </span>
-        <div className={"title"} style={{padding: "0"}}>Comment</div>
+  return <>
+    <div className={"comment"}>
+      <div className={"comment_wrap"}>
+        <div className={"comment_header"} style={{width: "100%", textAlign: "start"}}>
+          <span style={{cursor: "pointer"}} onClick={() => updateSelectPost({})}>
+            <Icon name={"back"}/>
+          </span>
+          <div className={"title"} style={{padding: "0"}}>Comment</div>
+        </div>
+        <div className={"comment_list"}>
+          <div style={{width: "100%", height: "1px", background: "#679BF8"}}/>
+          {comments.map((v, k) => {
+            return <CommentCon comment={v} profile={profiles[k]} key={k}/>
+          })}
+        </div>
       </div>
-      <div className={"comment_list"}>
-        <div style={{width: "100%", height: "1px", background: "#679BF8"}}/>
-        {comments.map((v, k) => {
-          return <CommentCon comment={v} profile={profiles[k]} key={k}/>
-        })}
+
+      <div className="close_comment_button" style={{cursor: "pointer"}} onClick={() => updateSelectPost({})}>
+          X
       </div>
     </div>
-  </div>
+  </>
 }
 const kk = [{label: "like", hoverColor: "rgba(249,24,128,0.6)"}, {
   label: "comment",

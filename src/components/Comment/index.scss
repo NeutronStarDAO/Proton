@@ -3,6 +3,22 @@
   padding: 2rem 1rem 0 1rem;
   height: 100%;
 
+  .close_comment_button {
+    display: none;
+    width: 7.7rem;
+    height: 7.7rem;
+    position: fixed;
+    bottom: 17rem;
+    right: 3rem;
+    z-index: 3;
+    padding: 1rem;
+    background-color: #428EFF;
+    color: white;
+    font-size: 3.7rem;
+    border-radius: 50%;
+    cursor: pointer;
+  }
+
   .comment_wrap {
     height: 100%;
     width: 100%;
@@ -118,6 +134,10 @@
     position: fixed;
     background-color: #fff;
     animation: slideLeft 0.2s linear;
+
+    .close_comment_button {
+      display: block;
+    }
   }
   
   @media (prefers-color-scheme: dark) {
