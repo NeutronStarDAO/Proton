@@ -251,3 +251,9 @@
     stroke-dashoffset: 0;
   }
 }
+
+@media (prefers-color-scheme: dark) {
+  .done_button ul li, .undone_button ul li {
+    color: #000;
+  }
+}

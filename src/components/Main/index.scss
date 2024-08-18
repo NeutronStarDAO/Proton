@@ -240,11 +240,52 @@
     background-color: rgba(81, 81, 102, 0.6);
   }
 
-  .post_main .more_wrap {
-    background: #d7e4ff;
+  .post_main {
+  
+    .more_wrap {
+
+      &:hover {
+        background: #617398;
+      }
+
+      svg {
+        path {
+          fill: #b9c9de;
+          stroke: #b9c9de;
+        }
+      }
+    }
+
+    .dropdown_wrap {
+      background-color: #617398;
+
+      div {
+        color: #ceddf1;
+
+        &:hover {
+          background: #8997b7;
+        }
+      }
+    }
   }
 
   .post_main .reply_wrap textarea {
     color: black;
+  }
+
+  .post_bottom {
+
+    span {
+      color: #b9c9de !important;
+
+      svg {
+        fill: #b9c9de;
+
+        path {
+          fill: #b9c9de;
+          stroke: none;
+        }
+      }
+    }
   }
 }

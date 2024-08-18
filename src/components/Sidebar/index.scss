@@ -85,3 +85,27 @@
     display: none;
   }
 }
+
+@media (prefers-color-scheme: dark) {
+  .sidebar_wrap {
+
+    .search_bar {
+
+      svg {
+        fill: #b9c9de;
+          
+        path {
+          fill: #b9c9de;
+        }
+      }
+
+      input {
+        background-color: #313a53;
+
+        &::placeholder {
+          color: #b9c0d3;
+        }
+      }
+    }
+  }
+}
