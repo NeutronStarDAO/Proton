@@ -48,18 +48,6 @@ pre {
 
 @media screen and (max-width: 500px) {
 
-    @supports (-webkit-appearance: none) {
-        pre {
-            word-spacing: -14px;
-        }
-    }
-
-    @-moz-document url-prefix() {
-        pre {
-            word-spacing: normal !important;
-        }
-    }
-
     ::-webkit-scrollbar {
         width: 0;
     }
