@@ -9,8 +9,13 @@ edition = "2021"
 crate-type = ["cdylib"]
 
 [dependencies]
-candid = "0.10.9"
+candid = "0.10.10"
 ic-cdk = "0.15.0"
-serde = "1.0.203"
+serde = "1.0.208"
 ic-stable-structures = "0.6.5"
+serde_bytes = "0.11.15"
+serde_cbor = "0.11.2"
+ic-crypto-sha2 = { git = "https://github.com/dfinity/ic" }
+ic-ledger-hash-of = { git = "https://github.com/dfinity/ic" }
+ic-ledger-types = "0.12.0"
 types = { path = "../../libraries/types" }

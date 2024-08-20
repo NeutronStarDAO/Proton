@@ -25,8 +25,29 @@ type QueryStats = record {
   num_calls_total : nat;
   request_payload_bytes_total : nat;
 };
+type TransferError = variant {
+  GenericError : record { message : text; error_code : nat };
+  TemporarilyUnavailable;
+  BadBurn : record { min_burn_amount : nat };
+  Duplicate : record { duplicate_of : nat };
+  BadFee : record { expected_fee : nat };
+  CreatedInFuture : record { ledger_time : nat64 };
+  TooOld;
+  InsufficientFunds : record { balance : nat };
+};
+type TransferResult = variant { Ok : nat; Err : TransferError };
+type WalletTX = record {
+  time : nat64;
+  tx_hash : text;
+  tx_type : WalletTXType;
+  amount : nat64;
+};
+type WalletTXType = variant { Send; Receive };
 service : (principal, principal) -> {
+  ckBTC_balance : (principal) -> (nat) query;
+  ckBTC_tx : (principal) -> (vec WalletTX) query;
   create_feed_canister : () -> (principal);
+  get_account_identifier : (principal) -> (text) query;
   get_all_feed_canister : () -> (vec principal) query;
   get_available_feed_canister_index : () -> (nat64) query;
   get_feed_canister_index : () -> (nat64) query;
@@ -35,16 +56,27 @@ service : (principal, principal) -> {
     ) query;
   get_feed_wasm : () -> (blob) query;
   get_root_bucket : () -> (principal) query;
+  get_subaccount : (principal) -> (blob) query;
   get_user_actor : () -> (principal) query;
   get_user_feed_canister : (principal) -> (opt principal) query;
   get_user_feed_canister_entries : () -> (
       vec record { principal; principal },
     ) query;
+  ghost_balance : (principal) -> (nat) query;
+  ghost_tx : (principal) -> (vec WalletTX) query;
+  icp_balance : (principal) -> (nat) query;
+  icp_tx : (principal) -> (vec WalletTX) query;
+  icrc1_transfer : (principal, principal, nat64) -> (TransferResult);
   init_fetch_actor : (principal) -> ();
   init_user_feed : () -> (principal);
   set_root_bucket : (principal) -> (bool);
   set_user_actor : (principal) -> (bool);
   status : () -> (CanisterStatusResponse);
+  token_balance : (principal, principal) -> (nat) query;
+  topup_by_icp : (nat64) -> (bool);
+  transfer_ckBTC : (principal, nat64) -> (TransferResult);
+  transfer_ghost : (principal, nat64) -> (TransferResult);
+  transfer_icp : (principal, nat64) -> (TransferResult);
   update_feed_canister_controller : (principal) -> (bool);
   update_feed_wasm : (blob, nat64) -> (bool);
 }
