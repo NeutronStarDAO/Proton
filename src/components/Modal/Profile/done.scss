@@ -130,8 +130,15 @@
 
 }
 
+.dark_done_button, .dark_undone_button {
+  ul li {
+    color: #000;
+  }
+}
+
 .undone_button {
   cursor: no-drop;
+
   span {
     &:nth-child(2) {
       left: calc(50% - 1.5rem);
@@ -252,8 +259,3 @@
   }
 }
 
-@media (prefers-color-scheme: dark) {
-  .done_button ul li, .undone_button ul li {
-    color: #000;
-  }
-}

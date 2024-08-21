@@ -26,7 +26,7 @@ type form_type = {
   Network: string
 }
 export const ProfileModal = ({open, setOpen, canClose}: { open: boolean, setOpen: Function, canClose: boolean }) => {
-  const {principal, userFeedCai} = useAuth()
+  const {principal, userFeedCai,isDark} = useAuth()
   const [backFile, setBackFile] = useState<File>()
   const [avatarFile, setAvatarFile] = useState<File>()
   const [api, contextHolder] = notification.useNotification();
@@ -133,7 +133,7 @@ export const ProfileModal = ({open, setOpen, canClose}: { open: boolean, setOpen
     {contextHolder}
     <Modal setOpen={setOpen} open={open} canClose={canClose}>
 
-      <div className={"login_modal"}>
+      <div className={`login_modal ${isDark?"dark_login_modal":""}`}>
         <div style={{display: "flex", justifyContent: "space-between", width: "100%", alignItems: "center"}}>
           <div className={"title"}>
             <Icon name={"edit"}/>
@@ -220,11 +220,11 @@ const InfoItem = ({
         return (
           <>
             { !canClose && <TipInfo index={index === undefined ? 0 : index}/> }
-            <input 
-              onChange={(e) => onchange(t, e)} 
-              defaultValue={value} 
-              readOnly={readOnly} 
-              placeholder={placeholder} 
+            <input
+              onChange={(e) => onchange(t, e)}
+              defaultValue={value}
+              readOnly={readOnly}
+              placeholder={placeholder}
               type="text"/>
           </>
         )

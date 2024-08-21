@@ -10,11 +10,13 @@ import {Tooltip} from "antd";
 import {useNavigate} from "react-router-dom";
 import {getTime} from "../../utils/util";
 import {updateSelectPost} from "../../redux/features/SelectPost";
+import {useAuth} from "../../utils/useAuth";
 
 export const Comment = ({comments}: { comments: comment_type[] }) => {
   const [profiles, setProfiles] = useState<Profile[]>([])
-
+  const {isDark} = useAuth()
   useEffect(() => {
+    setProfiles([])
     if (comments.length !== 0) {
       const users = comments.map((v) => v.user)
       userApi.batchGetProfile(users).then(e => {
@@ -22,12 +24,12 @@ export const Comment = ({comments}: { comments: comment_type[] }) => {
       })
     }
   }, [comments])
-  console.log(comments)
 
   return <>
-    <div className={"comment"}>
+    <div className={"comment"} style={{background: isDark ? "#23233c" : "#fff"}}>
       <div className={"comment_wrap"}>
-        <div className={"comment_header"} style={{width: "100%", textAlign: "start"}}>
+        <div className={`comment_header ${isDark ? "dark_comment_header" : ""}`}
+             style={{width: "100%", textAlign: "start"}}>
           <span style={{cursor: "pointer"}} onClick={() => updateSelectPost({})}>
             <Icon name={"back"}/>
           </span>
@@ -40,9 +42,8 @@ export const Comment = ({comments}: { comments: comment_type[] }) => {
           })}
         </div>
       </div>
-
       <div className="close_comment_button" style={{cursor: "pointer"}} onClick={() => updateSelectPost({})}>
-          ✕
+        ✕
       </div>
     </div>
   </>
@@ -54,31 +55,57 @@ const kk = [{label: "like", hoverColor: "rgba(249,24,128,0.6)"}, {
   // {label: "repost", hoverColor: "rgb(0,186,124,0.6)"}
 ]
 const CommentCon = ({comment, profile}: { comment: comment_type, profile: Profile }) => {
+  const [avatar, setAvatar] = useState("")
+  const [isLoad, setIsLoad] = useState(false)
+  const {isDark} = useAuth()
   const navigate = useNavigate()
+
+  const load = () => {
+    setIsLoad(true)
+  }
+
+  useEffect(() => {
+    if (profile) {
+      if (profile.avatar_url) setAvatar(profile.avatar_url)
+      else setAvatar("/img_3.png")
+    } else setIsLoad(false)
+  }, [profile])
+
   return <div className={"comment_main"}>
-    <div className={"author"}>
-      <Tooltip title={profile?.name}>
-        <img style={{borderRadius: "50%",objectFit:"cover"}} className={"avatar"}
-             onClick={() => navigate(`/profile/${profile?.id.toString()}`)}
-             src={profile?.avatar_url ? profile.avatar_url : "/img_3.png"} alt=""/>
-      </Tooltip>
-      <div className="com_user_info" style={{display: "flex", flexDirection: "column", alignItems: "start", justifyContent: "center"}}>
-        <div style={{fontSize: "2rem"}}>{profile?.name}</div>
+    <div className={`author ${isDark ? "dark_author" : ""}`}>
+      <div style={{position: "relative"}}>
+        <Tooltip title={profile?.name}>
+          <img style={{borderRadius: "50%", objectFit: "cover"}} className={"avatar"}
+               onClick={() => navigate(`/profile/${profile?.id.toString()}`)}
+               src={avatar} alt="" onLoad={load}/>
+        </Tooltip>
+        <div className="skeleton skeleton-avatar" style={{display: !isLoad ? "block" : "none"}}/>
+      </div>
+      <div className={isDark ? "com_user_info" : ""}
+           style={{display: "flex", flexDirection: "column", alignItems: "start", justifyContent: "center"}}>
+        {profile ? <div style={{fontSize: "2rem"}}>{profile?.name}</div> :
+          <div className="skeleton skeleton-title"/>
+        }
+
         <div style={{display: "flex", alignItems: "center", fontSize: "1.5rem", gap: "1rem"}}>
-          <div style={{
-            fontSize: "1.7rem",
-            fontWeight: "500",
-            color: "rgba(0,0,0,0.5)"
-          }}>
-            {profile ? shortenString(profile.handle.toString(), 10) : ""}
-          </div>
+          {profile ?
+            <div style={{
+              fontSize: "1.7rem",
+              fontWeight: "500",
+
+            }}>
+              {profile ? shortenString(profile.handle.toString(), 10) : ""}
+            </div> :
+            <div className="skeleton skeleton-text"/>
+          }
+
           <span style={{
             width: "0.5rem",
             height: "0.5rem",
             background: "rgba(0,0,0,0.5)",
             borderRadius: "50%"
           }}/>
-          <div style={{fontWeight: "500", color: "rgba(0,0,0,0.5)"}}>
+          <div style={{fontWeight: "500"}}>
             {getTime(comment.created_at)}
           </div>
         </div>

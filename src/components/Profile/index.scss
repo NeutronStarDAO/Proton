@@ -1,4 +1,5 @@
 .profile_main {
+  position: relative;
   font-family: "Fredoka", sans-serif;
   flex: 1;
   display: flex;
@@ -14,7 +15,11 @@
     padding-left: 3rem;
     padding-top: 3rem;
     padding-bottom: 2rem;
-    border-right: 1px solid #679BF8;
+    border-right: .1px solid #679BF8;
+    position: sticky;
+    top: 0;
+    //background: white;
+    z-index: 1;
   }
 
   .background {
@@ -108,50 +113,59 @@
           align-items: center;
           gap: 1rem;
           font-size: 2.1rem;
-    
-            .wrap {
+
+          .wrap {
+            display: flex;
+            align-items: center;
+
+            .follow {
+              cursor: pointer;
               display: flex;
+              flex-direction: column;
               align-items: center;
-    
-              .follow {
-                cursor: pointer;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                margin-right: 3rem;
-              }
-    
-              .down_line {
-                background: black;
-                height: 1px;
-              }
+              margin-right: 3rem;
             }
-    
-            .number {
-              font-size: 2.7rem;
-              font-family: Arial, Helvetica, sans-serif;
-              color: #297EFF;
-              font-weight: bold;
-              margin-right: 1rem;
+
+            .down_line {
+              background: black;
+              height: 1px;
             }
+          }
+
+          .number {
+            font-size: 2.7rem;
+            font-family: Arial, Helvetica, sans-serif;
+            color: #297EFF;
+            font-weight: bold;
+            margin-right: 1rem;
           }
         }
       }
+    }
+  }
+}
+
+.dark_profile_main{
+  .profile_body .user_panel .avatar_panel .edit {
+    color: black;
+  }
+  .profile_body .user_panel .aa .label svg path {
+    fill: #b9c9de;
   }
 }
 
 @media screen and (max-width: 500px) {
-  
+
   .profile_main {
     border-right: 0;
     border-left: 0;
-    
+
     .profile_body {
 
       .user_panel {
         padding: 0 2rem;
         margin-bottom: 2rem;
-        
+
         .avatar_panel .info .name {
           font-size: 3rem;
         }
@@ -172,26 +186,11 @@
         }
       }
     }
-    
+
     .background {
       margin: 1rem 0;
     }
   }
 
-  @media (prefers-color-scheme: dark) {
-    .side_wrap_open {
-      background-color: #515d88;
-    }
-  }
 }
 
-@media (prefers-color-scheme: dark) {
-
-  .profile_main .profile_body .user_panel .avatar_panel .edit {
-    color: black;
-  }
-
-  .profile_main .profile_body .user_panel .aa .label svg path {
-    fill: #b9c9de;
-  }
-}

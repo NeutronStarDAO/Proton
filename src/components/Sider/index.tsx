@@ -1,17 +1,17 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import "./index.scss";
-import Icon, { Name } from "../../Icons/Icon";
-import { useLocation, useNavigate } from "react-router-dom";
-import { useAuth } from "../../utils/useAuth";
-import { Tooltip } from "antd";
-import { PostModal } from "../Modal/Post";
-import { useProfileStore } from "../../redux";
+import Icon, {Name} from "../../Icons/Icon";
+import {useLocation, useNavigate} from "react-router-dom";
+import {useAuth} from "../../utils/useAuth";
+import {Tooltip} from "antd";
+import {PostModal} from "../Modal/Post";
+import {useProfileStore} from "../../redux";
 
 const menu = ["Home", "Explore", "Settings"]
-export const Side = ({ scrollToTop }: { scrollToTop: Function }) => {
+export const Side = ({scrollToTop}: { scrollToTop: Function }) => {
   const navigate = useNavigate()
   const location = useLocation()
-  const { logIn, isAuth } = useAuth()
+  const {logIn, isAuth, isDark} = useAuth()
   const [open, setOpen] = useState(false)
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
 
@@ -24,9 +24,10 @@ export const Side = ({ scrollToTop }: { scrollToTop: Function }) => {
   };
 
   return <>
-    <div className={`side_wrap ${isSidebarOpen ? "side_wrap_open" : ""}`}>
-      <div style={{ width: "100%", display: "flex", flexDirection: "column", alignItems: "center" }}>
-        <Logo />
+    <div
+      className={`side_wrap ${isDark ? "dark_side_wrap" : ""} ${isSidebarOpen ? `side_wrap_open ${isDark ? "dark_side_wrap_open" : ""}` : ""}`}>
+      <div style={{width: "100%", display: "flex", flexDirection: "column", alignItems: "center"}}>
+        <Logo/>
         <div className={"side_items"}>
           {menu.map((v, k) => {
             const isClick = location.pathname === `/${v.toLowerCase()}`
@@ -35,31 +36,32 @@ export const Side = ({ scrollToTop }: { scrollToTop: Function }) => {
               background: isClick ? "#B0CCFF" : "",
               boxShadow: isClick ? "0 4px 4px 0 rgba(0, 0, 0, 0.25)" : ""
             }}
-              onClick={() => {
-                if (!(v === "Home" && !isAuth))
-                  navigate(`/${v.toLowerCase()}`);
-                scrollToTop()
-                closeSidebar()
-              }} key={k} className="item">
-              <Icon name={isClick ? `${v}_Click` as Name : v as Name} />&nbsp;{v === "Home" ?
-                <Tooltip title={v === "Home" && !isAuth ? "Please login first" : ""}>{v}</Tooltip> : <div className="sider_btn_word">{v}</div>}
+                        onClick={() => {
+                          if (!(v === "Home" && !isAuth))
+                            navigate(`/${v.toLowerCase()}`);
+                          scrollToTop()
+                          closeSidebar()
+                        }} key={k} className="item">
+              <Icon name={isClick ? `${v}_Click` as Name : v as Name}/>&nbsp;{v === "Home" ?
+              <Tooltip title={v === "Home" && !isAuth ? "Please login first" : ""}>{v}</Tooltip> :
+              <div className="sider_btn_word">{v}</div>}
             </div>
           })}
-          <PostModal setOpen={setOpen} open={open} />
+          <PostModal setOpen={setOpen} open={open}/>
           <Tooltip title={isAuth ? "" : "Please login first"}>
             <div className={"post_button"}
-              style={{
-                justifyContent: "center",
-                padding: "0",
-                cursor: isAuth ? "pointer" : "no-drop"
-              }}
-              onClick={() => isAuth && setOpen(true)}>Post
+                 style={{
+                   justifyContent: "center",
+                   padding: "0",
+                   cursor: isAuth ? "pointer" : "no-drop"
+                 }}
+                 onClick={() => isAuth && setOpen(true)}>Post
             </div>
           </Tooltip>
         </div>
       </div>
       {
-        isAuth ? <UserInfo closeSidebar={closeSidebar} />
+        isAuth ? <UserInfo closeSidebar={closeSidebar}/>
           : <div className="side_bottom" onClick={() => logIn?.()}>
             👋 Hi, login
           </div>
@@ -79,20 +81,20 @@ const Logo = () => {
   const navigate = useNavigate();
 
   return <div onClick={() => navigate("/")} className={"logo"}>
-    <img style={{ objectFit: "cover" }} src="/img_1.png" alt="" />
+    <img style={{objectFit: "cover"}} src="/img_1.png" alt=""/>
   </div>
 }
 
-export const UserInfo = ({ closeSidebar }: { closeSidebar: Function }) => {
+export const UserInfo = ({closeSidebar}: { closeSidebar: Function }) => {
   const navigate = useNavigate()
   const profile = useProfileStore()
-  const { principal } = useAuth()
+  const {principal} = useAuth()
   const location = useLocation()
 
   return <div className={"user_info"}>
     <div className={"info"}>
-      <img style={{ objectFit: "cover" }} src={profile.avatar_url ? profile.avatar_url : "/img_3.png"} alt="" />
-      <div style={{ display: "flex", alignItems: "start", flexDirection: "column", justifyContent: "center" }}>
+      <img style={{objectFit: "cover"}} src={profile.avatar_url ? profile.avatar_url : "/img_3.png"} alt=""/>
+      <div style={{display: "flex", alignItems: "start", flexDirection: "column", justifyContent: "center"}}>
         <div className={"name"}>{profile.name ?? "Loading"}</div>
         <div className={"id"}>{shortenString(profile.handle ?? "", 10)}</div>
       </div>
@@ -100,10 +102,10 @@ export const UserInfo = ({ closeSidebar }: { closeSidebar: Function }) => {
     <div onClick={() => {
       navigate(`/profile/${principal?.toString()}`)
       closeSidebar()
-      }}
-      className={"icon"}
-      style={{ background: location.pathname.includes("profile") ? "#C4B1EE" : "#DAD2EC" }}>
-      <Icon name={location.pathname.includes("profile") ? "dark_user" : "user"} />
+    }}
+         className={"icon"}
+         style={{background: location.pathname.includes("profile") ? "#C4B1EE" : "#DAD2EC"}}>
+      <Icon name={location.pathname.includes("profile") ? "dark_user" : "user"}/>
       Profile
     </div>
   </div>

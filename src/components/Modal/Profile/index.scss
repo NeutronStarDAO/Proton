@@ -52,6 +52,17 @@
   }
 }
 
+.dark_login_modal {
+  div {
+    color: #c8baed;
+
+  }
+
+  .title svg path {
+    fill: #c8baed;
+  }
+}
+
 @media screen and (max-width: 500px) {
 
   .id_and_name_prof_mod {
@@ -69,14 +80,3 @@
   }
 }
 
-
-@media (prefers-color-scheme: dark) {
-  
-  .login_modal div {
-    color: #c8baed;
-  }
-
-  .login_modal .title svg path {
-    fill: #c8baed;
-  }
-}

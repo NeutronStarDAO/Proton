@@ -15,6 +15,7 @@ import {shortenString} from "../Sider";
 import {CloseOutlined} from "@ant-design/icons";
 import {updateSelectPost, useSelectPostStore} from "../../redux/features/SelectPost";
 import {getTime, isIn, postSort} from "../../utils/util";
+import autosize from "autosize"
 
 export const Main = ({scrollContainerRef}: { scrollContainerRef: React.MutableRefObject<null> }) => {
   const location = useLocation()
@@ -37,14 +38,13 @@ export const Main = ({scrollContainerRef}: { scrollContainerRef: React.MutableRe
     if (isAuth === false)
       navigate("/explore")
   }
-
   const Title = React.useMemo(() => {
     setData(undefined)
     setProfiles([])
     updateAllData({allFeed: undefined, allPost: undefined})
     if (location.pathname === "/explore") return "Explore"
     return "Home"
-  }, [location])
+  }, [location.pathname])
 
   useEffect(() => {
     !isAuth && change()
@@ -105,7 +105,7 @@ export const Post = ({post, updateFunction, selectedID, profile}: {
   selectedID: string, profile?: Profile
 }) => {
   const principal = post.user
-  const {principal: user_id} = useAuth()
+  const {principal: user_id, isDark} = useAuth()
   const [hoverOne, setHoverOne] = useState(-1)
   const [replyContent, setReplyContent] = useState("")
   const [open, setOpen] = useState(false)
@@ -117,12 +117,23 @@ export const Post = ({post, updateFunction, selectedID, profile}: {
   const navigate = useNavigate()
   const [api, contextHolder] = notification.useNotification();
   const [like, setLike] = useState(false)
+  const textareaRef = useRef<any>(null);
   const isMy = useMemo(() => {
     if (!user_id) return false
     return user_id.toText() === principal.toText()
   }, [user_id, principal])
   const [isLoad, setIsLoad] = useState(false)
   const [avatar, setAvatar] = useState("")
+
+  useEffect(() => {
+    if (textareaRef.current) {
+      autosize(textareaRef.current);
+
+      return () => {
+        autosize.destroy(textareaRef.current);
+      };
+    }
+  }, [textareaRef, open]);
 
   const arg = useMemo(() => {
     const res = {
@@ -144,6 +155,7 @@ export const Post = ({post, updateFunction, selectedID, profile}: {
       setOpen(false)
       await feedApi.createComment(post.post_id, replyContent)
       updateFunction()
+      "comment" in selectPost && updateSelectPost(post)
     } catch (e) {
       api.error({
         message: 'Sent failed !',
@@ -256,7 +268,8 @@ export const Post = ({post, updateFunction, selectedID, profile}: {
     setIsLoad(true)
   }
 
-  return <div ref={postRef} className={`post_main ${selectedID === post.post_id ? "selected_post" : ""}`}
+  return <div ref={postRef}
+              className={`post_main ${isDark ? "dark_post_main" : ""} ${(selectedID === post.post_id) ? isDark ? "dark_selected_post" : "selected_post" : ""}`}
               onClick={() => updateSelectPost(post)}
   >
     {contextHolder}
@@ -279,7 +292,8 @@ export const Post = ({post, updateFunction, selectedID, profile}: {
             <div className="skeleton skeleton-title"/>
           }
           <div style={{display: "flex", alignItems: "center", fontSize: "2rem", gap: "1rem"}}>
-            {profile ? <div style={{color: "rgb(132 137 168)"}}>{profile ? shortenString(profile.handle, 25) : ""}</div> :
+            {profile ?
+              <div style={{color: "rgb(132 137 168)"}}>{profile ? shortenString(profile.handle, 25) : ""}</div> :
               <div className="skeleton skeleton-text"/>
             }
             <span className="post_dot"/>
@@ -318,55 +332,22 @@ export const Post = ({post, updateFunction, selectedID, profile}: {
         minHeight: post.photo_url.length === 0 ? "0" : "50rem",
       }}>
         {post.photo_url.map((v, k) => {
-          return <ImagePreview key={k} src={v} imageCount={post.photo_url.length} />
+          return <ImagePreview key={k} src={v} imageCount={post.photo_url.length}/>
         })}
       </div>
     </div>
-    <div className={"post_bottom"}>
 
-      <span onClick={(e) => {
-        e.stopPropagation()
-        handleClick(0)
-      }}
-            style={{color: arg.isLike || hoverOne === 0 ? "red" : "black"}}
-            onMouseEnter={e => setHoverOne(0)}
-            onMouseLeave={e => setHoverOne(-1)}>
-           <Icon name={arg.isLike || hoverOne === 0 || like ? "like_click" : "like"}/>
-        {like ? post.like.length + 1 : post.like.length}
-      </span>
-
-      <span onClick={(e) => {
-        e.stopPropagation()
-        handleClick(1)
-      }}
-            style={{color: hoverOne === 1 ? "#1C9BEF" : "black"}}
-            onMouseEnter={e => setHoverOne(1)}
-            onMouseLeave={e => setHoverOne(-1)}>
-           <Icon color={hoverOne === 1 ? "#1C9BEF" : "black"} name={"comment"}/>
-        {post.comment.length}
-      </span>
-
-      <span onClick={(e) => {
-        e.stopPropagation()
-        handleClick(2)
-      }}
-            style={{color: arg.isRepost || hoverOne === 2 ? "rgb(0,186,124,0.6)" : "black"}}
-            onMouseEnter={() => setHoverOne(2)}
-            onMouseLeave={e => setHoverOne(-1)}>
-           <Icon color={arg.isRepost || hoverOne === 2 ? "rgb(0,186,124,0.6)" : "black"} name={"repost"}/>
-        {post.repost.length}
-      </span>
-    </div>
-
+    <BottomButton post={post} like={like} arg={arg} handleClick={handleClick} hoverOne={hoverOne}
+                  setHoverOne={setHoverOne}/>
 
     <div onClick={e => {
       e.stopPropagation()
     }} ref={specifiedElementRef} style={{display: open ? "flex" : "none"}} className={"reply_wrap"}>
-      <textarea onChange={e => setReplyContent(e.target.value)}
+      <textarea ref={textareaRef} onChange={e => setReplyContent(e.target.value)}
                 value={replyContent}
                 name=""
                 id=""
-                rows={3}
+        // rows={3}
                 placeholder={"Reply"}/>
 
       <div onClick={sendReply} style={(() => {
@@ -383,7 +364,7 @@ export const Post = ({post, updateFunction, selectedID, profile}: {
   </div>
 }
 
-const ImagePreview = ({ src, imageCount }: { src: string, imageCount: number }) => {
+const ImagePreview = ({src, imageCount}: { src: string, imageCount: number }) => {
 
   const [isFullScreen, setIsFullScreen] = useState(false);
 
@@ -404,7 +385,7 @@ const ImagePreview = ({ src, imageCount }: { src: string, imageCount: number }) 
           src={src}
           alt=""
           onClick={handleImageClick}
-          style={{ width: imageCount === 1 ? 'auto' : '100%' }}
+          style={{width: imageCount === 1 ? 'auto' : '100%'}}
         />
       </div>
 
@@ -420,4 +401,69 @@ const ImagePreview = ({ src, imageCount }: { src: string, imageCount: number }) 
     </>
   );
 };
+
+const BottomButton = React.memo(({handleClick, hoverOne, setHoverOne, arg, post, like}: {
+  handleClick: Function,
+  hoverOne: number,
+  setHoverOne: Function, arg: { isLike: boolean, isRepost: boolean }, post: postType, like: boolean
+}) => {
+
+  const {isAuth} = useAuth()
+
+  const handleHover = (index: number) => {
+    if (isAuth)
+      setHoverOne(index)
+    else setHoverOne(-1)
+  }
+
+  return <div className={"post_bottom"}>
+
+    <Tooltip title={!isAuth ? "please login first" : ""}>
+       <span onClick={(e) => {
+         if (!isAuth) return 0
+         e.stopPropagation()
+         handleClick(0)
+       }}
+             style={{color: arg.isLike || hoverOne === 0 ? "red" : "black", cursor: !isAuth ? "no-drop" : ""}}
+             onMouseEnter={e => handleHover(0)}
+             onMouseLeave={e => setHoverOne(-1)}>
+           <Icon name={arg.isLike || hoverOne === 0 || like ? "like_click" : "like"}/>
+         {like ? post.like.length + 1 : post.like.length}
+      </span>
+    </Tooltip>
+
+    <Tooltip title={!isAuth ? "please login first" : ""}>
+
+        <span onClick={(e) => {
+          if (!isAuth) return 0
+          e.stopPropagation()
+          handleClick(1)
+        }}
+              style={{color: hoverOne === 1 ? "#1C9BEF" : "black", cursor: !isAuth ? "no-drop" : ""}}
+              onMouseEnter={e => handleHover(1)}
+              onMouseLeave={e => setHoverOne(-1)}>
+           <Icon color={hoverOne === 1 ? "#1C9BEF" : "black"} name={"comment"}/>
+          {post.comment.length}
+      </span>
+    </Tooltip>
+
+    <Tooltip title={!isAuth ? "please login first" : ""}>
+         <span onClick={(e) => {
+           if (!isAuth) return 0
+           e.stopPropagation()
+           handleClick(2)
+         }}
+               style={{
+                 color: arg.isRepost || hoverOne === 2 ? "rgb(0,186,124,0.6)" : "black",
+                 cursor: !isAuth ? "no-drop" : ""
+               }}
+               onMouseEnter={() => handleHover(2)}
+               onMouseLeave={e => setHoverOne(-1)}>
+           <Icon color={arg.isRepost || hoverOne === 2 ? "rgb(0,186,124,0.6)" : "black"} name={"repost"}/>
+           {post.repost.length}
+      </span>
+    </Tooltip>
+
+  </div>
+})
 

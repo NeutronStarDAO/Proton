@@ -1,9 +1,11 @@
 import React from 'react';
 import "./index.scss"
 import Icon from "../../Icons/Icon";
+import {useAuth} from "../../utils/useAuth";
 
 export const Sidebar = () => {
-  return <div className={"sidebar_wrap"}>
+  const {isDark} = useAuth()
+  return <div className={`sidebar_wrap ${isDark ? "dark_sidebar_wrap" : ""}`}>
     <div className={"search_bar"}>
       <Icon name={"search"}/>
       <input placeholder={"Search"} type="text"/>
@@ -20,7 +22,7 @@ export const Sidebar = () => {
       <span style={{fontSize: "3.3rem"}}>Popular Users</span>
       <div className={"user"}>
         <div style={{display: "flex", alignItems: 'center'}}>
-          <img style={{objectFit:"cover"}} src="/img_3.png" alt=""/>
+          <img style={{objectFit: "cover"}} src="/img_3.png" alt=""/>
           <div style={{display: "flex", flexDirection: 'column', alignItems: 'start'}}>
             <span style={{fontSize: "2.5rem"}}>Nash</span>
             <span style={{fontSize: "2rem"}}>@nash.icp</span>
@@ -30,7 +32,7 @@ export const Sidebar = () => {
       </div>
       <div className={"user"}>
         <div style={{display: "flex", alignItems: 'center'}}>
-          <img style={{objectFit:"cover"}} src="/img_3.png" alt=""/>
+          <img style={{objectFit: "cover"}} src="/img_3.png" alt=""/>
           <div style={{display: "flex", flexDirection: 'column', alignItems: 'start'}}>
             <span style={{fontSize: "2.5rem"}}>Nash</span>
             <span style={{fontSize: "2rem"}}>@nash.icp</span>
@@ -40,7 +42,7 @@ export const Sidebar = () => {
       </div>
       <div className={"user"}>
         <div style={{display: "flex", alignItems: 'center'}}>
-          <img style={{objectFit:"cover"}} src="/img_3.png" alt=""/>
+          <img style={{objectFit: "cover"}} src="/img_3.png" alt=""/>
           <div style={{display: "flex", flexDirection: 'column', alignItems: 'start'}}>
             <span style={{fontSize: "2.5rem"}}>Nash</span>
             <span style={{fontSize: "2rem"}}>@nash.icp</span>

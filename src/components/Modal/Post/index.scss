@@ -347,42 +347,39 @@
 
 }
 
+.dark_post_modal {
+  .post_head div {
+    color: black;
+  }
+
+  .post_body textarea {
+    color: #000;
+  }
+
+  .post_foot {
+    border-bottom: 0.1rem solid rgb(195 216 255 / 50%);
+
+    svg {
+
+      path {
+        fill: #b9c9de;
+        stroke: #b9c9de;
+      }
+
+      rect {
+        stroke: #b9c9de;
+      }
+
+      circle {
+        stroke: #b9c9de;
+      }
+    }
+  }
+}
+
 @media screen and (max-width: 500px) {
   .smile {
     display: none;
   }
 }
 
-@media (prefers-color-scheme: dark) {
-
-  .post_modal {
-
-    .post_head div {
-      color: black;
-    }
-
-    .post_body textarea {
-      color: #000;
-    }
-
-    .post_foot {
-      border-bottom: 0.1rem solid rgb(195 216 255 / 50%);
-
-      svg {
-
-        path {
-          fill: #b9c9de;
-          stroke: #b9c9de;
-        }
-
-        rect {
-          stroke: #b9c9de;
-        }
-    
-        circle {
-          stroke: #b9c9de;
-        }
-      }
-    }
-  }
-}

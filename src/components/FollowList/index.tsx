@@ -1,4 +1,4 @@
-import React, {useEffect, useRef} from "react"
+import React, {useEffect, useRef, useState} from "react"
 import "./index.scss"
 import {useLocation, useNavigate, useParams} from "react-router-dom";
 import {Profile} from "../../declarations/user/user";
@@ -7,6 +7,7 @@ import {Principal} from "@dfinity/principal";
 import {useGSAP} from "@gsap/react";
 import gsap from "gsap";
 import {useAuth} from "../../utils/useAuth";
+import Icon from "../../Icons/Icon";
 
 export const FollowList = React.memo(() => {
   const {pathname} = useLocation()
@@ -14,6 +15,7 @@ export const FollowList = React.memo(() => {
   const [useridList, setUseridList] = React.useState<Principal[]>([])
   const [users, setUsers] = React.useState<Profile[]>([])
   const {principal} = useAuth()
+  const [profile, setProfile] = useState<Profile>()
 
   const isOwner = React.useMemo(() => {
     return id === principal?.toText()
@@ -25,6 +27,13 @@ export const FollowList = React.memo(() => {
 
   const init = async () => {
     if (!id) return
+    try {
+      userApi.getProfile(Principal.from(id)).then(e => {
+        setProfile(e)
+      })
+    } catch (e) {
+      console.error(e)
+    }
     if (isFollowerList) {
       const res = await userApi.getFollowerList(Principal.from(id))
       setUseridList(res)
@@ -46,6 +55,12 @@ export const FollowList = React.memo(() => {
 
 
   return <div className={"follow_main"}>
+    <div className={"title"}>
+      <span style={{cursor: "pointer"}} onClick={() => window.history.back()}>
+      <Icon name={"back"}/>
+      </span>
+      {`${profile?.name + "'s"} ${isFollowerList ? "Followers" : "Following"}`}
+    </div>
     {users.map((v, k) => {
       return <UserCard init={init} isFollowerList={isFollowerList} isOwner={isOwner} profile={v} key={k}/>
     })}
@@ -60,7 +75,7 @@ const UserCard = React.memo(({profile, isOwner, isFollowerList, init}: {
   const ref = useRef(null)
   const {contextSafe} = useGSAP({scope: ref})
   const tl = useRef<any>()
-
+const {isDark} = useAuth()
   const enter = contextSafe(() => {
     tl.current = gsap.timeline()
     tl.current.to(".down_line", {width: "100%", autoAlpha: 1, duration: 0.2})
@@ -76,9 +91,9 @@ const UserCard = React.memo(({profile, isOwner, isFollowerList, init}: {
 
   const navigate = useNavigate()
 
-  return <div ref={ref} className={"user_card"} onClick={() => navigate(`/profile/${profile.id.toString()}`)}>
-    <img style={{objectFit:"cover"}} src={profile.avatar_url ? profile.avatar_url : "/img_3.png"} alt=""/>
-    <div style={{width:"100%"}}>
+  return <div ref={ref} className={`user_card ${isDark?"dark_user_card":""}`} onClick={() => navigate(`/profile/${profile.id.toString()}`)}>
+    <img style={{objectFit: "cover"}} src={profile.avatar_url ? profile.avatar_url : "/img_3.png"} alt=""/>
+    <div style={{width: "100%"}}>
       <div className={"card_head"}>
         <div className={"user_info"}>
           <div className={"name"}>

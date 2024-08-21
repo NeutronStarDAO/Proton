@@ -35,18 +35,13 @@
       span {
         border: 2px solid #679BF8;
         border-radius: 2rem;
-        padding: 0.8rem 4rem
-      }
-
-      span:hover {
-        background-color: #A3C4FF;
+        padding: 0.8rem 4rem;
+        cursor: pointer;
       }
     }
   }
 }
 
-@media (prefers-color-scheme: dark) {
-  .setting_main .setting_item .setting_button span:hover {
-    color: black;
-  }
-}
+
+
+

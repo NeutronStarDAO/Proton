@@ -17,6 +17,9 @@ import {useGSAP} from "@gsap/react";
 import gsap from 'gsap';
 import {useSelectPostStore} from "../../redux/features/SelectPost";
 import {nanosecondsToDate} from "../../utils/util";
+import ScrollTrigger from 'gsap/ScrollTrigger';
+
+gsap.registerPlugin(ScrollTrigger);
 
 export const Profile = ({
                           scrollContainerRef,
@@ -26,6 +29,8 @@ export const Profile = ({
   const [profile, setProfile] = useState<profile_type>()
   const [posts, setPosts] = useState<post_type[]>()
   const selectPost = useSelectPostStore()
+  const {isDark} = useAuth()
+  const titleRef = useRef<any>(null)
 
   const getData = async () => {
     if (!profile || !id) return 0
@@ -49,9 +54,28 @@ export const Profile = ({
     }
   }, [id])
 
-  return <div className={"profile_main"}>
-    <div className={"profile_title"} style={{cursor: "pointer"}} onClick={() => scrollToTop()}>Profile</div>
-    <div ref={scrollContainerRef} style={{width: "100%", flex: "1"}}>
+  useEffect(() => {
+    const titleRefCurrent = titleRef.current;
+    const scrollContainer = scrollContainerRef.current;
+
+    if (titleRefCurrent && scrollContainer) {
+      gsap.to(titleRefCurrent, {
+        backgroundColor: '#F0F4FF', // 你希望滚动到特定位置时改变的颜色
+        scrollTrigger: {
+          trigger: titleRefCurrent,
+          scroller: scrollContainer,
+          start: 'top top', // 当元素顶部与视口顶部对齐时触发
+          scrub: true, // 平滑滚动触发
+        },
+      });
+    }
+
+  }, [titleRef, scrollContainerRef]);
+
+  return <div className={`profile_main ${isDark ? "dark_profile_main" : ""}`} ref={scrollContainerRef}>
+    <div ref={titleRef} className={"profile_title"} style={{cursor: "pointer"}} onClick={() => scrollToTop()}>Profile
+    </div>
+    <div style={{width: "100%", flex: "1"}}>
       <div className={"background"} style={{
         backgroundImage: `url(${profile?.back_img_url})`,
         backgroundSize: "cover",
@@ -75,7 +99,7 @@ export const Profile = ({
 
 const UserPanel = ({profile}: { profile?: profile_type }) => {
   const {id}: { id?: string } = useParams()
-  const {principal} = useAuth()
+  const {principal, isAuth} = useAuth()
   const [followers, setFollowers] = useState<number>(0)
   const [followings, setFollowings] = useState<number>(0)
   const [isFollowed, setIsFollowed] = useState(false)
@@ -163,7 +187,7 @@ const UserPanel = ({profile}: { profile?: profile_type }) => {
       {isOwner ? <span className={"edit"} onClick={() => setOpen(true)}>
         <Icon name={"edit"}/>
         Edit
-      </span> : <span className={"edit"} onClick={handleFollow}>
+      </span> : <span style={{display: isAuth ? "flex" : "none"}} className={"edit"} onClick={handleFollow}>
         {isFollowed ? "Following" : "Follow"}
       </span>}
     </div>
@@ -179,7 +203,7 @@ const UserPanel = ({profile}: { profile?: profile_type }) => {
       </div> : <div className="skeleton skeleton-text" style={{height: "2rem", width: "5rem"}}/>}
 
       {profile ? <div className={"label"} style={{display: !!profile?.location ? "block" : "none"}}>
-        <Icon name={"join_time"}/> {profile.created_at[0] ?"Joined "+ nanosecondsToDate(profile.created_at[0]) : ''}
+        <Icon name={"join_time"}/> {profile.created_at[0] ? "Joined " + nanosecondsToDate(profile.created_at[0]) : ''}
       </div> : <div className="skeleton skeleton-text" style={{height: "2rem", width: "5rem"}}/>}
 
       {profile ? <div onClick={() => window.open(profile?.website)} className={"label label-link"}
@@ -190,12 +214,12 @@ const UserPanel = ({profile}: { profile?: profile_type }) => {
       <div className={"label"} style={{display: "none"}}>
         <Icon name={"location"}/> {profile?.location}
       </div>
-      
+
       <div className={"label"}>
         <span className={"wrap"}>
           <span className={"number"}>{followings}</span>
           <div className={"follow"} onClick={() => nav(`/following/${id}`)} onMouseEnter={() => enter(".following")}
-                onMouseLeave={leave}>
+               onMouseLeave={leave}>
             Following
             <div className={"down_line following"}/>
           </div>
@@ -212,6 +236,6 @@ const UserPanel = ({profile}: { profile?: profile_type }) => {
       </div>
     </div>
 
-    
+
   </div>
 }

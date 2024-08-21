@@ -20,6 +20,7 @@
     "@types/react": "^18.0.0",
     "@types/react-dom": "^18.0.0",
     "antd": "^5.17.4",
+    "autosize": "^6.0.1",
     "emoji-mart": "^5.6.0",
     "gsap": "^3.12.5",
     "react": "^18.3.1",
@@ -56,5 +57,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@types/autosize": "^4.0.3"
   }
 }

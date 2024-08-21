@@ -1,7 +1,9 @@
 import React, {MouseEventHandler, useEffect} from "react";
 import "./done.scss"
+import {useAuth} from "../../../utils/useAuth";
 
 export const Done = ({done, setOpen}: { done: Function, setOpen?: Function }) => {
+  const {isDark} = useAuth()
 
   function handleEvent(event: any) {
     const self = event.currentTarget;
@@ -19,7 +21,7 @@ export const Done = ({done, setOpen}: { done: Function, setOpen?: Function }) =>
   }
 
   return <>
-    <a className="done_button" onClick={(e) => {
+    <a className={`done_button ${isDark ? "dark_done_button" : ""}`} onClick={(e) => {
       done()
       handleEvent(e)
     }}>
@@ -59,8 +61,9 @@ export const Done = ({done, setOpen}: { done: Function, setOpen?: Function }) =>
 }
 
 export const UnDone = () => {
+  const {isDark} = useAuth()
   return <>
-    <a className="undone_button" style={{background: "gray"}}>
+    <a className={`undone_button ${isDark ? "dark_undone_button" : ""}`} style={{background: "gray"}}>
      <span>
         <svg>
             <use xlinkHref="#circle"/>

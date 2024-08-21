@@ -2,6 +2,7 @@ import React, {useRef} from 'react';
 import './index.scss';
 import {useGSAP} from "@gsap/react";
 import gsap from 'gsap';
+import {useAuth} from "../../utils/useAuth";
 
 export const Modal = ({open, children, setOpen, canClose = true}: {
   children: JSX.Element,
@@ -10,7 +11,7 @@ export const Modal = ({open, children, setOpen, canClose = true}: {
   canClose?: boolean
 }) => {
   const ref = useRef(null)
-
+  const {isDark} = useAuth()
   useGSAP(() => {
     if (!ref.current) return
     if (open) {
@@ -24,7 +25,7 @@ export const Modal = ({open, children, setOpen, canClose = true}: {
 
   return (
     <>
-      <div className="modal_overlay" ref={ref} onClick={(e) => {
+      <div className={`modal_overlay ${isDark ? "dark_modal_overlay" : ""}`} ref={ref} onClick={(e) => {
         if (e.currentTarget === e.target && canClose) {
           setOpen(false)
         }

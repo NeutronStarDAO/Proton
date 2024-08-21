@@ -10,6 +10,14 @@
   gap: 1rem;
   font-family: "Fredoka", sans-serif;
 
+  .title {
+    padding: 2rem;
+    font-size: 3.7rem;
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+  }
+
   .user_card {
     width: 100%;
     padding: 2rem;
@@ -73,19 +81,19 @@
       margin-top: 1.5rem;
     }
   }
-}
 
-@media (prefers-color-scheme: dark) {
-
-  .follow_main .user_card:hover {
+  .dark_user_card:hover {
     background: #a8b3d3;
+
   }
 
-  .follow_main .user_card:hover div p {
+  .dark_user_card:hover div p {
     color: black;
   }
 
-  .follow_main .user_card:hover div {
+  .dark_user_card:hover div {
     color: black;
   }
 }
+
+

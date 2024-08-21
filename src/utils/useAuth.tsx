@@ -7,6 +7,9 @@ import {NotificationInstance} from "antd/es/notification/interface";
 import {CheckOutlined, CloseOutlined, LoadingOutlined} from "@ant-design/icons";
 import {rootFeedApi} from "../actors/root_feed";
 
+export type Theme = "light" | "dark" | "auto"
+export const themeKey = "proton_theme"
+
 export interface Props {
   readonly identity: DelegationIdentity | undefined;
   readonly isAuthClientReady: boolean;
@@ -15,6 +18,10 @@ export interface Props {
   readonly logOut: Function | undefined;
   readonly logIn: Function | undefined;
   readonly isAuth: boolean | undefined;
+  readonly isDark: boolean;
+  readonly setIsDark: Function;
+  readonly setTheme: Function
+  readonly theme: Theme
 }
 
 export const useProvideAuth = (api: NotificationInstance, authClient: IIForIdentity): Props => {
@@ -23,7 +30,42 @@ export const useProvideAuth = (api: NotificationInstance, authClient: IIForIdent
   const [principal, setPrincipal] = useState<Principal | undefined>(undefined);
   const [userFeedCai, setUserFeedCai] = useState<Principal | undefined>()
   const [authenticated, setAuthenticated] = useState<boolean | undefined>(undefined);
+  const [theme, setTheme] = useState<Theme>("auto");
+  const [isDark, setIsDark] = useState<boolean>(false);
+
   if (!isAuthClientReady) authClient.create().then(() => setAuthClientReady(true));
+
+  const handleColorSchemeChange = (event: any) => {
+    setIsDark(event.matches);
+  };
+
+  const initTheme = () => {
+    // 初始化时检查颜色主题
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    setIsDark(mediaQuery.matches);
+
+    // 监听颜色主题变化
+    mediaQuery.addEventListener('change', handleColorSchemeChange);
+
+    // 清理事件监听器
+    return () => {
+      mediaQuery.removeEventListener('change', handleColorSchemeChange);
+    };
+  }
+
+  useEffect(() => {
+    const storageTheme = localStorage.getItem(themeKey)
+    if (storageTheme === null || storageTheme === "auto") {
+      initTheme()
+    } else if (storageTheme === "dark") {
+      setIsDark(true)
+    } else if (storageTheme === "light") {
+      setIsDark(false)
+    } else {
+      initTheme()
+      localStorage.removeItem(themeKey)
+    }
+  }, [theme]);
 
 
   const init = async () => {
@@ -97,6 +139,8 @@ export const useProvideAuth = (api: NotificationInstance, authClient: IIForIdent
     logOut,
     userFeedCai,
     isAuth: authenticated,
+    isDark,
+    setIsDark, setTheme, theme
   };
   return Context;
 }
@@ -109,6 +153,10 @@ const props: Props = {
   logOut: undefined,
   isAuth: false,
   userFeedCai: undefined,
+  isDark: false, theme: "auto",
+  setIsDark: () => {
+  }, setTheme: () => {
+  }
 }
 
 const authContext = createContext(props);

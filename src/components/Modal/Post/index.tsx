@@ -23,7 +23,7 @@ export const PostModal = ({open, setOpen}: { open: boolean, setOpen: Function })
   const [img, setImg] = useState<string[]>([])
   const profile = useProfileStore()
   const textareaRef = useRef(null);
-  const {userFeedCai, principal} = useAuth()
+  const {userFeedCai, principal, isDark} = useAuth()
   const [api, contextHolder] = notification.useNotification();
   const ref = useRef(null)
   const [canSend, setCanSend] = useState(false)
@@ -233,7 +233,7 @@ export const PostModal = ({open, setOpen}: { open: boolean, setOpen: Function })
   return <>
     {contextHolder}
     <Modal canClose={true} setOpen={setOpen} open={open}>
-      <div className={"post_modal"}>
+      <div className={`post_modal ${isDark ? "dark_post_modal" : ""}`}>
         <div className={"post_head"}>
           <div style={{display: "flex", alignItems: "center"}}>
             <img style={{borderRadius: "50%", objectFit: "cover"}}

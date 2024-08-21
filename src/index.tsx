@@ -9,7 +9,7 @@ import {ProvideAuth} from "./utils/useAuth";
 import {Provider} from "react-redux";
 import store from "./redux/store";
 import gsap from 'gsap';
-import { useGSAP } from '@gsap/react';
+import {useGSAP} from '@gsap/react';
 
 gsap.registerPlugin(useGSAP);
 fontResize()
@@ -21,7 +21,7 @@ root.render(
     <BrowserRouter>
       <ProvideAuth>
         <Provider store={store}>
-          <App />
+            <App/>
         </Provider>
       </ProvideAuth>
     </BrowserRouter>

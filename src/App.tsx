@@ -19,7 +19,7 @@ import {Principal} from "@dfinity/principal";
 function App() {
 
   const selectPost = useSelectPostStore()
-  const {principal, isAuth} = useAuth()
+  const {principal, isAuth, isDark} = useAuth()
   const scrollContainerRef = useRef(null);
   const [open, setOpen] = useState(false)
 
@@ -46,8 +46,19 @@ function App() {
     }
   };
 
+  useEffect(() => {
+    if (isDark){
+      document.documentElement.classList.toggle('dark-theme', true);
+        document.documentElement.classList.toggle('light-theme', false);
+    }
+    else {
+      document.documentElement.classList.toggle('light-theme', true);
+        document.documentElement.classList.toggle('dark-theme', false);
+    }
+  }, [isDark]);
+
   return (
-    <div className={"App"}>
+    <div className={"App"} style={{background: isDark ? "#23233c" : ""}}>
       <ProfileModal setOpen={setOpen} open={open} canClose={false}/>
       <Side scrollToTop={scrollToTop}/>
       <Routes>

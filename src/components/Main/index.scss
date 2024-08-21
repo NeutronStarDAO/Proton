@@ -24,6 +24,11 @@
   background-color: rgb(239 239 250 / 60%);
 }
 
+
+.dark_selected_post {
+  background-color: rgba(81, 81, 102, 0.6);
+}
+
 .post_main {
   width: 100%;
   display: flex;
@@ -125,7 +130,7 @@
           transition: transform 0.3s ease;
         }
       }
-      
+
       .image-overlay {
         position: fixed;
         top: 0;
@@ -166,13 +171,13 @@
 
   @keyframes slideDown {
     from {
-      max-height: 0;
-      opacity: 0;
+      transform: scaleY(0);
+      transform-origin: top;
     }
 
     to {
-      max-height: 22rem;
-      opacity: 1;
+      transform: scaleY(1);
+
     }
   }
 
@@ -186,7 +191,7 @@
     background: #D7E4FF;
     border-radius: 2rem;
     padding: 1rem 1rem 1rem 2rem;
-    animation: slideDown 0.5s linear;
+    animation: slideDown 0.2s linear;
 
     textarea {
       width: 100%;
@@ -195,7 +200,6 @@
       border: none;
       resize: none;
       background: inherit;
-      max-height: 20rem;
     }
 
     div {
@@ -214,62 +218,34 @@
   }
 }
 
-@media screen and (max-width: 500px) {
+.dark_post_main {
+  .more_wrap {
 
-  .main_wrap {
-    border-right: 0;
-    border-left: 0;
-    
-    .title {
-      border-right: 0;
+    &:hover {
+      background: #617398;
+    }
+
+    svg {
+      path {
+        fill: #b9c9de;
+        stroke: #b9c9de;
+      }
     }
   }
 
-  .post_main {
-    border-right: 0;
-    
-    .post_bottom {
-      width: 50%;
-    }
-  }
-}
+  .dropdown_wrap {
+    background-color: #617398;
 
-@media (prefers-color-scheme: dark) {
-
-  .selected_post {
-    background-color: rgba(81, 81, 102, 0.6);
-  }
-
-  .post_main {
-  
-    .more_wrap {
+    div {
+      color: #ceddf1;
 
       &:hover {
-        background: #617398;
-      }
-
-      svg {
-        path {
-          fill: #b9c9de;
-          stroke: #b9c9de;
-        }
-      }
-    }
-
-    .dropdown_wrap {
-      background-color: #617398;
-
-      div {
-        color: #ceddf1;
-
-        &:hover {
-          background: #8997b7;
-        }
+        background: #8997b7;
       }
     }
   }
 
-  .post_main .reply_wrap textarea {
+  .reply_wrap textarea {
     color: black;
   }
 
@@ -289,3 +265,24 @@
     }
   }
 }
+
+@media screen and (max-width: 500px) {
+
+  .main_wrap {
+    border-right: 0;
+    border-left: 0;
+
+    .title {
+      border-right: 0;
+    }
+  }
+
+  .post_main {
+    border-right: 0;
+
+    .post_bottom {
+      width: 50%;
+    }
+  }
+}
+
