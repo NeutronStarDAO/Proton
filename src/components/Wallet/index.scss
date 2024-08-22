@@ -11,6 +11,10 @@
 
   .title {
     font-size: 3.7rem;
+
+    span {
+      font-size: 2.7rem;
+    }
   }
 
   .balance {
@@ -23,6 +27,15 @@
     align-items: start;
     gap: 3rem;
 
+    .title {
+      width: 60%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 2rem;
+      font-size: 2.5rem;
+    }
+
     .token_item {
       width: 100%;
       display: flex;
@@ -31,6 +44,18 @@
       padding-bottom: 2rem;
       font-size: 2.5rem;
       border-bottom: 1px solid rgba(0, 0, 0, 0.5);
+
+      .record_wrap {
+        border-radius: 5rem;
+        background-color: #d7e4ff;
+        padding: 2rem 3rem;
+        display: inline-flex;
+        cursor: pointer;
+      }
+
+      span {
+
+      }
 
       img {
         width: 6.3rem;
@@ -44,6 +69,7 @@
         background: #D7E4FF;
         border-radius: 5rem;
         padding: 1.5rem 4rem;
+        cursor: pointer;
       }
 
       .send {

@@ -22,6 +22,7 @@ export interface Props {
   readonly setIsDark: Function;
   readonly setTheme: Function
   readonly theme: Theme
+  readonly account?: string
 }
 
 export const useProvideAuth = (api: NotificationInstance, authClient: IIForIdentity): Props => {
@@ -32,6 +33,7 @@ export const useProvideAuth = (api: NotificationInstance, authClient: IIForIdent
   const [authenticated, setAuthenticated] = useState<boolean | undefined>(undefined);
   const [theme, setTheme] = useState<Theme>("auto");
   const [isDark, setIsDark] = useState<boolean>(false);
+  const [account, setAccount] = useState<string | undefined>(undefined)
 
   if (!isAuthClientReady) authClient.create().then(() => setAuthClientReady(true));
 
@@ -104,7 +106,10 @@ export const useProvideAuth = (api: NotificationInstance, authClient: IIForIdent
   }
 //aa3zr-2je3k-6vmid-vj657-x36hs-ylxag-e2jd5-pufmf-hh26e-uttum-rae
   useEffect(() => {
-    principal && getFeedCai(principal)
+    if (principal) {
+      getFeedCai(principal)
+      rootFeedApi.getAccountIdentifier(principal).then(e => setAccount(e))
+    }
   }, [principal])
 
   const logIn = async (): Promise<{ message?: string; status?: number } | undefined> => {
@@ -140,7 +145,8 @@ export const useProvideAuth = (api: NotificationInstance, authClient: IIForIdent
     userFeedCai,
     isAuth: authenticated,
     isDark,
-    setIsDark, setTheme, theme
+    setIsDark, setTheme, theme,
+    account
   };
   return Context;
 }
@@ -156,7 +162,8 @@ const props: Props = {
   isDark: false, theme: "auto",
   setIsDark: () => {
   }, setTheme: () => {
-  }
+  },
+  account: undefined
 }
 
 const authContext = createContext(props);

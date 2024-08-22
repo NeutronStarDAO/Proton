@@ -19,7 +19,7 @@ import {Principal} from "@dfinity/principal";
 function App() {
 
   const selectPost = useSelectPostStore()
-  const {principal, isAuth, isDark} = useAuth()
+  const {principal, isAuth, isDark,account} = useAuth()
   const scrollContainerRef = useRef(null);
   const [open, setOpen] = useState(false)
 
@@ -65,7 +65,7 @@ function App() {
         <Route path="/" element={<Main scrollContainerRef={scrollContainerRef}/>}/>
         <Route path="home" element={<Main scrollContainerRef={scrollContainerRef}/>}/>
         <Route path="explore" element={<Main scrollContainerRef={scrollContainerRef}/>}/>
-        {/*<Route path="wallet" element={<Wallet/>}/>*/}
+        <Route path="wallet" element={<Wallet/>}/>
         <Route path="settings" element={<Settings/>}/>
         <Route path="followers/:id" element={<FollowList/>}/>
         <Route path="following/:id" element={<FollowList/>}/>
