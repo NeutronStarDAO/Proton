@@ -40,7 +40,7 @@
 
     }
 
-    .dark_comment_header{
+    .dark_comment_header {
       span svg path {
         stroke: #b9c9de;
       }
@@ -162,5 +162,12 @@
       align-items: center;
     }
   }
+}
+
+
+
+.show-more-less-clickable{
+  font-size: 1.5rem;
+  color: #0C6DFF;
 }
 

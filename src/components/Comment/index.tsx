@@ -1,6 +1,7 @@
 import "./index.scss"
+import ShowMoreText from 'react-show-more-text';
 
-import React, {useEffect, useState} from "react"
+import React, {CSSProperties, useEffect, useRef, useState} from "react"
 import {Comment as comment_type} from "../../declarations/bucket/bucket";
 import {shortenString} from "../Sider";
 import Icon, {Name} from "../../Icons/Icon";
@@ -111,9 +112,7 @@ const CommentCon = ({comment, profile}: { comment: comment_type, profile: Profil
         </div>
       </div>
     </div>
-    <pre className={"tweet"}>
-      {comment.content}
-    </pre>
+    <ShowMoreTest content={comment.content} className={"tweet"}/>
     <div className={"post_bottom"}>
       {kk.map((v, k) => {
         return <span key={k}>
@@ -124,3 +123,28 @@ const CommentCon = ({comment, profile}: { comment: comment_type, profile: Profil
     </div>
   </div>
 }
+
+
+export const ShowMoreTest = React.memo(({content, className}: { content: string, className?: string }) => {
+    const formattedText = content.split('\n').map((line, index) => (
+      <React.Fragment key={index}>
+        {line}
+        <br/>
+      </React.Fragment>
+    ));
+    return (
+      <div>
+        <ShowMoreText
+          lines={7}
+          more="Show More"
+          less="Show Less"
+          expanded={false}
+          truncatedEndingComponent={"...   "}
+          className={className}
+        >
+          {formattedText}
+        </ShowMoreText>
+      </div>
+    );
+  }
+)

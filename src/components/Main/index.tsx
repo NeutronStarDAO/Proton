@@ -1,6 +1,6 @@
 import "./index.scss"
 
-import React, {useEffect, useMemo, useRef, useState} from 'react';
+import React, {CSSProperties, useEffect, useMemo, useRef, useState} from 'react';
 import Icon from "../../Icons/Icon";
 import {useLocation, useNavigate} from "react-router-dom";
 import {Post as postType} from "../../declarations/feed/feed";
@@ -16,6 +16,7 @@ import {CloseOutlined} from "@ant-design/icons";
 import {updateSelectPost, useSelectPostStore} from "../../redux/features/SelectPost";
 import {getTime, isIn, postSort} from "../../utils/util";
 import autosize from "autosize"
+import {ShowMoreTest} from "../Comment";
 
 export const Main = ({scrollContainerRef}: { scrollContainerRef: React.MutableRefObject<null> }) => {
   const location = useLocation()
@@ -98,6 +99,7 @@ export const Main = ({scrollContainerRef}: { scrollContainerRef: React.MutableRe
       }) : <Spin spinning={true} style={{width: "100%"}}/>}
   </div>
 }
+
 
 export const Post = ({post, updateFunction, selectedID, profile}: {
   post: postType,
@@ -323,9 +325,7 @@ export const Post = ({post, updateFunction, selectedID, profile}: {
       </div>
     </div>
     <div className={"tweet"}>
-      <pre>
-        {post.content}
-      </pre>
+      <ShowMoreTest content={post.content}/>
       <div className={"img_list"} style={{
         gridTemplateColumns: post.photo_url.length === 1 ? "1fr" : "repeat(2, 1fr)",
         height: post.photo_url.length === 0 ? "0" : "50rem",

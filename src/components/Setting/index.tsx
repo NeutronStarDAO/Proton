@@ -1,6 +1,6 @@
 import "./index.scss"
 
-import React from "react"
+import React, {useEffect} from "react"
 import Icon from "../../Icons/Icon";
 import {Theme, themeKey, useAuth} from "../../utils/useAuth";
 

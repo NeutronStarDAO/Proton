@@ -58,10 +58,13 @@ export const useProvideAuth = (api: NotificationInstance, authClient: IIForIdent
   useEffect(() => {
     const storageTheme = localStorage.getItem(themeKey)
     if (storageTheme === null || storageTheme === "auto") {
+      setTheme("auto")
       initTheme()
     } else if (storageTheme === "dark") {
+      setTheme("dark")
       setIsDark(true)
     } else if (storageTheme === "light") {
+      setTheme("light")
       setIsDark(false)
     } else {
       initTheme()
