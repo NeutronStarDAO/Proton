@@ -55,8 +55,8 @@ export const idlFactory = ({ IDL }) => {
     'reserved_cycles' : IDL.Nat,
   });
   return IDL.Service({
-    'ckBTC_balance' : IDL.Func([IDL.Principal], [IDL.Nat], ['query']),
-    'ckBTC_tx' : IDL.Func([IDL.Principal], [IDL.Vec(WalletTX)], ['query']),
+    'ckBTC_balance' : IDL.Func([IDL.Principal], [IDL.Nat], []),
+    'ckBTC_tx' : IDL.Func([IDL.Principal], [IDL.Vec(WalletTX)], []),
     'create_feed_canister' : IDL.Func([], [IDL.Principal], []),
     'get_account_identifier' : IDL.Func([IDL.Principal], [IDL.Text], ['query']),
     'get_all_feed_canister' : IDL.Func([], [IDL.Vec(IDL.Principal)], ['query']),
@@ -85,10 +85,10 @@ export const idlFactory = ({ IDL }) => {
         [IDL.Vec(IDL.Tuple(IDL.Principal, IDL.Principal))],
         ['query'],
       ),
-    'ghost_balance' : IDL.Func([IDL.Principal], [IDL.Nat], ['query']),
-    'ghost_tx' : IDL.Func([IDL.Principal], [IDL.Vec(WalletTX)], ['query']),
-    'icp_balance' : IDL.Func([IDL.Principal], [IDL.Nat], ['query']),
-    'icp_tx' : IDL.Func([IDL.Principal], [IDL.Vec(WalletTX)], ['query']),
+    'ghost_balance' : IDL.Func([IDL.Principal], [IDL.Nat], []),
+    'ghost_tx' : IDL.Func([IDL.Principal], [IDL.Vec(WalletTX)], []),
+    'icp_balance' : IDL.Func([IDL.Principal], [IDL.Nat], []),
+    'icp_tx' : IDL.Func([IDL.Principal], [IDL.Vec(WalletTX)], []),
     'icrc1_transfer' : IDL.Func(
         [IDL.Principal, IDL.Principal, IDL.Nat64],
         [TransferResult],
@@ -99,11 +99,7 @@ export const idlFactory = ({ IDL }) => {
     'set_root_bucket' : IDL.Func([IDL.Principal], [IDL.Bool], []),
     'set_user_actor' : IDL.Func([IDL.Principal], [IDL.Bool], []),
     'status' : IDL.Func([], [CanisterStatusResponse], []),
-    'token_balance' : IDL.Func(
-        [IDL.Principal, IDL.Principal],
-        [IDL.Nat],
-        ['query'],
-      ),
+    'token_balance' : IDL.Func([IDL.Principal, IDL.Principal], [IDL.Nat], []),
     'topup_by_icp' : IDL.Func([IDL.Nat64], [IDL.Bool], []),
     'transfer_ckBTC' : IDL.Func(
         [IDL.Principal, IDL.Nat64],

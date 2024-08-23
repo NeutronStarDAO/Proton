@@ -160,7 +160,7 @@ fn get_account_identifier(user: Principal) -> String {
     ).to_hex()
 }
 
-#[ic_cdk::query]
+#[ic_cdk::update]
 pub async fn icp_balance(user: Principal) -> Nat {
     let balance = ic_cdk::call::<(Account, ), (Nat, )>(
         Principal::from_text("ryjl3-tyaaa-aaaaa-aaaba-cai").unwrap(), 
@@ -174,7 +174,7 @@ pub async fn icp_balance(user: Principal) -> Nat {
     balance
 }
 
-#[ic_cdk::query]
+#[ic_cdk::update]
 pub async fn icp_tx(user: Principal) -> Vec<WalletTX> {
     let txs_result: GetAccountIdentifierTransactionsResult = ic_cdk::call::<(GetAccountTransactionsArgs, ), (GetAccountIdentifierTransactionsResult, )>(
         Principal::from_text("qhbym-qaaaa-aaaaa-aaafq-cai").unwrap(), 
@@ -230,7 +230,7 @@ pub async fn icp_tx(user: Principal) -> Vec<WalletTX> {
     wallet_txs
 }
 
-#[ic_cdk::query]
+#[ic_cdk::update]
 pub async fn ckBTC_balance(user: Principal) -> Nat {
     let balance = ic_cdk::call::<(Account, ), (Nat, )>(
         Principal::from_text("mxzaz-hqaaa-aaaar-qaada-cai").unwrap(), 
@@ -244,7 +244,7 @@ pub async fn ckBTC_balance(user: Principal) -> Nat {
     balance
 }
 
-#[ic_cdk::query]
+#[ic_cdk::update]
 pub async fn ckBTC_tx(user: Principal) -> Vec<WalletTX> {
     let txs_result: GetAccountIdentifierTransactionsResult = ic_cdk::call::<(GetAccountTransactionsArgs, ), (GetAccountIdentifierTransactionsResult, )>(
         Principal::from_text("n5wcd-faaaa-aaaar-qaaea-cai").unwrap(), 
@@ -300,7 +300,7 @@ pub async fn ckBTC_tx(user: Principal) -> Vec<WalletTX> {
     wallet_txs
 }
 
-#[ic_cdk::query]
+#[ic_cdk::update]
 pub async fn ghost_balance(user: Principal) -> Nat {
     let balance = ic_cdk::call::<(Account, ), (Nat, )>(
         Principal::from_text("4c4fd-caaaa-aaaaq-aaa3a-cai").unwrap(), 
@@ -314,7 +314,7 @@ pub async fn ghost_balance(user: Principal) -> Nat {
     balance
 }
 
-#[ic_cdk::query]
+#[ic_cdk::update]
 pub async fn ghost_tx(user: Principal) -> Vec<WalletTX> {
     let txs_result: GetAccountIdentifierTransactionsResult = ic_cdk::call::<(GetAccountTransactionsArgs, ), (GetAccountIdentifierTransactionsResult, )>(
         Principal::from_text("5ithz-aqaaa-aaaaq-aaa4a-cai").unwrap(), 
@@ -370,7 +370,7 @@ pub async fn ghost_tx(user: Principal) -> Vec<WalletTX> {
     wallet_txs
 }
 
-#[ic_cdk::query]
+#[ic_cdk::update]
 pub async fn token_balance(token: Principal, user: Principal) -> Nat {
     let balance = ic_cdk::call::<(Account, ), (Nat, )>(
         token, 

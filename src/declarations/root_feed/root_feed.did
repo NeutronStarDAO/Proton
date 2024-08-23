@@ -44,8 +44,8 @@ type WalletTX = record {
 };
 type WalletTXType = variant { Send; Receive };
 service : (principal, principal) -> {
-  ckBTC_balance : (principal) -> (nat) query;
-  ckBTC_tx : (principal) -> (vec WalletTX) query;
+  ckBTC_balance : (principal) -> (nat);
+  ckBTC_tx : (principal) -> (vec WalletTX);
   create_feed_canister : () -> (principal);
   get_account_identifier : (principal) -> (text) query;
   get_all_feed_canister : () -> (vec principal) query;
@@ -62,17 +62,17 @@ service : (principal, principal) -> {
   get_user_feed_canister_entries : () -> (
       vec record { principal; principal },
     ) query;
-  ghost_balance : (principal) -> (nat) query;
-  ghost_tx : (principal) -> (vec WalletTX) query;
-  icp_balance : (principal) -> (nat) query;
-  icp_tx : (principal) -> (vec WalletTX) query;
+  ghost_balance : (principal) -> (nat);
+  ghost_tx : (principal) -> (vec WalletTX);
+  icp_balance : (principal) -> (nat);
+  icp_tx : (principal) -> (vec WalletTX);
   icrc1_transfer : (principal, principal, nat64) -> (TransferResult);
   init_fetch_actor : (principal) -> ();
   init_user_feed : () -> (principal);
   set_root_bucket : (principal) -> (bool);
   set_user_actor : (principal) -> (bool);
   status : () -> (CanisterStatusResponse);
-  token_balance : (principal, principal) -> (nat) query;
+  token_balance : (principal, principal) -> (nat);
   topup_by_icp : (nat64) -> (bool);
   transfer_ckBTC : (principal, nat64) -> (TransferResult);
   transfer_ghost : (principal, nat64) -> (TransferResult);
