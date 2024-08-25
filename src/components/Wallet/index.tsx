@@ -8,6 +8,8 @@ import {Principal} from "@dfinity/principal";
 import {Receive} from "../Modal/Receive";
 import {Send} from "../Modal/Send";
 import {WalletTX} from "../../declarations/root_feed/root_feed";
+import {shortenString} from "../Sider";
+import {nanosecondsToDate} from "../../utils/util";
 
 export const Wallet = () => {
   const [showTx, setShowTx] = React.useState(false)
@@ -21,6 +23,7 @@ export const Wallet = () => {
 const Tx = () => {
   const [txs, setTxs] = React.useState<WalletTX[]>([])
   const {principal} = useAuth()
+
   useEffect(() => {
     principal && rootFeedApi.icpTx(principal).then(e => {
       console.log(e)
@@ -44,9 +47,9 @@ const TxItem = ({tx}: { tx: WalletTX }) => {
   return <div className={"tx_item"}>
     <Icon name={"receive"}/>
     <span style={{fontSize: "2.3rem"}}>{Object.keys(tx.tx_type)[0]}</span>
-    <span> {tx.tx_hash}</span>
-    <span>{Number(tx.amount)}</span>
-    <span>{Number(tx.time)}</span>
+    <span> {shortenString(tx.tx_hash, 20)}</span>
+    <span>{Number(tx.amount) / 1e8}</span>
+    <span>{ nanosecondsToDate(tx.time) }</span>
   </div>
 }
 
@@ -74,9 +77,9 @@ const Balance = ({setShowTx}: { setShowTx: Function }) => {
         Transactions
       </span>
     </div>
-    <Token token={"ICP"} balance={Number(balances[0])} filePath={"/img_6.png"} setShowTx={setShowTx}/>
-    {/*<Token token={"ckBTC"} balance={Number(balances[1])} filePath={"/img_4.png"}/>*/}
-    {/*<Token token={"ghost"} balance={Number(balances[2])} filePath={"/img_5.png"}/>*/}
+    {/*<Token token={"ckBTC"} balance={Number(balances[0])} filePath={"/img_4.png"}/>*/}
+    {/*<Token token={"ghost"} balance={Number(balances[1])} filePath={"/img_5.png"}/>*/}
+    <Token token={"ICP"} balance={Number(balances[2]) / 1e8} filePath={"/img_6.png"} setShowTx={setShowTx}/>
   </div>
 }
 

@@ -10,8 +10,10 @@ export const Send = ({open, setOpen}: { open: boolean, setOpen: Function }) => {
   const [to, setTo] = React.useState("")
   const [amount, setAmount] = React.useState(0)
   const send = () => {
-    // rootFeedApi.transferICP(Principal.from(to), BigInt(amount)).then((res) => {
-    // })
+    console.log(to)
+    rootFeedApi.transferICP(Principal.from(to), BigInt(amount * 1e8)).then((res) => {
+      console.log("res",res)
+    })
   }
   return <Modal setOpen={setOpen} open={open}>
     <div className={"send_modal"}>
@@ -30,7 +32,7 @@ export const Send = ({open, setOpen}: { open: boolean, setOpen: Function }) => {
           <input onChange={e => setTo(e.target.value)} type="text"/>
         </div>
         <div className={"amount"}>
-          <input  onChange={e => setAmount(Number(e.target.value))} type="number"/>
+          <input onChange={e => setAmount(Number(e.target.value))} type="number"/>
           <span>Max</span>
         </div>
         <p>Fee:</p>
