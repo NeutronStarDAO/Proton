@@ -171,13 +171,14 @@
 
   @keyframes slideDown {
     from {
-      transform: scaleY(0);
+      transform: translateY(-30%);
       transform-origin: top;
+      opacity: 0;
     }
 
     to {
-      transform: scaleY(1);
-
+      transform: translateY(0);
+      opacity: 1;
     }
   }
 
