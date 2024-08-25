@@ -3,23 +3,35 @@
   display: flex;
   flex-direction: column;
   gap: 2rem;
+  font-family: "Fredoka", sans-serif;
 
-  .title {
+  .receive_title {
     font-size: 3.7rem;
+    font-weight: 500;
     display: flex;
     align-items: center;
-    gap: 2rem
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .dark_receive_title svg path {
+    stroke: var(--text-color);
   }
 
   .token {
-    width: 31.4rem;
+    width: 31.9rem;
     padding: 1rem;
     display: flex;
     align-items: center;
     justify-content: center;
     background: #E0E6F9;
-    font-size: 3.3rem;
+    font-weight: 500;
+    font-size: 2.9rem;
     border-radius: 2rem;
+  }
+
+  .dark_token {
+    background: #434e6e;
   }
 
   .wallet {
@@ -39,6 +51,7 @@
       background: #E0E6F9;
       border-radius: 2rem;
       font-size: 2.3rem;
+      font-family: Arial, Helvetica, sans-serif;
       gap: 2rem;
       cursor: pointer;
 
@@ -48,6 +61,14 @@
         path {
           fill: white;
         }
+      }
+    }
+
+    .dark_address {
+      background: #434e6e;
+
+      svg path {
+        fill: var(--text-color);
       }
     }
   }
@@ -63,5 +84,7 @@
     border-radius: 2rem;
     color: white;
     font-size: 3rem;
+    font-weight: 500;
+    margin-bottom: 2rem;
   }
 }

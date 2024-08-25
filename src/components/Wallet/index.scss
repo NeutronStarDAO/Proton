@@ -5,9 +5,10 @@
   align-items: start;
   padding: 3rem;
   overflow: auto;
+  font-family: "Fredoka", sans-serif;
   border-right: 1px solid #679BF8;
   border-left: 1px solid #679BF8;
-  gap: 4rem;
+  gap: 3rem;
 
   .title {
     font-size: 3.7rem;
@@ -51,10 +52,14 @@
         padding: 2rem 3rem;
         display: inline-flex;
         cursor: pointer;
+
+        &:hover {
+          background-color: #AECBFF;
+        }
       }
 
       span {
-
+        
       }
 
       img {
@@ -72,9 +77,25 @@
         cursor: pointer;
       }
 
+      .receive:hover {
+        background-color: #AECBFF;
+      }
+
       .send {
         background: #E1DEFF;
+
+        &:hover {
+          background-color: #CEC9FF;
+        }
       }
+    }
+  }
+
+  .dark_balance {
+    background-color: #2d3550;
+
+    .token_item div span {
+      color: #000;
     }
   }
 
@@ -99,5 +120,9 @@
       font-size: 2rem;
       grid-template-columns:0.4fr 1.5fr 4fr 3fr 2fr;
     }
+  }
+
+  .dark_tx_main {
+    background: #2d3550;
   }
 }

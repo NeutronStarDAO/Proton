@@ -3,23 +3,35 @@
   display: flex;
   flex-direction: column;
   gap: 2rem;
+  font-family: "Fredoka", sans-serif;
 
-  .title {
+  .send_title {
     font-size: 3.7rem;
+    font-weight: 500;
     display: flex;
     align-items: center;
-    gap: 2rem
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .dark_send_title svg path {
+    stroke: var(--text-color);
   }
 
   .token {
-    width: 31.4rem;
+    width: 31.9rem;
     padding: 1rem;
     display: flex;
     align-items: center;
     justify-content: center;
     background: #E0E6F9;
     font-size: 3.3rem;
+    font-weight: 500;
     border-radius: 2rem;
+  }
+
+  .dark_token {
+    background: #434e6e;
   }
 
   .account {
@@ -29,9 +41,9 @@
     align-items: start;
     font-size: 3.3rem;
     gap: 1rem;
-    p{
+    
+    p {
       margin: 0;
-      color:#2e2e23;
       font-size: 2.3rem;
     }
 
@@ -56,13 +68,24 @@
 
     .amount{
       margin-top: 2rem;
+
       span{
         cursor: pointer;
         font-size: 2.3rem;
-        color:#2e2e23;
       }
     }
 
+  }
+
+  .dark_account {
+
+    .amount, .send_address {
+      background: #434e6e;
+    }
+
+    .amount span {
+      color: var(--text-color) !important;
+    }
   }
 
   .done_button {
@@ -76,5 +99,7 @@
     border-radius: 2rem;
     color: white;
     font-size: 3rem;
+    font-weight: 500;
+    margin-bottom: 2rem;
   }
 }

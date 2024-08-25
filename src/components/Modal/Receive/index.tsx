@@ -5,9 +5,11 @@ import {Modal} from "../index";
 import Icon from "../../../Icons/Icon";
 import {shortenString} from "../../Sider";
 import {Tooltip} from "antd";
+import {useAuth} from "../../../utils/useAuth";
 
 export const Receive = ({open, setOpen, address}: { open: boolean, setOpen: Function, address: string }) => {
   const [copied, setCopied] = React.useState(false)
+  const {isDark} = useAuth()
 
   const copy = async () => {
     try {
@@ -22,19 +24,19 @@ export const Receive = ({open, setOpen, address}: { open: boolean, setOpen: Func
   }, [open]);
   return <Modal setOpen={setOpen} open={open}>
     <div className={"receive_modal"}>
-      <div className={"title"}>
+      <div className={`receive_title ${isDark ? "dark_receive_title" : ""}`}>
         <Icon name={"right"}/>
         Receive
       </div>
 
-      <div className={"token"}>
+      <div className={`token ${isDark ? "dark_token" : ""}`}>
         ICP
       </div>
 
       <div className={"wallet"}>
         Wallet Address
         <Tooltip title={copied ? "copied!" : "copy"}>
-          <div className={"address"} onClick={copy}>
+          <div className={`address ${isDark ? "dark_address" : ""}`} onClick={copy}>
             {shortenString(address, 40)}
             <Icon name={"copy"}/>
           </div>
