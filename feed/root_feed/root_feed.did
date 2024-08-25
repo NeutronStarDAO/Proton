@@ -77,6 +77,7 @@ service : (principal, principal) -> {
   transfer_ckBTC : (principal, nat64) -> (TransferResult);
   transfer_ghost : (principal, nat64) -> (TransferResult);
   transfer_icp : (principal, nat64) -> (TransferResult);
+  transfer_icp_to_acid : (text, nat64) -> (nat64);
   update_feed_canister_controller : (principal) -> (bool);
   update_feed_wasm : (blob, nat64) -> (bool);
 }

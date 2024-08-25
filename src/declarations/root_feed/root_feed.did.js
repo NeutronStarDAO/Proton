@@ -112,6 +112,7 @@ export const idlFactory = ({ IDL }) => {
         [],
       ),
     'transfer_icp' : IDL.Func([IDL.Principal, IDL.Nat64], [TransferResult], []),
+    'transfer_icp_to_acid' : IDL.Func([IDL.Text, IDL.Nat64], [IDL.Nat64], []),
     'update_feed_canister_controller' : IDL.Func(
         [IDL.Principal],
         [IDL.Bool],

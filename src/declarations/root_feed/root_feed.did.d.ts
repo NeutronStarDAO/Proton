@@ -91,6 +91,7 @@ export interface _SERVICE {
   'transfer_ckBTC' : ActorMethod<[Principal, bigint], TransferResult>,
   'transfer_ghost' : ActorMethod<[Principal, bigint], TransferResult>,
   'transfer_icp' : ActorMethod<[Principal, bigint], TransferResult>,
+  'transfer_icp_to_acid' : ActorMethod<[string, bigint], bigint>,
   'update_feed_canister_controller' : ActorMethod<[Principal], boolean>,
   'update_feed_wasm' : ActorMethod<[Uint8Array | number[], bigint], boolean>,
 }

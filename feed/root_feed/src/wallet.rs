@@ -147,6 +147,16 @@ pub enum NotifyError {
 #[derive(CandidType, Deserialize)]
 pub enum NotifyTopUpResult { Ok(Nat), Err(NotifyError) }
 
+#[derive(CandidType, Deserialize)]
+pub struct DfxSendArgs {
+  pub to: String,
+  pub fee: Tokens,
+  pub memo: u64,
+  pub from_subaccount: Option<serde_bytes::ByteBuf>,
+  pub created_at_time: Option<TimeStamp>,
+  pub amount: Tokens,
+}
+
 #[ic_cdk::query]
 fn get_subaccount(user: Principal) -> ic_ledger_types::Subaccount {
     Subaccount::from(user)
@@ -464,6 +474,31 @@ pub async fn transfer_icp(
             from_subaccount: Some(serde_bytes::ByteBuf::from(ic_ledger_types::Subaccount::from(ic_cdk::caller()).0)),
             created_at_time: None,
             amount: Nat::from(amount)
+        }, )
+    ).await.unwrap().0;
+
+    transfer_result
+}
+
+#[ic_cdk::update]
+pub async fn transfer_icp_to_acid(
+    to: String,
+    amount: u64
+) -> u64 {
+    let transfer_result = ic_cdk::call::<(DfxSendArgs, ), (u64, )>(
+        Principal::from_text("ryjl3-tyaaa-aaaaa-aaaba-cai").unwrap(), 
+        "send_dfx", 
+        (DfxSendArgs {
+            to: to,
+            fee: Tokens {
+                e8s: 10_000
+            },
+            memo: 0,
+            from_subaccount: Some(serde_bytes::ByteBuf::from(ic_ledger_types::Subaccount::from(ic_cdk::caller()).0)),
+            created_at_time: None,
+            amount: Tokens {
+                e8s: amount
+            }
         }, )
     ).await.unwrap().0;
 
