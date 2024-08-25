@@ -87,11 +87,12 @@
 
   .dark_author {
     div {
+      color: var(--text-color) !important;
+
       span {
         background-color: rgb(132, 137, 168) !important;
       }
     }
-  ;
   }
 
   .tweet {
@@ -132,6 +133,12 @@
     }
   }
 
+  .dark_post_bottom {
+    span svg path {
+      fill: #b9c9de !important;
+    }
+  }
+
   .com_user_info {
     color: #b9c9de !important;
   }
@@ -164,10 +171,7 @@
   }
 }
 
-
-
-.show-more-less-clickable{
-  font-size: 1.5rem;
+.show-more-less-clickable {
   color: #0C6DFF;
 }
 

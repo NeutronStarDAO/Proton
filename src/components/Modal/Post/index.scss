@@ -349,11 +349,11 @@
 
 .dark_post_modal {
   .post_head div {
-    color: black;
+    color: var(--text-color);
   }
 
   .post_body textarea {
-    color: #000;
+    color: var(--text-color);
   }
 
   .post_foot {

@@ -93,7 +93,7 @@ const CommentCon = ({comment, profile}: { comment: comment_type, profile: Profil
             <div style={{
               fontSize: "1.7rem",
               fontWeight: "500",
-
+              color: "rgba(0,0,0,0.5)"
             }}>
               {profile ? shortenString(profile.handle.toString(), 10) : ""}
             </div> :
@@ -106,14 +106,14 @@ const CommentCon = ({comment, profile}: { comment: comment_type, profile: Profil
             background: "rgba(0,0,0,0.5)",
             borderRadius: "50%"
           }}/>
-          <div style={{fontWeight: "500"}}>
+          <div style={{fontWeight: "500", color: "rgba(0,0,0,0.5)"}}>
             {getTime(comment.created_at)}
           </div>
         </div>
       </div>
     </div>
     <ShowMoreTest content={comment.content} className={"tweet"}/>
-    <div className={"post_bottom"}>
+    <div className={`post_bottom ${isDark ? "dark_post_bottom" : ""}`}>
       {kk.map((v, k) => {
         return <span key={k}>
       <Icon name={v.label as Name}/>

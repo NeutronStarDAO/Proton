@@ -24,6 +24,7 @@ const Tx = () => {
   const [txs, setTxs] = React.useState<WalletTX[]>([])
   const {principal} = useAuth()
 
+  const {isDark} = useAuth()
   useEffect(() => {
     principal && rootFeedApi.icpTx(principal).then(e => {
       console.log(e)
@@ -31,7 +32,7 @@ const Tx = () => {
     })
   }, [principal]);
 
-  return <div className={"tx_main"}>
+  return <div className={`tx_main ${isDark ? "dark_tx_main" : ""}`}>
       <span style={{fontSize: "2.7rem", gap: "2rem", display: "flex", alignItems: "center"}}>
         Transactions
         <Icon name={"tx"}/>
@@ -56,6 +57,7 @@ const TxItem = ({tx}: { tx: WalletTX }) => {
 const Balance = ({setShowTx}: { setShowTx: Function }) => {
   const {principal, isAuth} = useAuth()
   const [balances, setBalance] = React.useState<bigint[]>([])
+  const {isDark} = useAuth()
   useEffect(() => {
     if (principal && isAuth) {
       Promise.all([rootFeedApi.ckBTCBalance(principal), rootFeedApi.ghostBalance(principal), rootFeedApi.icpBalance(principal)]).then(e => {
@@ -65,7 +67,7 @@ const Balance = ({setShowTx}: { setShowTx: Function }) => {
     }
   }, [principal, isAuth])
 
-  return <div className={"balance"}>
+  return <div className={`balance ${isDark ? "dark_balance" : ""}`}>
     <div className={"title"}>
        <span>
         Token

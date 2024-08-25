@@ -347,7 +347,7 @@ export const Post = ({post, updateFunction, selectedID, profile}: {
                 value={replyContent}
                 name=""
                 id=""
-        // rows={3}
+                rows={3}
                 placeholder={"Reply"}/>
 
       <div onClick={sendReply} style={(() => {
