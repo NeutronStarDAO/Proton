@@ -35,7 +35,7 @@ export const Send = ({open, setOpen}: { open: boolean, setOpen: Function }) => {
           <input  onChange={e => setAmount(Number(e.target.value))} placeholder={"Amount"} type="number"/>
           <span>Max</span>
         </div>
-        <p>Fee:</p>
+        <p>Fee: 0.0001 ICP</p>
       </div>
 
       <div className={"done_button"} onClick={send}>

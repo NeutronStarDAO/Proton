@@ -54,10 +54,12 @@
       font-family: Arial, Helvetica, sans-serif;
       gap: 2rem;
       cursor: pointer;
+      flex-wrap: wrap;
 
       &:hover {
         background-color: #10499F;
         color: white;
+        
         path {
           fill: white;
         }
