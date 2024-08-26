@@ -24,6 +24,9 @@ export const Send = ({open, setOpen, balance, token, getBalance}: {
   }, [open]);
 
   const send = () => {
+    if (token === "ckBTC") {
+      return message.error("coming soon")
+    }
     let newAmount = amount
     if (token === "ICP" && amount === balance) {
       newAmount = amount - 0.0001

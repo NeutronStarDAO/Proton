@@ -43,7 +43,7 @@ export default class Feed {
     }
   }
 
-  async getAllPost(who:Principal) {
+  async getAllPost(who: Principal) {
     const actor = await this.getNoIdentityActor()
     try {
       const res = await actor.get_all_post(who) as Post[]
@@ -55,15 +55,6 @@ export default class Feed {
     }
   }
 
-  async getAllPostWithoutUpate() {
-    const actor = await this.getNoIdentityActor()
-    try {
-      return await actor.getAllPost() as Post[]
-    } catch (e) {
-      console.log("getAllPost", e)
-      throw e
-    }
-  }
 
   async createComment(postId: string, content: string) {
     const actor = await this.getActor()
@@ -115,14 +106,34 @@ export default class Feed {
     }
   }
 
-  async getLatestFeed(who:Principal,n: number) {
+  async getLatestFeed(who: Principal, n: number) {
     const actor = await this.getActor()
     try {
-      const res = await actor.get_latest_feed(who,BigInt(n)) as Post[]
+      const res = await actor.get_latest_feed(who, BigInt(n)) as Post[]
       updateAllData({allFeed: res})
       return res
     } catch (e) {
       console.log("getLatestFeed error", e)
+      throw e
+    }
+  }
+
+  async getHomeFeedByLength(who: Principal, start: number, end: number) {
+    const actor = await this.getActor()
+    try {
+      return await actor.get_home_feed_by_length(who, BigInt(start), BigInt(end)) as Post[]
+    } catch (e) {
+      console.log("getHomeFeedByLength error", e)
+      throw e
+    }
+  }
+
+  async getLatestFeedByLength(who: Principal, n: number, m: number) {
+    const actor = await this.getActor()
+    try {
+      return await actor.get_all_latest_feed_by_length(BigInt(n), BigInt(m)) as Post[]
+    } catch (e) {
+      console.log("getLatestFeedByLength error", e)
       throw e
     }
   }

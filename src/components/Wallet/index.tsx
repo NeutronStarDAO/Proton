@@ -6,6 +6,7 @@ import {useAuth} from "../../utils/useAuth";
 import {Receive} from "../Modal/Receive";
 import {Send} from "../Modal/Send";
 import {ledgerApi} from "../../actors/ledger";
+import {ckBTCApi} from "../../actors/ckbtc";
 
 export const Wallet = () => {
   return <div className={"wallet_main"}>
@@ -21,7 +22,7 @@ const Balance = () => {
 
   const getBalance = async () => {
     if (principal && isAuth) {
-      Promise.all([ledgerApi.icpBalance(principal)]).then(e => setBalance(e))
+      Promise.all([ckBTCApi.ckBTCBalance(principal), ledgerApi.icpBalance(principal)]).then(e => setBalance(e))
     }
   }
   useEffect(() => {
@@ -40,9 +41,8 @@ const Balance = () => {
         Transactions
       </span>
     </div>
-    {/*<Token token={"ckBTC"} balance={Number(balances[0])} filePath={"/img_4.png"}/>*/}
-    {/*<Token token={"ghost"} balance={Number(balances[1])} filePath={"/img_5.png"}/>*/}
-    <Token getBalance={getBalance} token={"ICP"} balance={Number(balances[0]) / 1e8} filePath={"/img_6.png"}/>
+    <Token getBalance={getBalance} token={"ckBTC"} balance={Number(balances[0])} filePath={"/img_4.png"}/>
+    <Token getBalance={getBalance} token={"ICP"} balance={Number(balances[1]) / 1e8} filePath={"/img_6.png"}/>
   </div>
 }
 
@@ -54,9 +54,9 @@ const Token = ({filePath, balance, token, getBalance}: {
   const [openReceive, setOpenReceive] = React.useState(false)
   const [openSend, setOpenSend] = React.useState(false)
   const {account, principal} = useAuth()
-
   return <div className={"token_item"}>
-    <Receive account={account ?? ""} principalId={principal ? principal.toString() : ""} open={openReceive}
+    <Receive account={account ?? ""} principalId={token === "ICP" ? principal ? principal.toString() : "" : ""}
+             open={openReceive}
              setOpen={setOpenReceive}/>
     <Send getBalance={getBalance} token={token} balance={balance} open={openSend} setOpen={setOpenSend}/>
     <img src={filePath} alt=""/>
@@ -65,14 +65,14 @@ const Token = ({filePath, balance, token, getBalance}: {
       <span className={"record_wrap"}
             onClick={() => {
               if (token === "ICP") window.open(`https://dashboard.internetcomputer.org/account/${account}`)
+              else if (token === "ckBTC") window.open(`https://dashboard.internetcomputer.org/ethereum/mxzaz-hqaaa-aaaar-qaada-cai/account/${principal?.toString()}`)
             }}>
         <Icon name={"record"}/>
       </span>
     </span>
     <div className={"token_button_wrap"} style={{display: "flex", alignItems: "center", gap: "2rem", width: "40%"}}>
       <span className={"receive"} onClick={() => {
-        if (token === "ICP")
-          setOpenReceive(true)
+        setOpenReceive(true)
       }}>Receive</span>
       <span className={"send"} onClick={() => setOpenSend(true)}>Send</span>
     </div>

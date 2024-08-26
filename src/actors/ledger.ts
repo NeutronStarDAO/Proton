@@ -19,7 +19,9 @@ export default class Ledger {
         owner: who,
         subaccount: []
       }
-      return await actor.icrc1_balance_of(account) as bigint
+      const res=  await actor.icrc1_balance_of(account) as bigint
+      console.log("icp",res)
+      return res
     } catch (e) {
       console.log("icp_balance error", e)
       throw e
