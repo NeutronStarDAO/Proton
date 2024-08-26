@@ -9,18 +9,15 @@ import {useAuth} from "../../../utils/useAuth";
 import {ledgerApi} from "../../../actors/ledger";
 import {message} from "antd";
 
-export const Send = ({open, setOpen, balance, token}: {
+export const Send = ({open, setOpen, balance, token, getBalance}: {
   open: boolean,
   setOpen: Function,
   balance: number,
-  token: string
+  token: string, getBalance: Function
 }) => {
   const [to, setTo] = React.useState("")
   const [amount, setAmount] = React.useState<number>(0)
-
   const {isDark} = useAuth()
-
-
   useEffect(() => {
     setAmount(0)
     setTo("")
@@ -29,7 +26,7 @@ export const Send = ({open, setOpen, balance, token}: {
   const send = () => {
     let newAmount = amount
     if (token === "ICP" && amount === balance) {
-      newAmount = amount - 0.0002
+      newAmount = amount - 0.0001
     }
     if (newAmount <= 0) {
       return message.error("invalid amount")
@@ -38,9 +35,11 @@ export const Send = ({open, setOpen, balance, token}: {
     message.loading("transferring...")
     if (to.length === 64) { // account id
       try {
-        ledgerApi.transferUseAccount(to, newAmount).then(() => message.success("transfer success"))
+        ledgerApi.transferUseAccount(to, newAmount).then(() => {
+          message.success("transfer success")
+          getBalance()
+        })
       } catch (e) {
-        console.log("???")
         message.error("transfer error")
       }
     } else if (to.length === 63) {// principal
@@ -48,10 +47,12 @@ export const Send = ({open, setOpen, balance, token}: {
       try {
         pri = Principal.fromText(to)
       } catch (e) {
-        message.error("principal error")
-        return
+        return message.error("principal error")
       }
-      ledgerApi.transferUsePrincipal(pri, newAmount).then(() => message.success("transfer success"))
+      ledgerApi.transferUsePrincipal(pri, newAmount).then(() => {
+        message.success("transfer success")
+        getBalance()
+      })
     } else {
       message.error("invalid address")
     }
@@ -83,7 +84,7 @@ export const Send = ({open, setOpen, balance, token}: {
           }} value={amount} placeholder={"Amount"} type="number"/>
           <span onClick={() => setAmount(balance)}>Max</span>
         </div>
-        <p>Fee: 0.0001 ICP</p>
+        <p style={{display: token === "ICP" ? "flex" : "none"}}>Fee: 0.0001 ICP</p>
       </div>
 
       <div className={"done_button"} onClick={send}>

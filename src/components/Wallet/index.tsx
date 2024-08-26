@@ -18,10 +18,14 @@ const Balance = () => {
   const {principal, isAuth} = useAuth()
   const [balances, setBalance] = React.useState<bigint[]>([])
   const {isDark} = useAuth()
-  useEffect(() => {
+
+  const getBalance = async () => {
     if (principal && isAuth) {
       Promise.all([ledgerApi.icpBalance(principal)]).then(e => setBalance(e))
     }
+  }
+  useEffect(() => {
+    getBalance()
   }, [principal, isAuth])
 
   return <div className={`balance ${isDark ? "dark_balance" : ""}`}>
@@ -38,14 +42,14 @@ const Balance = () => {
     </div>
     {/*<Token token={"ckBTC"} balance={Number(balances[0])} filePath={"/img_4.png"}/>*/}
     {/*<Token token={"ghost"} balance={Number(balances[1])} filePath={"/img_5.png"}/>*/}
-    <Token token={"ICP"} balance={Number(balances[0]) / 1e8} filePath={"/img_6.png"}/>
+    <Token getBalance={getBalance} token={"ICP"} balance={Number(balances[0]) / 1e8} filePath={"/img_6.png"}/>
   </div>
 }
 
-const Token = ({filePath, balance, token}: {
+const Token = ({filePath, balance, token, getBalance}: {
   filePath: string,
   balance: number,
-  token: string,
+  token: string, getBalance: Function
 }) => {
   const [openReceive, setOpenReceive] = React.useState(false)
   const [openSend, setOpenSend] = React.useState(false)
@@ -54,7 +58,7 @@ const Token = ({filePath, balance, token}: {
   return <div className={"token_item"}>
     <Receive account={account ?? ""} principalId={principal ? principal.toString() : ""} open={openReceive}
              setOpen={setOpenReceive}/>
-    <Send token={token} balance={balance} open={openSend} setOpen={setOpenSend}/>
+    <Send getBalance={getBalance} token={token} balance={balance} open={openSend} setOpen={setOpenSend}/>
     <img src={filePath} alt=""/>
     <span style={{flex: "1"}}>{balance.toFixed(3)}</span>
     <span style={{flex: "1"}}>
