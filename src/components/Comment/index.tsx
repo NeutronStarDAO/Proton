@@ -1,7 +1,6 @@
 import "./index.scss"
 import ShowMoreText from 'react-show-more-text';
-
-import React, {CSSProperties, useEffect, useRef, useState} from "react"
+import React, {useEffect, useState} from "react"
 import {Comment as comment_type} from "../../declarations/bucket/bucket";
 import {shortenString} from "../Sider";
 import Icon, {Name} from "../../Icons/Icon";
@@ -136,9 +135,8 @@ export const ShowMoreTest = React.memo(({content, className}: { content: string,
       <div>
         <ShowMoreText
           lines={7}
-          more="Show More"
-          less="Show Less"
-          expanded={false}
+          more={"Show more"}
+          less={"Show less"}
           truncatedEndingComponent={"...   "}
           className={className}
         >

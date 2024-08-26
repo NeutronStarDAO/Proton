@@ -271,7 +271,12 @@ export const Post = ({post, updateFunction, selectedID, profile}: {
 
   return <div ref={postRef}
               className={`post_main ${isDark ? "dark_post_main" : ""} ${(selectedID === post.post_id) ? isDark ? "dark_selected_post" : "selected_post" : ""}`}
-              onClick={() => updateSelectPost(post)}
+              onClick={(e) => {
+                if ("className" in e.target && e.target.className === "show-more-less-clickable") {
+                  return 0
+                }
+                updateSelectPost(post)
+              }}
   >
     {contextHolder}
     <div style={{display: "flex", justifyContent: "space-between", alignItems: "center"}}>
