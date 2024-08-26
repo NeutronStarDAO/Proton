@@ -1,7 +1,9 @@
 import {Post} from "../declarations/feed/feed";
 import * as SHA1 from "@dfinity/principal/lib/esm/utils/sha224";
 import {getCrc32} from "@dfinity/principal/lib/esm/utils/getCrc";
-import {Principal} from "@dfinity/principal";
+import {Principal} from "@dfinity/principal"
+import {Buffer} from "buffer";
+
 
 
 export const getBase64 = (file: File): Promise<string> =>
