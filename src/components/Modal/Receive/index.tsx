@@ -7,11 +7,11 @@ import {shortenString} from "../../Sider";
 import {Tooltip} from "antd";
 import {useAuth} from "../../../utils/useAuth";
 
-export const Receive = ({open, setOpen, account, principalId}: {
+export const Receive = ({open, setOpen, account, principalId,token}: {
   open: boolean,
   setOpen: Function,
   account?: string,
-  principalId: string
+  principalId: string,token:string
 }) => {
   const [copied, setCopied] = React.useState(false)
   const {isDark} = useAuth()
@@ -35,7 +35,7 @@ export const Receive = ({open, setOpen, account, principalId}: {
       </div>
 
       <div className={`token ${isDark ? "dark_token" : ""}`}>
-        ICP
+        {token}
       </div>
 
       <div style={{display: account ? "flex" : "none"}} className={"wallet"}>
