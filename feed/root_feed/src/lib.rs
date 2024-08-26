@@ -275,6 +275,13 @@ fn get_user_actor() -> Principal {
     USER_ACTOR.with(|user_actor| user_actor.borrow().get().clone())
 }
 
+#[ic_cdk::query]
+fn get_registered_user_number() -> u64 {
+    USER_FEED_CANISTER.with(|map| {
+        map.borrow().len()
+    })
+}
+
 #[ic_cdk::update]
 async fn set_root_bucket(canister: Principal) -> bool {
     if !is_controller(&ic_cdk::caller()).await {

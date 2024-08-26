@@ -68,6 +68,7 @@ export const idlFactory = ({ IDL }) => {
         ['query'],
       ),
     'get_feed_wasm' : IDL.Func([], [IDL.Vec(IDL.Nat8)], ['query']),
+    'get_registered_user_number' : IDL.Func([], [IDL.Nat64], ['query']),
     'get_root_bucket' : IDL.Func([], [IDL.Principal], ['query']),
     'get_subaccount' : IDL.Func(
         [IDL.Principal],

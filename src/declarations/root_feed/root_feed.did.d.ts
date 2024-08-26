@@ -65,6 +65,7 @@ export interface _SERVICE {
     Array<[Principal, bigint]>
   >,
   'get_feed_wasm' : ActorMethod<[], Uint8Array | number[]>,
+  'get_registered_user_number' : ActorMethod<[], bigint>,
   'get_root_bucket' : ActorMethod<[], Principal>,
   'get_subaccount' : ActorMethod<[Principal], Uint8Array | number[]>,
   'get_user_actor' : ActorMethod<[], Principal>,

@@ -55,6 +55,7 @@ service : (principal, principal) -> {
       vec record { principal; nat64 },
     ) query;
   get_feed_wasm : () -> (blob) query;
+  get_registered_user_number : () -> (nat64) query;
   get_root_bucket : () -> (principal) query;
   get_subaccount : (principal) -> (blob) query;
   get_user_actor : () -> (principal) query;
