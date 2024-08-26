@@ -6,6 +6,7 @@ import {notification} from "antd";
 import {NotificationInstance} from "antd/es/notification/interface";
 import {CheckOutlined, CloseOutlined, LoadingOutlined} from "@ant-design/icons";
 import {rootFeedApi} from "../actors/root_feed";
+import {getToAccountIdentifier} from "./util";
 
 export type Theme = "light" | "dark" | "auto"
 export const themeKey = "proton_theme"
@@ -109,11 +110,12 @@ export const useProvideAuth = (api: NotificationInstance, authClient: IIForIdent
   }
 //aa3zr-2je3k-6vmid-vj657-x36hs-ylxag-e2jd5-pufmf-hh26e-uttum-rae
   useEffect(() => {
-    if (principal) {
+    if (principal && authenticated) {
       getFeedCai(principal)
-      rootFeedApi.getAccountIdentifier(principal).then(e => setAccount(e))
+      const ac = getToAccountIdentifier(principal)
+      setAccount(ac)
     }
-  }, [principal])
+  }, [principal, authenticated])
 
   const logIn = async (): Promise<{ message?: string; status?: number } | undefined> => {
     try {

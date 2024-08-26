@@ -1,4 +1,8 @@
 import {Post} from "../declarations/feed/feed";
+import * as SHA1 from "@dfinity/principal/lib/esm/utils/sha224";
+import {getCrc32} from "@dfinity/principal/lib/esm/utils/getCrc";
+import {Principal} from "@dfinity/principal";
+
 
 export const getBase64 = (file: File): Promise<string> =>
   new Promise((resolve, reject) => {
@@ -77,3 +81,37 @@ export const postSort = (arr: Post[]): Post[] => {
 
   return [...postSort(left), mid, ...postSort(right)];
 }
+
+//account id
+export const getToAccountIdentifier = (principal: Principal) => {
+  const padding = new Buffer("\x0Aaccount-id");
+  const array = new Uint8Array([
+    // @ts-ignore
+    ...padding,
+    // @ts-ignore
+    ...principal.toUint8Array(),
+    ...getSubAccountArray(0),
+  ]);
+  const hash = SHA1.sha224(array);
+  const checksum = to32bits(getCrc32(hash));
+  // @ts-ignore
+  const array2 = new Uint8Array([...checksum, ...hash]);
+  return toHexString(array2);
+};
+
+const to32bits = (num: number) => {
+  let b = new ArrayBuffer(4);
+  new DataView(b).setUint32(0, num);
+  return Array.from(new Uint8Array(b));
+};
+const toHexString = (byteArray: Uint8Array) => {
+  return Array.from(byteArray, function (byte) {
+    return ("0" + (byte & 0xff).toString(16)).slice(-2);
+  }).join("");
+};
+
+const getSubAccountArray = (s: number) => {
+  return Array(28)
+  .fill(0)
+  .concat(to32bits(s ? s : 0));
+};

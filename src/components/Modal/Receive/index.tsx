@@ -7,13 +7,18 @@ import {shortenString} from "../../Sider";
 import {Tooltip} from "antd";
 import {useAuth} from "../../../utils/useAuth";
 
-export const Receive = ({open, setOpen, address}: { open: boolean, setOpen: Function, address: string }) => {
+export const Receive = ({open, setOpen, account, principalId}: {
+  open: boolean,
+  setOpen: Function,
+  account: string,
+  principalId?: string
+}) => {
   const [copied, setCopied] = React.useState(false)
   const {isDark} = useAuth()
 
-  const copy = async () => {
+  const copy = async (text: string) => {
     try {
-      await navigator.clipboard.writeText(address);
+      await navigator.clipboard.writeText(text);
       setCopied(true)
     } catch (e) {
     }
@@ -34,10 +39,21 @@ export const Receive = ({open, setOpen, address}: { open: boolean, setOpen: Func
       </div>
 
       <div className={"wallet"}>
-        Wallet Address
+        Account ID
         <Tooltip title={copied ? "copied!" : "copy"}>
-          <div className={`address ${isDark ? "dark_address" : ""}`} onClick={copy}>
-            {shortenString(address, 40)}
+          <div className={`address ${isDark ? "dark_address" : ""}`} onClick={() => copy(account)}>
+            {shortenString(account, 40)}
+            <Icon name={"copy"}/>
+          </div>
+        </Tooltip>
+      </div>
+
+      <div style={{display: principalId ? "flex" : "none"}} className={"wallet"}>
+        Principal ID
+        <Tooltip title={copied ? "copied!" : "copy"}>
+          <div className={`address ${isDark ? "dark_address" : ""}`}
+               onClick={() => copy(principalId ?? "")}>
+            {shortenString(principalId ?? "", 40)}
             <Icon name={"copy"}/>
           </div>
         </Tooltip>

@@ -14,12 +14,11 @@ import {useSelectPostStore} from "./redux/features/SelectPost";
 import {ProfileModal} from "./components/Modal/Profile";
 import {FollowList} from "./components/FollowList";
 import {Wallet} from "./components/Wallet";
-import {Principal} from "@dfinity/principal";
 
 function App() {
 
   const selectPost = useSelectPostStore()
-  const {principal, isAuth, isDark,account} = useAuth()
+  const {principal, isAuth, isDark, account} = useAuth()
   const scrollContainerRef = useRef(null);
   const [open, setOpen] = useState(false)
 
@@ -47,13 +46,12 @@ function App() {
   };
 
   useEffect(() => {
-    if (isDark){
+    if (isDark) {
       document.documentElement.classList.toggle('dark-theme', true);
-        document.documentElement.classList.toggle('light-theme', false);
-    }
-    else {
+      document.documentElement.classList.toggle('light-theme', false);
+    } else {
       document.documentElement.classList.toggle('light-theme', true);
-        document.documentElement.classList.toggle('dark-theme', false);
+      document.documentElement.classList.toggle('dark-theme', false);
     }
   }, [isDark]);
 

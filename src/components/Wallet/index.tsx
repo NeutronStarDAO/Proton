@@ -3,67 +3,24 @@ import "./index.scss"
 import React, {useEffect} from "react"
 import Icon from "../../Icons/Icon";
 import {useAuth} from "../../utils/useAuth";
-import {rootFeedApi} from "../../actors/root_feed";
-import {Principal} from "@dfinity/principal";
 import {Receive} from "../Modal/Receive";
 import {Send} from "../Modal/Send";
-import {WalletTX} from "../../declarations/root_feed/root_feed";
-import {shortenString} from "../Sider";
-import {nanosecondsToDate} from "../../utils/util";
+import {ledgerApi} from "../../actors/ledger";
 
 export const Wallet = () => {
-  const [showTx, setShowTx] = React.useState(false)
   return <div className={"wallet_main"}>
     <div className={"title"}>Wallet</div>
-    <Balance setShowTx={setShowTx}/>
-    {showTx && <Tx/>}
+    <Balance/>
   </div>
 }
 
-const Tx = () => {
-  const [txs, setTxs] = React.useState<WalletTX[]>([])
-  const {principal} = useAuth()
-
-  const {isDark} = useAuth()
-  useEffect(() => {
-    principal && rootFeedApi.icpTx(principal).then(e => {
-      console.log(e)
-      setTxs(e)
-    })
-  }, [principal]);
-
-  return <div className={`tx_main ${isDark ? "dark_tx_main" : ""}`}>
-      <span style={{fontSize: "2.7rem", gap: "2rem", display: "flex", alignItems: "center"}}>
-        Transactions
-        <Icon name={"tx"}/>
-        <img style={{width: "3rem"}} src="/img_6.png" alt=""/>
-      </span>
-    {txs.map((v, k) => {
-      return <TxItem tx={v} key={k}/>
-    })}
-  </div>
-}
-
-const TxItem = ({tx}: { tx: WalletTX }) => {
-  return <div className={"tx_item"}>
-    <Icon name={"receive"}/>
-    <span style={{fontSize: "2.3rem"}}>{Object.keys(tx.tx_type)[0]}</span>
-    <span> {shortenString(tx.tx_hash, 20)}</span>
-    <span>{Number(tx.amount) / 1e8}</span>
-    <span>{ nanosecondsToDate(tx.time) }</span>
-  </div>
-}
-
-const Balance = ({setShowTx}: { setShowTx: Function }) => {
+const Balance = () => {
   const {principal, isAuth} = useAuth()
   const [balances, setBalance] = React.useState<bigint[]>([])
   const {isDark} = useAuth()
   useEffect(() => {
     if (principal && isAuth) {
-      Promise.all([rootFeedApi.ckBTCBalance(principal), rootFeedApi.ghostBalance(principal), rootFeedApi.icpBalance(principal)]).then(e => {
-        console.log(e)
-        setBalance(e)
-      })
+      Promise.all([ledgerApi.icpBalance(principal)]).then(e => setBalance(e))
     }
   }, [principal, isAuth])
 
@@ -81,27 +38,30 @@ const Balance = ({setShowTx}: { setShowTx: Function }) => {
     </div>
     {/*<Token token={"ckBTC"} balance={Number(balances[0])} filePath={"/img_4.png"}/>*/}
     {/*<Token token={"ghost"} balance={Number(balances[1])} filePath={"/img_5.png"}/>*/}
-    <Token token={"ICP"} balance={Number(balances[2]) / 1e8} filePath={"/img_6.png"} setShowTx={setShowTx}/>
+    <Token token={"ICP"} balance={Number(balances[0]) / 1e8} filePath={"/img_6.png"}/>
   </div>
 }
 
-const Token = ({filePath, balance, token, setShowTx}: {
+const Token = ({filePath, balance, token}: {
   filePath: string,
   balance: number,
   token: string,
-  setShowTx: Function
 }) => {
   const [openReceive, setOpenReceive] = React.useState(false)
   const [openSend, setOpenSend] = React.useState(false)
-  const {account} = useAuth()
+  const {account, principal} = useAuth()
 
   return <div className={"token_item"}>
-    <Receive address={account ?? ""} open={openReceive} setOpen={setOpenReceive}/>
-    <Send open={openSend} setOpen={setOpenSend}/>
+    <Receive account={account ?? ""} principalId={principal ? principal.toString() : ""} open={openReceive}
+             setOpen={setOpenReceive}/>
+    <Send token={token} balance={balance} open={openSend} setOpen={setOpenSend}/>
     <img src={filePath} alt=""/>
-    <span style={{flex: "1"}}>{balance}</span>
+    <span style={{flex: "1"}}>{balance.toFixed(3)}</span>
     <span style={{flex: "1"}}>
-      <span className={"record_wrap"} onClick={() => setShowTx(true)}>
+      <span className={"record_wrap"}
+            onClick={() => {
+              if (token === "ICP") window.open(`https://dashboard.internetcomputer.org/account/${account}`)
+            }}>
         <Icon name={"record"}/>
       </span>
     </span>
