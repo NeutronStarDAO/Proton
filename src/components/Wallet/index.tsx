@@ -55,7 +55,7 @@ const Token = ({filePath, balance, token, getBalance}: {
   const [openSend, setOpenSend] = React.useState(false)
   const {account, principal} = useAuth()
   return <div className={"token_item"}>
-    <Receive account={account ?? ""} principalId={token === "ICP" ? principal ? principal.toString() : "" : ""}
+    <Receive account={token === "ICP" ? account ?? "" : ""} principalId={principal ? principal.toString() : ""}
              open={openReceive}
              setOpen={setOpenReceive}/>
     <Send getBalance={getBalance} token={token} balance={balance} open={openSend} setOpen={setOpenSend}/>

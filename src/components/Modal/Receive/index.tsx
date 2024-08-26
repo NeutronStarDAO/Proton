@@ -10,8 +10,8 @@ import {useAuth} from "../../../utils/useAuth";
 export const Receive = ({open, setOpen, account, principalId}: {
   open: boolean,
   setOpen: Function,
-  account: string,
-  principalId?: string
+  account?: string,
+  principalId: string
 }) => {
   const [copied, setCopied] = React.useState(false)
   const {isDark} = useAuth()
@@ -38,17 +38,17 @@ export const Receive = ({open, setOpen, account, principalId}: {
         ICP
       </div>
 
-      <div className={"wallet"}>
+      <div style={{display: account ? "flex" : "none"}} className={"wallet"}>
         Account ID
         <Tooltip title={copied ? "copied!" : "copy"}>
-          <div className={`address ${isDark ? "dark_address" : ""}`} onClick={() => copy(account)}>
-            {shortenString(account, 40)}
+          <div className={`address ${isDark ? "dark_address" : ""}`} onClick={() => copy(account ?? "")}>
+            {shortenString(account ?? "", 40)}
             <Icon name={"copy"}/>
           </div>
         </Tooltip>
       </div>
 
-      <div style={{display: principalId ? "flex" : "none"}} className={"wallet"}>
+      <div className={"wallet"}>
         Principal ID
         <Tooltip title={copied ? "copied!" : "copy"}>
           <div className={`address ${isDark ? "dark_address" : ""}`}
