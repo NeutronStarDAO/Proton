@@ -2,6 +2,7 @@ import {getActor} from "../utils/Actor";
 import {idlFactory} from "../declarations/ckBTC/ckbtc.did";
 import {Principal} from "@dfinity/principal";
 import {Account, Result, TransferArg} from "../declarations/ckBTC/ckbtc";
+import {toBigInt} from "ethers";
 
 
 const indexCai = "mxzaz-hqaaa-aaaar-qaada-cai"
@@ -19,7 +20,6 @@ export default class CkBTC {
         subaccount: []
       }
       const res = await actor.icrc1_balance_of(account) as bigint
-      console.log("btc",res)
       return res
     } catch (e) {
       console.log("ckBTCBalance error", e)
@@ -28,12 +28,12 @@ export default class CkBTC {
 
   }
 
-  async transferCkBTC(to: Principal, amount: number): Promise<bigint> {
+  async transferCkBTC(to: Principal, amount: bigint): Promise<bigint> {
     const actor = await this.getActor()
     try {
       const arg: TransferArg = {
         to: {owner: to, subaccount: []},
-        amount: BigInt(amount * 1e8),
+        amount,
         fee: [],
         memo: [],
         from_subaccount: [],

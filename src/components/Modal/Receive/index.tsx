@@ -15,7 +15,6 @@ export const Receive = ({open, setOpen, account, principalId,token}: {
 }) => {
   const [copied, setCopied] = React.useState(false)
   const {isDark} = useAuth()
-
   const copy = async (text: string) => {
     try {
       await navigator.clipboard.writeText(text);

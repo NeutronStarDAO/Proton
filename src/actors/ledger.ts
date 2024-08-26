@@ -19,8 +19,7 @@ export default class Ledger {
         owner: who,
         subaccount: []
       }
-      const res=  await actor.icrc1_balance_of(account) as bigint
-      console.log("icp",res)
+      const res = await actor.icrc1_balance_of(account) as bigint
       return res
     } catch (e) {
       console.log("icp_balance error", e)
@@ -28,12 +27,12 @@ export default class Ledger {
     }
   }
 
-  async transferUsePrincipal(to: Principal, amount: number): Promise<bigint> {
+  async transferUsePrincipal(to: Principal, amount: bigint): Promise<bigint> {
     const actor = await this.getActor()
     try {
       const arg: TransferArg = {
         to: {owner: to, subaccount: []},
-        amount: BigInt(amount * 1e8),
+        amount,
         fee: [],
         memo: [],
         from_subaccount: [],
@@ -50,12 +49,12 @@ export default class Ledger {
     }
   }
 
-  async transferUseAccount(to: string, amount: number): Promise<bigint> {
+  async transferUseAccount(to: string, amount: bigint): Promise<bigint> {
     const actor = await this.getActor()
     try {
       const arg: SendArgs = {
         to,
-        amount: {e8s: BigInt(amount * 1e8)},
+        amount: {e8s: amount},
         fee: {e8s: BigInt(10000)},
         memo: BigInt(0),
         from_subaccount: [],

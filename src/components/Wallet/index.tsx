@@ -41,7 +41,7 @@ const Balance = () => {
         Transactions
       </span>
     </div>
-    <Token getBalance={getBalance} token={"ckBTC"} balance={Number(balances[0])} filePath={"/img_4.png"}/>
+    <Token getBalance={getBalance} token={"ckBTC"} balance={Number(balances[0]) / 1e8} filePath={"/img_4.png"}/>
     <Token getBalance={getBalance} token={"ICP"} balance={Number(balances[1]) / 1e8} filePath={"/img_6.png"}/>
   </div>
 }
@@ -55,7 +55,8 @@ const Token = ({filePath, balance, token, getBalance}: {
   const [openSend, setOpenSend] = React.useState(false)
   const {account, principal} = useAuth()
   return <div className={"token_item"}>
-    <Receive token={token} account={token === "ICP" ? account ?? "" : ""} principalId={principal ? principal.toString() : ""}
+    <Receive token={token} account={token === "ICP" ? account ?? "" : ""}
+             principalId={principal ? principal.toString() : ""}
              open={openReceive}
              setOpen={setOpenReceive}/>
     <Send getBalance={getBalance} token={token} balance={balance} open={openSend} setOpen={setOpenSend}/>
