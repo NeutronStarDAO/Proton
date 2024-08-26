@@ -125,3 +125,31 @@
     background: #2d3550;
   }
 }
+
+@media screen and (max-width: 500px) {
+
+  .wallet_main .balance {
+    flex-direction: row;
+  }
+
+  .wallet_main .balance .title {
+    flex-direction: column;
+    gap: 3.9rem;
+  }
+
+  .wallet_main .balance .token_item {
+    flex-direction: column;
+    gap: 1.3rem;
+
+    
+    .token_button_wrap {
+      display: flex;
+      gap: 2rem;
+      width: auto;
+      flex-direction: row;
+      position: absolute;
+      left: 10rem;
+      bottom: 8rem;
+    }
+  }
+}

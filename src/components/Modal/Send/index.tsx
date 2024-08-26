@@ -83,7 +83,7 @@ export const Send = ({open, setOpen, balance, token}: {
           }} value={amount} placeholder={"Amount"} type="number"/>
           <span onClick={() => setAmount(balance)}>Max</span>
         </div>
-        {/*<p>Fee:</p>*/}
+        <p>Fee: 0.0001 ICP</p>
       </div>
 
       <div className={"done_button"} onClick={send}>

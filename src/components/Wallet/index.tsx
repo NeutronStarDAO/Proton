@@ -65,7 +65,7 @@ const Token = ({filePath, balance, token}: {
         <Icon name={"record"}/>
       </span>
     </span>
-    <div style={{display: "flex", alignItems: "center", gap: "2rem", width: "40%"}}>
+    <div className={"token_button_wrap"} style={{display: "flex", alignItems: "center", gap: "2rem", width: "40%"}}>
       <span className={"receive"} onClick={() => {
         if (token === "ICP")
           setOpenReceive(true)
