@@ -2,7 +2,6 @@ import {Principal} from "@dfinity/principal";
 import {idlFactory} from "../declarations/feed/feed.did.js";
 import {getActor} from "../utils/Actor";
 import {Post} from "../declarations/feed/feed";
-import {updateAllData} from "../redux";
 
 
 export default class Feed {
@@ -47,7 +46,6 @@ export default class Feed {
     const actor = await this.getNoIdentityActor()
     try {
       const res = await actor.get_all_post(who) as Post[]
-      updateAllData({allPost: res})
       return res
     } catch (e) {
       console.log("getAllPost", e)
@@ -110,7 +108,6 @@ export default class Feed {
     const actor = await this.getActor()
     try {
       const res = await actor.get_latest_feed(who, BigInt(n)) as Post[]
-      updateAllData({allFeed: res})
       return res
     } catch (e) {
       console.log("getLatestFeed error", e)
@@ -118,24 +115,13 @@ export default class Feed {
     }
   }
 
-  async getHomeFeedByLength(who: Principal, start: number, end: number) {
+  async getHomeFeedByLength(who: Principal, start: number, count: number) {
     const actor = await this.getActor()
     try {
-      return await actor.get_home_feed_by_length(who, BigInt(start), BigInt(end)) as Post[]
+      return await actor.get_home_feed_by_length(who, BigInt(start), BigInt(count)) as Post[]
     } catch (e) {
       console.log("getHomeFeedByLength error", e)
       throw e
     }
   }
-
-  async getLatestFeedByLength(who: Principal, n: number, m: number) {
-    const actor = await this.getActor()
-    try {
-      return await actor.get_all_latest_feed_by_length(BigInt(n), BigInt(m)) as Post[]
-    } catch (e) {
-      console.log("getLatestFeedByLength error", e)
-      throw e
-    }
-  }
-
 }

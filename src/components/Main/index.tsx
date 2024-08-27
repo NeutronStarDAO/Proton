@@ -8,7 +8,6 @@ import {Empty, notification, Spin, Tooltip} from "antd";
 import {useAuth} from "../../utils/useAuth";
 import Feed from "../../actors/feed";
 import {rootPostApi} from "../../actors/root_bucket";
-import {updateAllData, useAllDataStore} from "../../redux";
 import {userApi} from "../../actors/user";
 import {Profile} from "../../declarations/user/user";
 import {shortenString} from "../Sider";
@@ -17,32 +16,35 @@ import {updateSelectPost, useSelectPostStore} from "../../redux/features/SelectP
 import {getTime, isIn, postSort} from "../../utils/util";
 import autosize from "autosize"
 import {ShowMoreTest} from "../Comment";
+import InfiniteScroll from 'react-infinite-scroll-component';
+
+const pageCount = 30
 
 export const Main = ({scrollContainerRef}: { scrollContainerRef: React.MutableRefObject<null> }) => {
   const location = useLocation()
   const navigate = useNavigate()
-  const [data, setData] = useState<postType[]>()
   const {userFeedCai, isAuth, principal} = useAuth()
-  const {allPost, allFeed} = useAllDataStore()
+  const [homeData, setHomeData] = useState<postType[]>()
+  const [exploreData, setExploreData] = useState<postType[]>()
+  const [page, setPage] = useState(0);
+  const [isEnd, setIsEnd] = useState(false)
   const [profiles, setProfiles] = useState<Profile[]>([])
   const selectPost = useSelectPostStore()
 
-  const HomeData = React.useMemo(() => {
-    if (!allFeed || !allPost) return undefined
-    const a = postSort([...allFeed, ...allPost])
-    userApi.batchGetProfile(a.map(v => v.user)).then(e => setProfiles(e))
-    return a
-  }, [allFeed, allPost])
-
+  const data = React.useMemo(() => {
+    return location.pathname === "/explore" ? exploreData : homeData
+  }, [homeData, exploreData])
 
   const change = () => {
     if (isAuth === false)
       navigate("/explore")
   }
   const Title = React.useMemo(() => {
-    setData(undefined)
+    setHomeData(undefined)
+    setExploreData(undefined)
     setProfiles([])
-    updateAllData({allFeed: undefined, allPost: undefined})
+    setPage(0)
+    setIsEnd(false)
     if (location.pathname === "/explore") return "Explore"
     return "Home"
   }, [location.pathname])
@@ -51,52 +53,67 @@ export const Main = ({scrollContainerRef}: { scrollContainerRef: React.MutableRe
     !isAuth && change()
   }, [isAuth, Title])
 
-  const getHomeData = async () => {
+  const getHomeData = React.useCallback(async () => {
     if (!userFeedCai || !principal) return 0
     const feedApi = new Feed(userFeedCai)
-    await Promise.all([feedApi.getAllPost(principal), feedApi.getLatestFeed(principal, 100)])
-  }
+    const res = await feedApi.getHomeFeedByLength(principal, page * pageCount, pageCount)
+    const uniqueData = res.filter(newItem =>
+      !data?.some(existingItem => existingItem.post_id === newItem.post_id)
+    );
+    if (res.length < 30 || res.length === 0) setIsEnd(true)
+    const newArr = [...(data ?? []), ...uniqueData]
+    setHomeData(newArr);
+  }, [page, userFeedCai, principal])
 
-  const getExploreData = async () => {
-    const res = await rootPostApi.get_buckets_latest_feed(100)
-    setData(res)
-
-  }
+  const getExploreData = React.useCallback(async () => {
+    const res = await rootPostApi.get_buckets_latest_feed_from_start(page * pageCount, pageCount)
+    const uniqueData = res.filter(newItem =>
+      !data?.some(existingItem => existingItem.post_id === newItem.post_id)
+    );
+    if (res.length < 30 || res.length === 0) setIsEnd(true)
+    const newArr = [...(data ?? []), ...uniqueData]
+    setExploreData(newArr);
+  }, [page])
 
   useEffect(() => {
     if (data)
       userApi.batchGetProfile(data.map(v => v.user)).then(e => setProfiles(e))
   }, [data]);
 
-  useEffect(() => {
-    if (Title == "Home") {
-      getHomeData()
-    } else {
-      getExploreData()
-    }
-  }, [Title, userFeedCai, principal])
 
-  if (Title === "Explore") {
-    return <div ref={scrollContainerRef} className={"main_wrap scroll_main"}>
-      <div className={"title"}>{Title}</div>
+  useEffect(() => {
+    if (Title === "Explore") getExploreData()
+  }, [Title, getExploreData])
+
+  useEffect(() => {
+    if (Title === "Home") getHomeData()
+  }, [Title, getHomeData]);
+
+  return <div ref={scrollContainerRef} id={"content_main"} className={"main_wrap scroll_main"}>
+    <div className={"title"}>{Title}</div>
+    <InfiniteScroll
+      dataLength={data ? data.length : 0} //This is important field to render the next data
+      next={() => {
+        const newPage = page + 1
+        setPage(newPage)
+      }}
+      style={{width: "100%"}}
+      scrollThreshold={0.9}
+      hasMore={!isEnd}
+      scrollableTarget={"content_main"}
+      loader={<Spin spinning={true} style={{width: "100%", height: "10rem", display: data ? "" : "none"}}/>}
+    >
       {data ? data.length === 0 ? <Empty style={{width: "100%"}}/>
         : data.map((v, k) => {
           return <Post key={k} profile={profiles[k]} selectedID={"post_id" in selectPost ? selectPost.post_id : ""}
-                       updateFunction={getExploreData}
+                       updateFunction={Title === "Explore" ? getExploreData : getHomeData}
                        post={v}/>
         }) : <Spin spinning={true} style={{width: "100%"}}/>}
-    </div>
-  }
 
-  return <div ref={scrollContainerRef} className={"main_wrap scroll_main"}>
-    <div className={"title"}>{Title}</div>
-    {HomeData ? HomeData.length === 0 ? <Empty style={{width: "100%"}}/>
-      : HomeData.map((v, k) => {
-        return <Post key={k} profile={profiles[k]} selectedID={"post_id" in selectPost ? selectPost.post_id : ""}
-                     updateFunction={getHomeData}
-                     post={v}/>
-      }) : <Spin spinning={true} style={{width: "100%"}}/>}
+    </InfiniteScroll>
   </div>
+
+
 }
 
 

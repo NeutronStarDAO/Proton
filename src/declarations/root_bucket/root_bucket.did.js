@@ -68,6 +68,11 @@ export const idlFactory = ({ IDL }) => {
       [IDL.Vec(Post)],
       ['composite_query'],
     ),
+    'get_buckets_latest_feed_from_start' : IDL.Func(
+      [IDL.Nat64, IDL.Nat64],
+      [IDL.Vec(Post)],
+      ['composite_query'],
+    ),
     'init' : IDL.Func([], [], []),
     'status' : IDL.Func([], [CanisterStatusResponse], []),
     'update_bucket_wasm' : IDL.Func(

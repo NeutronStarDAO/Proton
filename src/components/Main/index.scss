@@ -4,8 +4,10 @@
   flex-direction: column;
   align-items: start;
   overflow: auto;
+  height: 100%;
   overflow-x: hidden;
   border-left: 1px solid #79aaff;
+  border-right: 1px solid #79aaff;
 
   .title {
     display: flex;
@@ -16,7 +18,6 @@
     padding-bottom: 2rem;
     padding-top: 3rem;
     padding-left: 2rem;
-    border-right: 1px solid #79aaff;
   }
 }
 
@@ -33,7 +34,6 @@
   display: flex;
   cursor: pointer;
   padding: 2rem;
-  border-right: 1px solid #79aaff;
   border-bottom: 1px rgb(197, 217, 251) solid;
   flex-direction: column;
   transition: 0.7s ease;

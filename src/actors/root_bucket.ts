@@ -9,10 +9,10 @@ class rootPost {
     return await getActor.createActor(idlFactory, root_bucket);
   }
 
-  async get_buckets_latest_feed(count: number) {
+  async get_buckets_latest_feed_from_start(start: number, count: number) {
     const actor = await rootPost.getActor()
     try {
-      return await actor.get_buckets_latest_feed(BigInt(count)) as Post[]
+      return await actor.get_buckets_latest_feed_from_start(BigInt(start), BigInt(count)) as Post[]
     } catch (e) {
       throw e
     }
