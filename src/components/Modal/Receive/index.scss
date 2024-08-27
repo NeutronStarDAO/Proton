@@ -91,3 +91,9 @@
     margin-bottom: 2rem;
   }
 }
+
+@media screen and (max-width: 500px) {
+  .receive_modal .wallet .address {
+    font-size: 2.3rem;
+  }
+}
