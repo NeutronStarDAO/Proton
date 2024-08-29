@@ -18,6 +18,8 @@ export const Send = ({open, setOpen, balance, token, getBalance}: {
 }) => {
   const [to, setTo] = React.useState("")
   const [amount, setAmount] = React.useState<number>(0)
+  const [icpLoading, setIcpLoading] = React.useState(false)
+  const [ckbtcLoading, setCkbtcLoading] = React.useState(false)
   const {isDark} = useAuth()
   useEffect(() => {
     setAmount(0)
@@ -39,10 +41,12 @@ export const Send = ({open, setOpen, balance, token, getBalance}: {
     setOpen(false)
     message.loading("transferring...")
     if (token === "ICP") {
+      setIcpLoading(true)
       if (to.length === 64) { // account id
         try {
           ledgerApi.transferUseAccount(to, newAmount).then(() => {
             message.success("transfer success")
+            setIcpLoading(false)
             getBalance()
           })
         } catch (e) {
@@ -58,12 +62,14 @@ export const Send = ({open, setOpen, balance, token, getBalance}: {
         ledgerApi.transferUsePrincipal(pri, newAmount).then(() => {
           message.success("transfer success")
           getBalance()
+          setIcpLoading(false)
         })
       } else {
         message.error("invalid address")
+        setIcpLoading(false)
       }
     } else if (token === "ckBTC") {
-
+      setCkbtcLoading(true)
       let pri: Principal
       try {
         pri = Principal.fromText(to)
@@ -73,6 +79,7 @@ export const Send = ({open, setOpen, balance, token, getBalance}: {
       ckBTCApi.transferCkBTC(pri, newAmount).then(() => {
         message.success("transfer success")
         getBalance()
+        setCkbtcLoading(false)
       })
 
     }

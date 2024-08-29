@@ -13,7 +13,7 @@ import {Profile} from "../../declarations/user/user";
 import {shortenString} from "../Sider";
 import {CloseOutlined} from "@ant-design/icons";
 import {updateSelectPost, useSelectPostStore} from "../../redux/features/SelectPost";
-import {getTime, isIn, postSort} from "../../utils/util";
+import {getTime, isIn} from "../../utils/util";
 import autosize from "autosize"
 import {ShowMoreTest} from "../Comment";
 import InfiniteScroll from 'react-infinite-scroll-component';
@@ -30,6 +30,7 @@ export const Main = ({scrollContainerRef}: { scrollContainerRef: React.MutableRe
   const [isEnd, setIsEnd] = useState(false)
   const [profiles, setProfiles] = useState<Profile[]>([])
   const selectPost = useSelectPostStore()
+  const loader = useRef(null)
 
   const data = React.useMemo(() => {
     return location.pathname === "/explore" ? exploreData : homeData
@@ -57,21 +58,17 @@ export const Main = ({scrollContainerRef}: { scrollContainerRef: React.MutableRe
     if (!userFeedCai || !principal) return 0
     const feedApi = new Feed(userFeedCai)
     const res = await feedApi.getHomeFeedByLength(principal, page * pageCount, pageCount)
-    const uniqueData = res.filter(newItem =>
-      !data?.some(existingItem => existingItem.post_id === newItem.post_id)
-    );
+    if (page === 0) return setHomeData(res);
     if (res.length < 30 || res.length === 0) setIsEnd(true)
-    const newArr = [...(data ?? []), ...uniqueData]
+    const newArr = [...(data ?? []), ...res]
     setHomeData(newArr);
   }, [page, userFeedCai, principal])
 
   const getExploreData = React.useCallback(async () => {
     const res = await rootPostApi.get_buckets_latest_feed_from_start(page * pageCount, pageCount)
-    const uniqueData = res.filter(newItem =>
-      !data?.some(existingItem => existingItem.post_id === newItem.post_id)
-    );
+    if (page === 0) return setExploreData(res);
     if (res.length < 30 || res.length === 0) setIsEnd(true)
-    const newArr = [...(data ?? []), ...uniqueData]
+    const newArr = [...(data ?? []), ...res]
     setExploreData(newArr);
   }, [page])
 
@@ -89,30 +86,55 @@ export const Main = ({scrollContainerRef}: { scrollContainerRef: React.MutableRe
     if (Title === "Home") getHomeData()
   }, [Title, getHomeData]);
 
+  // return <div ref={scrollContainerRef} id={"content_main"} className={"main_wrap scroll_main"}>
+  //   <div className={"title"}>{Title}</div>
+  //   <InfiniteScroll
+  //     dataLength={data ? data.length : 0} //This is important field to render the next data
+  //     next={() => {
+  //       const newPage = page + 1
+  //       setPage(newPage)
+  //     }}
+  //     style={{width: "100%"}}
+  //     scrollThreshold={0.9}
+  //     hasMore={!isEnd}
+  //     scrollableTarget={"content_main"}
+  //     loader={<Spin spinning={true} style={{width: "100%", height: "10rem", display: data ? "" : "none"}}/>}>
+  //     {data ? data.length === 0 ? <Empty style={{width: "100%"}}/>
+  //       : data.map((v, k) => {
+  //         return <Post key={k} profile={profiles[k]} selectedID={"post_id" in selectPost ? selectPost.post_id : ""}
+  //                      updateFunction={Title === "Explore" ? getExploreData : getHomeData}
+  //                      post={v}/>
+  //       }) : <Spin spinning={true} style={{width: "100%"}}/>}
+  //
+  //   </InfiniteScroll>
+  // </div>
+
+  useEffect(() => {
+    const ob = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting) {
+        setPage((prev) => prev + 1)
+      }
+    }, {threshold: 0})
+
+    loader.current && ob.observe(loader.current)
+
+    return () => {
+      loader.current && ob.unobserve(loader.current)
+    }
+  }, [loader.current])
+
   return <div ref={scrollContainerRef} id={"content_main"} className={"main_wrap scroll_main"}>
     <div className={"title"}>{Title}</div>
-    <InfiniteScroll
-      dataLength={data ? data.length : 0} //This is important field to render the next data
-      next={() => {
-        const newPage = page + 1
-        setPage(newPage)
-      }}
-      style={{width: "100%"}}
-      scrollThreshold={0.9}
-      hasMore={!isEnd}
-      scrollableTarget={"content_main"}
-      loader={<Spin spinning={true} style={{width: "100%", height: "10rem", display: data ? "" : "none"}}/>}
-    >
-      {data ? data.length === 0 ? <Empty style={{width: "100%"}}/>
-        : data.map((v, k) => {
-          return <Post key={k} profile={profiles[k]} selectedID={"post_id" in selectPost ? selectPost.post_id : ""}
-                       updateFunction={Title === "Explore" ? getExploreData : getHomeData}
-                       post={v}/>
-        }) : <Spin spinning={true} style={{width: "100%"}}/>}
-
-    </InfiniteScroll>
+    {data ? data.length === 0 ? <Empty style={{width: "100%"}}/>
+      : data.map((v, k) => {
+        return <Post key={k} profile={profiles[k]} selectedID={"post_id" in selectPost ? selectPost.post_id : ""}
+                     updateFunction={Title === "Explore" ? getExploreData : getHomeData}
+                     post={v}/>
+      }) : <Spin spinning={true} style={{width: "100%"}}/>}
+    <div ref={loader} style={{width: "100%", display: data && !isEnd ? "" : "none"}}>
+      <Spin spinning={true} style={{width: "100%"}}/>
+    </div>
   </div>
-
 
 }
 
