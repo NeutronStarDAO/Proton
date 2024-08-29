@@ -34,7 +34,7 @@ export const Side = ({scrollToTop}: { scrollToTop: Function }) => {
             return <div style={{
               cursor: v === "Home" && !isAuth ? "no-drop" : "pointer",
               background: isClick ? "#B0CCFF" : "",
-              boxShadow: isClick ? "0 4px 4px 0 rgba(0, 0, 0, 0.25)" : ""
+              boxShadow: isClick ? "rgba(0, 0, 0, 0.15) 5px 5px 10px 3px" : ""
             }}
                         onClick={() => {
                           if (!(v === "Home" && !isAuth))
