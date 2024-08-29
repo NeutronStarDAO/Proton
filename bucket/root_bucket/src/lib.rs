@@ -203,10 +203,9 @@ async fn status() -> CanisterStatusResponse {
 #[ic_cdk::query(composite = true)]
 async fn get_buckets_latest_feed(n: u64) -> Vec<Post> {
     let mut posts: Vec<Post> = Vec::new();
-    let mut m = n;
     let buckets: Vec<Principal> = AVAILABLE_BUCKET_MAP.with(|map| {
         let mut values: Vec<Principal> = vec![];
-        for (k, v) in map.borrow().iter() {
+        for (_, v) in map.borrow().iter() {
             values.push(v.clone())
         }
         values
@@ -215,20 +214,12 @@ async fn get_buckets_latest_feed(n: u64) -> Vec<Post> {
         let result = ic_cdk::call::<(u64, ), (Vec<Post>, )>(
             bucket, 
             "get_latest_feed", 
-            (m,)
+            (n,)
         ).await.unwrap().0;
-        if result.len() > 0 {
-            let len = result.len() as u64;
-            for post in result {
-                posts.push(post);
-            };
-            if len < m {
-                m -= len;
-            } else {
-                m = 0;
-                break;
-            }
-        }
+
+        for post in result {
+            posts.push(post);
+        };
     }
 
     posts.sort_by(|a, b| {
@@ -236,9 +227,55 @@ async fn get_buckets_latest_feed(n: u64) -> Vec<Post> {
     });
 
     let mut sorted_posts = Vec::new();
-
+    let mut i = 0;
     for post in posts.iter().rev() {
-        sorted_posts.push(post.clone())
+        if i >= n {
+            break;
+        }
+        sorted_posts.push(post.clone());
+        i += 1;
+    }
+
+    sorted_posts
+}
+
+#[ic_cdk::query(composite = true)]
+async fn get_buckets_latest_feed_from_start(start:u64, length: u64) -> Vec<Post> {
+    let mut posts: Vec<Post> = Vec::new();
+    let buckets: Vec<Principal> = AVAILABLE_BUCKET_MAP.with(|map| {
+        let mut values: Vec<Principal> = vec![];
+        for (_, v) in map.borrow().iter() {
+            values.push(v.clone())
+        }
+        values
+    });
+    let n = start + length + 1;
+    for bucket in buckets {
+        let result = ic_cdk::call::<(u64, ), (Vec<Post>, )>(
+            bucket, 
+            "get_latest_feed", 
+            (n,)
+        ).await.unwrap().0;
+
+        for post in result {
+            posts.push(post);
+        };
+    }
+
+    posts.sort_by(|a, b| {
+        a.created_at.partial_cmp(&b.created_at).unwrap()
+    });
+
+    let mut sorted_posts = Vec::new();
+    let mut i = 0;
+    for post in posts.iter().rev() {
+        if i >= start + length {
+            break;
+        }
+        if i >= start {
+            sorted_posts.push(post.clone());
+        }
+        i += 1;
     }
 
     sorted_posts

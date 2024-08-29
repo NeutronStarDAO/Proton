@@ -47,6 +47,9 @@ service : {
   get_bucket_index : () -> (nat64) query;
   get_bucket_wasm : () -> (blob) query;
   get_buckets_latest_feed : (nat64) -> (vec Post) composite_query;
+  get_buckets_latest_feed_from_start : (nat64, nat64) -> (
+      vec Post,
+    ) composite_query;
   init : () -> ();
   status : () -> (CanisterStatusResponse);
   update_bucket_wasm : (blob, nat64) -> (bool);
