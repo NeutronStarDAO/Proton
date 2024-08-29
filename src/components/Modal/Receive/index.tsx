@@ -7,11 +7,11 @@ import {shortenString} from "../../Sider";
 import {Tooltip} from "antd";
 import {useAuth} from "../../../utils/useAuth";
 
-export const Receive = ({open, setOpen, account, principalId,token}: {
+export const Receive = ({open, setOpen, account, principalId, token}: {
   open: boolean,
   setOpen: Function,
   account?: string,
-  principalId: string,token:string
+  principalId: string, token: string
 }) => {
   const [copied, setCopied] = React.useState(false)
   const {isDark} = useAuth()
@@ -58,7 +58,7 @@ export const Receive = ({open, setOpen, account, principalId,token}: {
         </Tooltip>
       </div>
 
-      <div className={"done_button"}>
+      <div className={"done_button"} onClick={() => setOpen(false)}>
         Done
       </div>
     </div>
