@@ -58,7 +58,7 @@ export const Receive = ({open, setOpen, account, principalId, token}: {
         </Tooltip>
       </div>
 
-      <div className={"done_button"} onClick={() => setOpen(false)}>
+      <div className={"done_button"} onClick={() => setTimeout(() => setOpen(false), 230)}>
         Done
       </div>
     </div>
