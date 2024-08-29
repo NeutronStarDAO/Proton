@@ -10,16 +10,15 @@ import {message} from "antd";
 import {ckBTCApi} from "../../../actors/ckbtc";
 import {parseUnits} from "ethers";
 
-export const Send = ({open, setOpen, balance, token, getBalance}: {
+export const Send = ({open, setOpen, balance, token, getBalance, setIcpLoading, setCkbtcLoading}: {
   open: boolean,
   setOpen: Function,
   balance: number,
-  token: string, getBalance: Function
+  token: string, getBalance: Function, setIcpLoading: Function, setCkbtcLoading: Function
 }) => {
   const [to, setTo] = React.useState("")
   const [amount, setAmount] = React.useState<number>(0)
-  const [icpLoading, setIcpLoading] = React.useState(false)
-  const [ckbtcLoading, setCkbtcLoading] = React.useState(false)
+
   const {isDark} = useAuth()
   useEffect(() => {
     setAmount(0)

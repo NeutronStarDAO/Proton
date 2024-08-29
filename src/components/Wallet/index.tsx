@@ -54,12 +54,15 @@ const Token = ({filePath, balance, token, getBalance}: {
   const [openReceive, setOpenReceive] = React.useState(false)
   const [openSend, setOpenSend] = React.useState(false)
   const {account, principal} = useAuth()
+  const [icpLoading, setIcpLoading] = React.useState(false)
+  const [ckbtcLoading, setCkbtcLoading] = React.useState(false)
   return <div className={"token_item"}>
     <Receive token={token} account={token === "ICP" ? account ?? "" : ""}
              principalId={principal ? principal.toString() : ""}
              open={openReceive}
              setOpen={setOpenReceive}/>
-    <Send getBalance={getBalance} token={token} balance={balance} open={openSend} setOpen={setOpenSend}/>
+    <Send setIcpLoading={setIcpLoading} setCkbtcLoading={setCkbtcLoading} getBalance={getBalance} token={token}
+          balance={balance} open={openSend} setOpen={setOpenSend}/>
     <img src={filePath} alt=""/>
     <span style={{flex: "1"}}>{balance.toFixed(3)}</span>
     <span style={{flex: "1"}}>
@@ -75,7 +78,13 @@ const Token = ({filePath, balance, token, getBalance}: {
       <span className={"receive"} onClick={() => {
         setOpenReceive(true)
       }}>Receive</span>
-      <span className={"send"} onClick={() => setOpenSend(true)}>Send</span>
+      <span
+        style={{cursor: (token === "ICP" && icpLoading) || (token === "ckBTC" && ckbtcLoading) ? "no-drop" : "pointer"}}
+        className={"send"}
+        onClick={() => {
+          if ((token === "ICP" && icpLoading) || (token === "ckBTC" && ckbtcLoading)) return
+          setOpenSend(true)
+        }}>Send</span>
     </div>
   </div>
 }

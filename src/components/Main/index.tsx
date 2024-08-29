@@ -73,10 +73,8 @@ export const Main = ({scrollContainerRef}: { scrollContainerRef: React.MutableRe
   }, [page])
 
   useEffect(() => {
-    if (data)
-      userApi.batchGetProfile(data.map(v => v.user)).then(e => setProfiles(e))
+    data && userApi.batchGetProfile(data.map(v => v.user)).then(e => setProfiles(e))
   }, [data]);
-
 
   useEffect(() => {
     if (Title === "Explore") getExploreData()
