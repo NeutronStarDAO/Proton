@@ -1,4 +1,4 @@
-use types::{Comment, Like, Post, Repost};
+use types::{Comment, CommentToComment, Like, Post, Repost};
 
 use candid::{CandidType, Decode, Encode, Principal};
 use ic_cdk::api::management_canister::main::{CanisterStatusResponse, CanisterIdRecord};
@@ -9,7 +9,7 @@ use serde::Deserialize;
 
 use std::cell::RefCell;
 use std::collections::{HashMap, HashSet};
-use std::borrow::Cow;
+use std::borrow::{Borrow, Cow};
 
 type Memory = VirtualMemory<DefaultMemoryImpl>;
 
@@ -116,6 +116,149 @@ fn init(
 }
 
 #[ic_cdk::update]
+async fn complete_upgrade() -> bool {
+    if !is_controller(&ic_cdk::caller()).await {
+        return false;
+    }
+
+// POST_MAP
+    let post_map_entries: Vec<(Principal, PostHashMap)> = POST_MAP.with(|map| {
+        map.borrow().iter().collect()
+    });
+
+    for (user, map_struct) in post_map_entries {
+        let mut map = map_struct.0;
+
+        for (k, v) in map.clone() {
+            let mut i = 0;
+            let mut new_comment: Vec<Comment> = Vec::new();
+            for comment in v.comment {
+                new_comment.push(Comment {
+                    index: Some(i),
+                    user: comment.user,
+                    content: comment.content,
+                    created_at: comment.created_at,
+                    like: Some(Vec::new())
+                });
+                i += 1;
+            }
+
+            map.insert(k, Post {
+                post_id: v.post_id,
+                feed_canister: v.feed_canister,
+                index: v.index,
+                user: v.user,
+                content: v.content,
+                photo_url: v.photo_url,
+                repost: v.repost,
+                like: v.like,
+                comment_index: Some(i),
+                comment: new_comment,
+                comment_to_comment: Some(Vec::new()),
+                created_at: v.created_at
+            });
+        }
+
+        POST_MAP.with(|post_map| {
+            post_map.borrow_mut().insert(user, PostHashMap(map))
+        });
+    }
+
+// FEED_MAP 
+    let feed_map_entries: Vec<(Principal, FeedHashMap)> = FEED_MAP.with(|map| {
+        map.borrow().iter().collect()
+    });
+
+    for (user, map_struct) in feed_map_entries {
+        let mut map = map_struct.0;
+
+        for (k, v) in map.clone() {
+            let mut i = 0;
+            let mut new_comment: Vec<Comment> = Vec::new();
+            for comment in v.comment {
+                new_comment.push(Comment {
+                    index: Some(i),
+                    user: comment.user,
+                    content: comment.content,
+                    created_at: comment.created_at,
+                    like: Some(Vec::new())
+                });
+                i += 1;
+            }
+
+            map.insert(k, Post {
+                post_id: v.post_id,
+                feed_canister: v.feed_canister,
+                index: v.index,
+                user: v.user,
+                content: v.content,
+                photo_url: v.photo_url,
+                repost: v.repost,
+                like: v.like,
+                comment_index: Some(i),
+                comment: new_comment,
+                comment_to_comment: Some(Vec::new()),
+                created_at: v.created_at
+            });
+        }
+
+        FEED_MAP.with(|feed_map| {
+            feed_map.borrow_mut().insert(user, FeedHashMap(map))
+        });
+    }
+
+// ARCHIEVE_POST_MAP 
+    let archieve_post_map_entries: Vec<(String, Post)> = ARCHIEVE_POST_MAP.with(|map| {
+        map.borrow().iter().collect()
+    });
+
+    for (k, v) in archieve_post_map_entries {
+        let mut i = 0;
+        let mut new_comment: Vec<Comment> = Vec::new();
+        for comment in v.comment {
+            new_comment.push(Comment {
+                index: Some(i),
+                user: comment.user,
+                content: comment.content,
+                created_at: comment.created_at,
+                like: Some(Vec::new())
+            });
+            i += 1;
+        }
+        
+        ARCHIEVE_POST_MAP.with(|archieve_post_map| {
+            archieve_post_map.borrow_mut().insert(k, Post {
+                post_id: v.post_id,
+                feed_canister: v.feed_canister,
+                index: v.index,
+                user: v.user,
+                content: v.content,
+                photo_url: v.photo_url,
+                repost: v.repost,
+                like: v.like,
+                comment_index: Some(i),
+                comment: new_comment,
+                comment_to_comment: Some(Vec::new()),
+                created_at: v.created_at
+            })
+        });
+    }
+
+    true
+}
+
+async fn is_controller(user: &Principal) -> bool {
+    let status = status().await;
+    let controllers = status.settings.controllers;
+
+    if !controllers.contains(user) {
+        return false;
+    }
+
+    true
+}
+
+#[ic_cdk::update]
 async fn create_post(content: String, photo_url: Vec<String>) -> String {
     assert!(ic_cdk::caller() != Principal::anonymous());
 
@@ -140,7 +283,9 @@ async fn create_post(content: String, photo_url: Vec<String>) -> String {
         photo_url: photo_url,
         repost: Vec::new(),
         like: Vec::new(),
+        comment_index: Some(0),
         comment: Vec::new(),
+        comment_to_comment: Some(Vec::new()),
         created_at: ic_cdk::api::time()
     };
 
@@ -261,10 +406,13 @@ async fn create_comment(post_id: String, content: String) -> bool {
     }).unwrap();
 
     post.comment.push(Comment {
+        index: Some(post.comment_index.unwrap()),
         user: caller,
         content: content,
-        created_at: ic_cdk::api::time()
+        created_at: ic_cdk::api::time(),
+        like: Some(Vec::new())
     });
+    post.comment_index = Some(post.comment_index.unwrap() + 1);
 
     // 更改 Post_Map 中 Post 的数据
     let post_user = post.user.clone();
@@ -301,6 +449,222 @@ async fn create_comment(post_id: String, content: String) -> bool {
     };
 
     true
+}
+
+#[ic_cdk::update]
+async fn like_comment(post_id: String, comment_index: u64) -> bool {
+    assert!(ic_cdk::caller() != Principal::anonymous());
+
+    let (bucket, _, _) = check_post_id(&post_id);
+    let caller = ic_cdk::caller();
+
+    let mut post = ARCHIEVE_POST_MAP.with(|map| {
+        map.borrow().get(&post_id)
+    }).unwrap();
+
+    let old_comment_vec = post.comment.clone();
+    let mut i = 0;
+    for comment in old_comment_vec {
+        if comment.index.unwrap() == comment_index {
+            let mut is_already_like_flag = false;
+            for like in comment.like.clone().unwrap().clone() {
+                if like.user == caller {
+                    is_already_like_flag = true;
+                    break;
+                }
+            }
+
+            if !is_already_like_flag {
+                let mut old_comment = comment.clone();
+                let mut old_comment_like = old_comment.like.clone().unwrap();
+                old_comment_like.push(Like {
+                    user: caller,
+                    created_at: ic_cdk::api::time()
+                });
+                old_comment.like = Some(old_comment_like);
+
+                post.comment[i] = old_comment;
+
+                // 更改 Post_Map 中 Post 的数据
+                let post_user = post.user.clone();
+                let mut user_map = POST_MAP.with(|map| {
+                    map.borrow().get(&post_user)
+                }).unwrap();
+                user_map.0.insert(post.index.clone(), post.clone());
+                POST_MAP.with(|map| {
+                    map.borrow_mut().insert(post_user, user_map)
+                });
+
+                // 更改 Archiev_Post_Map 中 Post 的数据
+                ARCHIEVE_POST_MAP.with(|map| {
+                    map.borrow_mut().insert(post.post_id.clone(), post.clone())
+                });
+
+                // 推送最新的帖子到Bucket
+                let call_bucket_result = ic_cdk::call::<(Post, ), (bool, )>(
+                    bucket, 
+                    "store_feed", 
+                    (post.clone(), )
+                ).await.unwrap().0;
+                assert!(call_bucket_result);
+
+                // 通知 PostFetch
+                let notify_users = get_notify_users(post.clone()).await;
+
+                if notify_users.len() > 0 {
+                    let _post_fetch_store_result = ic_cdk::call::<(Vec<Principal>, String, ), ()>(
+                        POST_FETCH_ACTOR.with(|post_fetch| post_fetch.borrow().get().clone()), 
+                        "receive_notify", 
+                        (notify_users, post.post_id.clone(), )
+                    ).await.unwrap();
+                };
+
+                return true;
+            }
+        }
+
+        i += 1;
+    }
+
+    false
+}
+
+#[ic_cdk::update]
+async fn comment_comment(post_id: String, to: Principal, content: String) -> bool {
+    assert!(ic_cdk::caller() != Principal::anonymous());
+
+    let (bucket, _, _) = check_post_id(&post_id);
+    let caller = ic_cdk::caller();
+
+    let mut post = ARCHIEVE_POST_MAP.with(|map| {
+        map.borrow().get(&post_id)
+    }).unwrap();
+
+    let mut old_comment_comment_vec = post.comment_to_comment.clone().unwrap();
+    old_comment_comment_vec.push(CommentToComment {
+        index: post.comment_index.unwrap(),
+        from_user: caller,
+        to_user: to,
+        content: content,
+        created_at: ic_cdk::api::time(),
+        like: Vec::new()
+    });
+    post.comment_to_comment = Some(old_comment_comment_vec);
+    ic_cdk::println!("comment_comment : {:?}", post);
+    post.comment_index = Some(post.comment_index.unwrap() + 1);
+
+    // 更改 Post_Map 中 Post 的数据
+    let post_user = post.user.clone();
+    let mut user_map = POST_MAP.with(|map| {
+        map.borrow().get(&post_user)
+    }).unwrap();
+    user_map.0.insert(post.index.clone(), post.clone());
+    POST_MAP.with(|map| {
+        map.borrow_mut().insert(post_user, user_map)
+    });
+
+    // 更改 Archiev_Post_Map 中 Post 的数据
+    ARCHIEVE_POST_MAP.with(|map| {
+        map.borrow_mut().insert(post.post_id.clone(), post.clone())
+    });
+
+    // 推送最新的帖子到Bucket
+    let call_bucket_result = ic_cdk::call::<(Post, ), (bool, )>(
+        bucket, 
+        "store_feed", 
+        (post.clone(), )
+    ).await.unwrap().0;
+    assert!(call_bucket_result);
+
+    // 通知 PostFetch
+    let notify_users = get_notify_users(post.clone()).await;
+
+    if notify_users.len() > 0 {
+        let _post_fetch_store_result = ic_cdk::call::<(Vec<Principal>, String, ), ()>(
+            POST_FETCH_ACTOR.with(|post_fetch| post_fetch.borrow().get().clone()), 
+            "receive_notify", 
+            (notify_users, post.post_id.clone(), )
+        ).await.unwrap();
+    };
+
+    true
+}
+
+#[ic_cdk::update]
+async fn like_comment_comment(post_id: String, comment_index: u64) -> bool {
+    assert!(ic_cdk::caller() != Principal::anonymous());
+
+    let (bucket, _, _) = check_post_id(&post_id);
+    let caller = ic_cdk::caller();
+
+    let mut post = ARCHIEVE_POST_MAP.with(|map| {
+        map.borrow().get(&post_id)
+    }).unwrap();
+
+    let mut old_comment_to_comment_vec = post.comment_to_comment.clone().unwrap();
+    let mut i = 0;
+    for comment_to_comment in old_comment_to_comment_vec.clone() {
+        if comment_to_comment.index == comment_index {
+            let mut is_already_like_flag = false;
+            for like in comment_to_comment.like.clone() {
+                if like.user == caller {
+                    is_already_like_flag = true;
+                    break;
+                }
+            }
+
+            if !is_already_like_flag {
+                let mut old_comment_to_comment = comment_to_comment.clone();
+                old_comment_to_comment.like.push(Like {
+                    user: caller,
+                    created_at: ic_cdk::api::time()
+                });
+                old_comment_to_comment_vec[i] = old_comment_to_comment;
+
+                post.comment_to_comment = Some(old_comment_to_comment_vec);
+
+                // 更改 Post_Map 中 Post 的数据
+                let post_user = post.user.clone();
+                let mut user_map = POST_MAP.with(|map| {
+                    map.borrow().get(&post_user)
+                }).unwrap();
+                user_map.0.insert(post.index.clone(), post.clone());
+                POST_MAP.with(|map| {
+                    map.borrow_mut().insert(post_user, user_map)
+                });
+
+                // 更改 Archiev_Post_Map 中 Post 的数据
+                ARCHIEVE_POST_MAP.with(|map| {
+                    map.borrow_mut().insert(post.post_id.clone(), post.clone())
+                });
+
+                // 推送最新的帖子到Bucket
+                let call_bucket_result = ic_cdk::call::<(Post, ), (bool, )>(
+                    bucket, 
+                    "store_feed", 
+                    (post.clone(), )
+                ).await.unwrap().0;
+                assert!(call_bucket_result);
+
+                // 通知 PostFetch
+                let notify_users = get_notify_users(post.clone()).await;
+
+                if notify_users.len() > 0 {
+                    let _post_fetch_store_result = ic_cdk::call::<(Vec<Principal>, String, ), ()>(
+                        POST_FETCH_ACTOR.with(|post_fetch| post_fetch.borrow().get().clone()), 
+                        "receive_notify", 
+                        (notify_users, post.post_id.clone(), )
+                    ).await.unwrap();
+                };
+
+                return true;
+            }
+        }
+
+        i += 1;
+    }
+
+    false
 }
 
 #[ic_cdk::update]

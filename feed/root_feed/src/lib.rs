@@ -1,6 +1,3 @@
-mod wallet;
-use wallet::{TransferResult, WalletTX};
-
 use candid::{Principal, Nat, Encode};
 use ic_cdk::api::management_canister::main::{CanisterStatusResponse, CanisterIdRecord};
 use ic_cdk::api::management_canister::main::{

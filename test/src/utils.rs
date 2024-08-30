@@ -115,3 +115,13 @@ pub fn cketh_decode_principal_to_bytes32_string(
     fixed_bytes[1..=n].copy_from_slice(pr.as_slice());
     format!("0x{}", hex::encode(fixed_bytes).as_str())
 }
+
+pub fn check_post_id(
+    post_id: &String
+) -> (Principal, Principal, u64) {
+    let words: Vec<&str> = post_id.split("#").collect();
+    let bucket = Principal::from_text(words[0]).unwrap();
+    let user = Principal::from_text(words[1]).unwrap();
+    let post_index = u64::from_str_radix(words[2], 10).unwrap();
+    (bucket, user, post_index)
+}

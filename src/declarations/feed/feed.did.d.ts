@@ -17,8 +17,18 @@ export type CanisterStatusType = { 'stopped' : null } |
   { 'running' : null };
 export interface Comment {
   'content' : string,
+  'like' : [] | [Array<Like>],
   'user' : Principal,
   'created_at' : bigint,
+  'index' : [] | [bigint],
+}
+export interface CommentToComment {
+  'content' : string,
+  'from_user' : Principal,
+  'to_user' : Principal,
+  'like' : Array<Like>,
+  'created_at' : bigint,
+  'index' : bigint,
 }
 export interface DefiniteCanisterSettings {
   'freezing_threshold' : bigint,
@@ -42,7 +52,9 @@ export interface Post {
   'created_at' : bigint,
   'comment' : Array<Comment>,
   'feed_canister' : Principal,
+  'comment_index' : [] | [bigint],
   'index' : bigint,
+  'comment_to_comment' : [] | [Array<CommentToComment>],
 }
 export interface QueryStats {
   'response_payload_bytes_total' : bigint,
@@ -54,6 +66,8 @@ export interface _SERVICE {
   'batch_delete_feed' : ActorMethod<[Principal, Array<string>], undefined>,
   'batch_receive_feed' : ActorMethod<[Principal, Array<string>], undefined>,
   'check_available_bucket' : ActorMethod<[], boolean>,
+  'comment_comment' : ActorMethod<[string, Principal, string], boolean>,
+  'complete_upgrade' : ActorMethod<[], boolean>,
   'create_comment' : ActorMethod<[string, string], boolean>,
   'create_like' : ActorMethod<[string], boolean>,
   'create_post' : ActorMethod<[string, Array<string>], string>,
@@ -76,6 +90,8 @@ export interface _SERVICE {
   'get_post_number' : ActorMethod<[Principal], bigint>,
   'get_root_bucket' : ActorMethod<[], Principal>,
   'get_user_actor' : ActorMethod<[], Principal>,
+  'like_comment' : ActorMethod<[string, bigint], boolean>,
+  'like_comment_comment' : ActorMethod<[string, bigint], boolean>,
   'status' : ActorMethod<[], CanisterStatusResponse>,
 }
 export declare const idlFactory: IDL.InterfaceFactory;

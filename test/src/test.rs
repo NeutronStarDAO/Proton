@@ -1,9 +1,12 @@
 use candid::Principal;
 use ic_agent::Agent;
+use types::Post;
 
 use crate::feed;
+use crate::bucket;
 use crate::photo_storage;
 use crate::user;
+use crate::utils;
 use crate::utils::{build_agent, build_local_agent};
 use crate::{
     USERA_PEM, USERB_PEM,
@@ -310,6 +313,152 @@ async fn test_cancle_follow(
     assert!(user::is_followed(agent_f.clone(), pr_f, pr_e).await == false);
 }
 
+async fn test_comment_comment(
+    agent_a: Agent,
+    agent_b: Agent,
+    agent_c: Agent
+) {
+    let pr_a = agent_a.get_principal().unwrap();
+    let pr_b = agent_b.get_principal().unwrap();
+    let pr_c = agent_c.get_principal().unwrap();
+
+    // B 的粉丝为A
+    // B 新发一个帖子
+    root_feed::init_user_feed(agent_b.clone()).await;
+    let feed_canister = root_feed::get_user_feed_canister(agent_b.clone(), pr_b).await.unwrap();
+    let post_id = feed::create_post(
+        agent_b, 
+        feed_canister,
+        "User_B : test_comment_comment".to_string(),
+    Vec::new()
+    ).await;
+
+    // A 去评论
+    assert!(feed::create_comment(
+        agent_a.clone(),
+        feed_canister, 
+        post_id.clone(), 
+        "test_comment_comment : UserA comment UserB".to_string()
+    ).await);
+
+    // C 去评论 A 的评论
+    assert!(feed::comment_comment(
+        agent_c, 
+        feed_canister, 
+        post_id.clone(), 
+        pr_a, 
+        "test_comment_comment : UserC comment_comment to UserA".to_string()
+    ).await);
+
+// 检查post
+    let post = feed::get_post(agent_a.clone(), feed_canister, post_id.clone()).await.unwrap();
+    assert!(post.comment_index.unwrap() == 2);
+    assert!(post.comment.len() > 0);
+    assert!(post.comment_to_comment.clone().unwrap().len() > 0);
+    println!("test_comment_comment 后的 Post : {:?}", post);
+
+// 检查 A 是否收到推流
+    println!("Wait 30s !\n");
+    std::thread::sleep(std::time::Duration::from_secs(30));
+    let a_feed_vec = feed::get_latest_feed(agent_a.clone(), feed_canister, pr_a, 100).await;
+    let mut is_a_feed_update_flag = false;
+    for feed in a_feed_vec {
+        if feed.post_id == post_id {
+            assert!(feed.comment_index.unwrap() == 2);
+            assert!(feed.comment.len() > 0);
+            assert!(feed.comment_to_comment.unwrap().len() > 0);
+            is_a_feed_update_flag = true;
+        }
+    }
+    assert!(is_a_feed_update_flag);
+    
+// 检查 bucket中的帖子是否更新
+    println!("Wait 30s !\n");
+    std::thread::sleep(std::time::Duration::from_secs(30));
+    let (bucket_canister, _, _) = utils::check_post_id(&post_id);
+    let bucket_post = bucket::get_post(
+        agent_a, 
+        bucket_canister, 
+        post_id
+    ).await.unwrap();
+    assert!(bucket_post.comment_index.unwrap() == 2);
+    assert!(bucket_post.comment.len() > 0);
+    assert!(bucket_post.comment_to_comment.unwrap().len() > 0); 
+
+}
+
+async fn test_like_comment(
+    agent_a: Agent,
+    agent_b: Agent,
+    agent_c: Agent
+) {
+    let pr_a = agent_a.get_principal().unwrap();
+    let pr_b = agent_b.get_principal().unwrap();
+    let pr_c = agent_c.get_principal().unwrap();
+
+    // B 的粉丝为A
+    // 找到 B 有评论的评论的帖子
+    let feed_canister = root_feed::get_user_feed_canister(agent_b.clone(), pr_b).await.unwrap();
+    let b_post_vec = feed::get_all_post(agent_b, feed_canister, pr_b).await;
+
+    let mut is_find_post_flag = false;
+
+    for post in b_post_vec {
+        if post.comment_to_comment.clone().unwrap().len() > 0 {
+            // C 点赞 评论，评论的评论
+            assert!(feed::like_comment(
+                agent_c.clone(), 
+                feed_canister, 
+                post.post_id.clone(), 
+                post.comment[0].index.unwrap()
+            ).await);
+
+            assert!(feed::like_comment_comment(
+                agent_c.clone(), 
+                feed_canister, 
+                post.post_id.clone(), 
+                post.comment_to_comment.clone().unwrap()[0].index
+            ).await);
+
+            // 检查post
+            let feed_get_post = feed::get_post(agent_a.clone(), feed_canister, post.post_id.clone()).await.unwrap();
+            assert!(feed_get_post.comment[0].like.clone().unwrap().len() > 0);
+            assert!(feed_get_post.comment_to_comment.clone().unwrap()[0].like.len() > 0);
+            println!("like_comment &  like_comment_comment 后的 Post : {:?}", feed_get_post);
+
+            // 检查 A 是否收到推流
+            println!("Wait 30s !\n");
+            std::thread::sleep(std::time::Duration::from_secs(30));
+            let a_feed_vec = feed::get_latest_feed(agent_a.clone(), feed_canister, pr_a, 100).await;
+            let mut is_a_feed_update_flag = false;
+            for feed in a_feed_vec {
+                if feed.post_id == post.post_id {
+                    assert!(feed.comment[0].like.clone().unwrap().len() > 0);
+                    assert!(feed.comment_to_comment.unwrap()[0].like.len() > 0);
+                    is_a_feed_update_flag = true;
+                }
+            }
+            assert!(is_a_feed_update_flag);
+
+            // 检查 bucket中的帖子是否更新
+            println!("Wait 30s !\n");
+            std::thread::sleep(std::time::Duration::from_secs(30));
+            let (bucket_canister, _, _) = utils::check_post_id(&post.post_id);
+            let bucket_post = bucket::get_post(
+                agent_a.clone(), 
+                bucket_canister, 
+                post.post_id
+            ).await.unwrap();
+            assert!(bucket_post.comment[0].like.clone().unwrap().len() > 0);
+            assert!(bucket_post.comment_to_comment.unwrap()[0].like.len() > 0);
+
+            is_find_post_flag = true;
+        }
+    }
+
+    assert!(is_find_post_flag);
+}
+
 pub async fn test() {
     println!("---------------- Test Start ---------------- \n");
 
@@ -379,6 +528,19 @@ pub async fn test() {
         build_local_agent(USERF_PEM).await
     ).await;
 
+    println!("---------------- TEST 13 comment_comment ------------------ \n");
+    test_comment_comment(
+        build_local_agent(USERA_PEM).await,
+        build_local_agent(USERB_PEM).await,
+        build_local_agent(USERC_PEM).await
+    ).await;
+
+    println!("---------------- TEST 14 like_comment ------------------ \n");
+    test_like_comment(
+        build_local_agent(USERA_PEM).await,
+        build_local_agent(USERB_PEM).await,
+        build_local_agent(USERC_PEM).await
+    ).await;
 }
 
 pub async fn test_on_ic() {
