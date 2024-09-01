@@ -873,6 +873,8 @@ fn get_post_comment_tree(post_id: String) -> Vec<CommentTreeNode>{
     }).unwrap();
 
     for comment in post.comment {
+        ic_cdk::println!("comment : {:?}", comment.clone());
+
         tree.push(CommentTreeNode {
             dep: 0,
             father: comment.index.unwrap(),
@@ -890,12 +892,14 @@ fn get_post_comment_tree(post_id: String) -> Vec<CommentTreeNode>{
 }
 
 fn get_one_comment_tree(fa_index: u64, dep: u64, comment_vec: Vec<CommentToComment>) -> Vec<CommentTreeNode> {
+    ic_cdk::println!("get_one_comment_tree : {} {} \n", fa_index, dep);
+
     let mut tree = vec![];
     let mut son_index_vec = Vec::new();
 
     for comment in comment_vec.clone() {
         if comment.to_index == fa_index {
-            son_index_vec.push(comment.to_index);
+            son_index_vec.push(comment.index);
 
             tree.push(CommentTreeNode {
                 dep: dep + 1,
