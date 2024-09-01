@@ -3,7 +3,7 @@ import './App.css';
 import {Side} from "./components/Sider";
 import {Main} from "./components/Main";
 import {Settings} from "./components/Setting";
-import {Routes, Route} from "react-router-dom";
+import {Routes, Route, Navigate} from "react-router-dom";
 import {Profile} from "./components/Profile";
 import {Comment} from "./components/Comment";
 import {useAuth} from "./utils/useAuth";
@@ -60,7 +60,7 @@ function App() {
       <ProfileModal setOpen={setOpen} open={open} canClose={false}/>
       <Side scrollToTop={scrollToTop}/>
       <Routes>
-        <Route path="/" element={<Main scrollContainerRef={scrollContainerRef}/>}/>
+        <Route path="/" element={<Navigate to={"home"}/>}/>
         <Route path="home" element={<Main scrollContainerRef={scrollContainerRef}/>}/>
         <Route path="explore" element={<Main scrollContainerRef={scrollContainerRef}/>}/>
         <Route path="wallet" element={<Wallet/>}/>

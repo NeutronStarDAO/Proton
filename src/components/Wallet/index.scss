@@ -35,6 +35,31 @@
       justify-content: space-between;
       padding-bottom: 2rem;
       font-size: 2.5rem;
+
+      span {
+        img {
+          width: 2.5rem;
+          height: 2.5rem;
+          cursor: pointer;
+          margin: 0;
+          padding: 0;
+          transform-origin: 45% 50%;
+        }
+
+        .loading {
+          animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+          from {
+            transform: rotate(0deg);
+          }
+          to {
+            transform: rotate(360deg);
+          }
+        }
+      }
+
     }
 
     .token_item {
@@ -141,7 +166,7 @@
     flex-direction: column;
     gap: 1.3rem;
 
-    
+
     .token_button_wrap {
       display: flex;
       gap: 2rem;

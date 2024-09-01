@@ -9,7 +9,7 @@ import {shortenString} from "../Sider";
 import {useNavigate, useParams} from "react-router-dom";
 import {Principal} from "@dfinity/principal";
 import {Post as post_type} from "../../declarations/feed/feed";
-import {Skeleton, Spin} from "antd";
+import {message, Skeleton, Spin} from "antd";
 import {Post} from "../Main";
 import Feed from "../../actors/feed";
 import {useAuth} from "../../utils/useAuth";
@@ -139,12 +139,20 @@ const UserPanel = ({profile}: { profile?: profile_type }) => {
   const handleFollow = async () => {
     if (!id) return
     if (isFollowed) {
+      setIsFollowed(false)
       userApi.cancel_follow(Principal.from(id)).then(() => {
         isFollow()
+      }).catch(() => {
+        message.error("Failed to cancel follow.")
+        setIsFollowed(true)
       })
     } else {
+      setIsFollowed(true)
       userApi.follow(Principal.from(id)).then(() => {
         isFollow()
+      }).catch(() => {
+        message.error("Failed to follow.")
+        setIsFollowed(false)
       })
     }
   }

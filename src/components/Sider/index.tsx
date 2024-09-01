@@ -80,7 +80,7 @@ export const Side = ({scrollToTop}: { scrollToTop: Function }) => {
 const Logo = () => {
   const navigate = useNavigate();
 
-  return <div onClick={() => navigate("/")} className={"logo"}>
+  return <div onClick={() => navigate("/home")} className={"logo"}>
     <img style={{objectFit: "cover"}} src="/img_1.png" alt=""/>
   </div>
 }

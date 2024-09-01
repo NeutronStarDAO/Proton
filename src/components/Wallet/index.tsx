@@ -19,10 +19,15 @@ const Balance = () => {
   const {principal, isAuth} = useAuth()
   const [balances, setBalance] = React.useState<bigint[]>([])
   const {isDark} = useAuth()
+  const [spin, setSpin] = React.useState(false)
 
   const getBalance = async () => {
+    setSpin(true)
     if (principal && isAuth) {
-      Promise.all([ckBTCApi.ckBTCBalance(principal), ledgerApi.icpBalance(principal)]).then(e => setBalance(e))
+      Promise.all([ckBTCApi.ckBTCBalance(principal), ledgerApi.icpBalance(principal)]).then(e => {
+        setBalance(e)
+        setSpin(false)
+      })
     }
   }
   useEffect(() => {
@@ -34,8 +39,10 @@ const Balance = () => {
        <span>
         Token
       </span>
-      <span style={{flex: "1"}}>
+      <span style={{flex: "1", display: "flex", alignItems: "center", justifyContent: 'center', gap: "1rem"}}>
         Balance
+          <img className={spin ? "loading" : ""} onClick={getBalance}
+               src={isDark ? "/refresh_light.png" : "/refresh.png"} alt=""/>
       </span>
       <span style={{flex: "1"}}>
         Transactions

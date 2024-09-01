@@ -2,8 +2,18 @@ export const idlFactory = ({ IDL }) => {
   const Like = IDL.Record({ 'user' : IDL.Principal, 'created_at' : IDL.Nat64 });
   const Comment = IDL.Record({
     'content' : IDL.Text,
+    'like' : IDL.Opt(IDL.Vec(Like)),
     'user' : IDL.Principal,
     'created_at' : IDL.Nat64,
+    'index' : IDL.Opt(IDL.Nat64),
+  });
+  const CommentToComment = IDL.Record({
+    'content' : IDL.Text,
+    'from_user' : IDL.Principal,
+    'to_user' : IDL.Principal,
+    'like' : IDL.Vec(Like),
+    'created_at' : IDL.Nat64,
+    'index' : IDL.Nat64,
   });
   const Post = IDL.Record({
     'repost' : IDL.Vec(Like),
@@ -15,7 +25,9 @@ export const idlFactory = ({ IDL }) => {
     'created_at' : IDL.Nat64,
     'comment' : IDL.Vec(Comment),
     'feed_canister' : IDL.Principal,
+    'comment_index' : IDL.Opt(IDL.Nat64),
     'index' : IDL.Nat64,
+    'comment_to_comment' : IDL.Opt(IDL.Vec(CommentToComment)),
   });
   const CanisterStatusType = IDL.Variant({
     'stopped' : IDL.Null,
@@ -55,6 +67,12 @@ export const idlFactory = ({ IDL }) => {
     'batch_delete_feed' : IDL.Func([IDL.Principal, IDL.Vec(IDL.Text)], [], []),
     'batch_receive_feed' : IDL.Func([IDL.Principal, IDL.Vec(IDL.Text)], [], []),
     'check_available_bucket' : IDL.Func([], [IDL.Bool], []),
+    'comment_comment' : IDL.Func(
+      [IDL.Text, IDL.Principal, IDL.Text],
+      [IDL.Bool],
+      [],
+    ),
+    'complete_upgrade' : IDL.Func([], [IDL.Bool], []),
     'create_comment' : IDL.Func([IDL.Text, IDL.Text], [IDL.Bool], []),
     'create_like' : IDL.Func([IDL.Text], [IDL.Bool], []),
     'create_post' : IDL.Func([IDL.Text, IDL.Vec(IDL.Text)], [IDL.Text], []),
@@ -90,6 +108,8 @@ export const idlFactory = ({ IDL }) => {
     'get_post_number' : IDL.Func([IDL.Principal], [IDL.Nat64], ['query']),
     'get_root_bucket' : IDL.Func([], [IDL.Principal], ['query']),
     'get_user_actor' : IDL.Func([], [IDL.Principal], ['query']),
+    'like_comment' : IDL.Func([IDL.Text, IDL.Nat64], [IDL.Bool], []),
+    'like_comment_comment' : IDL.Func([IDL.Text, IDL.Nat64], [IDL.Bool], []),
     'status' : IDL.Func([], [CanisterStatusResponse], []),
   });
 };
