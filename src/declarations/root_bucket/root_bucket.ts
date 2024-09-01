@@ -25,9 +25,9 @@ export interface Comment {
 export interface CommentToComment {
   'content' : string,
   'from_user' : Principal,
-  'to_user' : Principal,
   'like' : Array<Like>,
   'created_at' : bigint,
+  'to_index' : bigint,
   'index' : bigint,
 }
 export interface DefiniteCanisterSettings {

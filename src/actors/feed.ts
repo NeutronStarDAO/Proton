@@ -1,8 +1,7 @@
 import {Principal} from "@dfinity/principal";
 import {idlFactory} from "../declarations/feed/feed.did.js";
 import {getActor} from "../utils/Actor";
-import {Post} from "../declarations/feed/feed";
-
+import {CommentTreeNode, Post} from "../declarations/feed/feed";
 
 export default class Feed {
 
@@ -124,4 +123,45 @@ export default class Feed {
       throw e
     }
   }
+
+  async comment_comment(postID: string, index: number, content: string) {
+    const actor = await this.getActor()
+    try {
+      return await actor.comment_comment(postID, BigInt(index), content) as boolean
+    } catch (e) {
+      console.log("comment_comment error", e)
+      throw e
+    }
+  }
+
+  async like_comment(postID: string, index: number) {
+    const actor = await this.getActor()
+    try {
+      return await actor.like_comment(postID, BigInt(index)) as boolean
+    } catch (e) {
+      console.log("like_comment error", e)
+      throw e
+    }
+  }
+
+  async like_comment_comment(postID: string, index: number) {
+    const actor = await this.getActor()
+    try {
+      return await actor.like_comment_comment(postID, BigInt(index)) as boolean
+    } catch (e) {
+      console.log("like_comment_comment error", e)
+    }
+  }
+
+  async get_post_comment_tree(postID:string) {
+    const actor = await this.getActor()
+    try {
+      return await actor.get_post_comment_tree(postID) as Array<CommentTreeNode>
+    } catch (e) {
+      console.log("get_post_comment_tree error", e)
+      throw e
+    }
+  }
+
+
 }
