@@ -99,7 +99,7 @@ export const Send = ({open, setOpen, balance, token, getBalance, setIcpLoading, 
       <div className={`account ${isDark ? "dark_account" : ""}`}>
         Destination
         <div className={"send_address"}>
-          <input value={to} onChange={e => setTo(e.target.value)} placeholder={"Account ID / Principal ID"}
+          <input value={to} onChange={e => setTo(e.target.value)} placeholder={token === "ICP" ? "Account ID / Principal ID" : "Principal ID"}
                  type="text"/>
         </div>
         <div className={"amount"}>
