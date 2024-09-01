@@ -9,16 +9,32 @@ type CanisterStatusResponse = record {
   reserved_cycles : nat;
 };
 type CanisterStatusType = variant { stopped; stopping; running };
-type Comment = record { content : text; user : principal; created_at : nat64 };
+type Comment = record {
+  content : text;
+  like : opt vec Like;
+  user : principal;
+  created_at : nat64;
+  index : opt nat64;
+};
+type CommentToComment = record {
+  content : text;
+  from_user : principal;
+  like : vec Like;
+  created_at : nat64;
+  to_index : nat64;
+  index : nat64;
+};
 type DefiniteCanisterSettings = record {
   freezing_threshold : nat;
   controllers : vec principal;
   reserved_cycles_limit : nat;
+  log_visibility : LogVisibility;
   wasm_memory_limit : nat;
   memory_allocation : nat;
   compute_allocation : nat;
 };
 type Like = record { user : principal; created_at : nat64 };
+type LogVisibility = variant { controllers; public };
 type Post = record {
   repost : vec Like;
   post_id : text;
@@ -29,7 +45,9 @@ type Post = record {
   created_at : nat64;
   comment : vec Comment;
   feed_canister : principal;
+  comment_index : opt nat64;
   index : nat64;
+  comment_to_comment : opt vec CommentToComment;
 };
 type QueryStats = record {
   response_payload_bytes_total : nat;
@@ -52,5 +70,6 @@ service : {
     ) composite_query;
   init : () -> ();
   status : () -> (CanisterStatusResponse);
+  update_bucket_canister_controller : (principal) -> (bool);
   update_bucket_wasm : (blob, nat64) -> (bool);
 }

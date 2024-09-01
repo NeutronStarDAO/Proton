@@ -2,8 +2,18 @@ export const idlFactory = ({ IDL }) => {
   const Like = IDL.Record({ 'user' : IDL.Principal, 'created_at' : IDL.Nat64 });
   const Comment = IDL.Record({
     'content' : IDL.Text,
+    'like' : IDL.Opt(IDL.Vec(Like)),
     'user' : IDL.Principal,
     'created_at' : IDL.Nat64,
+    'index' : IDL.Opt(IDL.Nat64),
+  });
+  const CommentToComment = IDL.Record({
+    'content' : IDL.Text,
+    'from_user' : IDL.Principal,
+    'like' : IDL.Vec(Like),
+    'created_at' : IDL.Nat64,
+    'to_index' : IDL.Nat64,
+    'index' : IDL.Nat64,
   });
   const Post = IDL.Record({
     'repost' : IDL.Vec(Like),
@@ -15,7 +25,9 @@ export const idlFactory = ({ IDL }) => {
     'created_at' : IDL.Nat64,
     'comment' : IDL.Vec(Comment),
     'feed_canister' : IDL.Principal,
+    'comment_index' : IDL.Opt(IDL.Nat64),
     'index' : IDL.Nat64,
+    'comment_to_comment' : IDL.Opt(IDL.Vec(CommentToComment)),
   });
   const CanisterStatusType = IDL.Variant({
     'stopped' : IDL.Null,
@@ -47,6 +59,7 @@ export const idlFactory = ({ IDL }) => {
     'reserved_cycles' : IDL.Nat,
   });
   return IDL.Service({
+    'complete_upgrade' : IDL.Func([], [IDL.Bool], []),
     'delete_feed' : IDL.Func([IDL.Text], [IDL.Bool], []),
     'get_latest_feed' : IDL.Func([IDL.Nat64], [IDL.Vec(Post)], ['query']),
     'get_post' : IDL.Func([IDL.Text], [IDL.Opt(Post)], ['query']),

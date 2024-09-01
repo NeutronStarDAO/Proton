@@ -17,8 +17,18 @@ export type CanisterStatusType = { 'stopped' : null } |
   { 'running' : null };
 export interface Comment {
   'content' : string,
+  'like' : [] | [Array<Like>],
   'user' : Principal,
   'created_at' : bigint,
+  'index' : [] | [bigint],
+}
+export interface CommentToComment {
+  'content' : string,
+  'from_user' : Principal,
+  'like' : Array<Like>,
+  'created_at' : bigint,
+  'to_index' : bigint,
+  'index' : bigint,
 }
 export interface DefiniteCanisterSettings {
   'freezing_threshold' : bigint,
@@ -39,7 +49,9 @@ export interface Post {
   'created_at' : bigint,
   'comment' : Array<Comment>,
   'feed_canister' : Principal,
+  'comment_index' : [] | [bigint],
   'index' : bigint,
+  'comment_to_comment' : [] | [Array<CommentToComment>],
 }
 export interface QueryStats {
   'response_payload_bytes_total' : bigint,
@@ -48,6 +60,7 @@ export interface QueryStats {
   'request_payload_bytes_total' : bigint,
 }
 export interface _SERVICE {
+  'complete_upgrade' : ActorMethod<[], boolean>,
   'delete_feed' : ActorMethod<[string], boolean>,
   'get_latest_feed' : ActorMethod<[bigint], Array<Post>>,
   'get_post' : ActorMethod<[string], [] | [Post]>,

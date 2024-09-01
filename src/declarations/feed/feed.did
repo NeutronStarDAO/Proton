@@ -9,7 +9,27 @@ type CanisterStatusResponse = record {
   reserved_cycles : nat;
 };
 type CanisterStatusType = variant { stopped; stopping; running };
-type Comment = record { content : text; user : principal; created_at : nat64 };
+type Comment = record {
+  content : text;
+  like : opt vec Like;
+  user : principal;
+  created_at : nat64;
+  index : opt nat64;
+};
+type CommentToComment = record {
+  content : text;
+  from_user : principal;
+  like : vec Like;
+  created_at : nat64;
+  to_index : nat64;
+  index : nat64;
+};
+type CommentTreeNode = record {
+  dep : nat64;
+  comment : opt Comment;
+  comment_to_comment : opt CommentToComment;
+  father : nat64;
+};
 type DefiniteCanisterSettings = record {
   freezing_threshold : nat;
   controllers : vec principal;
@@ -31,7 +51,9 @@ type Post = record {
   created_at : nat64;
   comment : vec Comment;
   feed_canister : principal;
+  comment_index : opt nat64;
   index : nat64;
+  comment_to_comment : opt vec CommentToComment;
 };
 type QueryStats = record {
   response_payload_bytes_total : nat;
@@ -43,6 +65,8 @@ service : (principal, principal, principal) -> {
   batch_delete_feed : (principal, vec text) -> ();
   batch_receive_feed : (principal, vec text) -> ();
   check_available_bucket : () -> (bool);
+  comment_comment : (text, nat64, text) -> (bool);
+  complete_upgrade : () -> (bool);
   create_comment : (text, text) -> (bool);
   create_like : (text) -> (bool);
   create_post : (text, vec text) -> (text);
@@ -57,10 +81,13 @@ service : (principal, principal, principal) -> {
   get_home_feed_by_length : (principal, nat64, nat64) -> (vec Post) query;
   get_latest_feed : (principal, nat64) -> (vec Post) query;
   get_post : (text) -> (opt Post) query;
+  get_post_comment_tree : (text) -> (vec CommentTreeNode) query;
   get_post_fetch : () -> (principal) query;
   get_post_index : () -> (nat64) query;
   get_post_number : (principal) -> (nat64) query;
   get_root_bucket : () -> (principal) query;
   get_user_actor : () -> (principal) query;
+  like_comment : (text, nat64) -> (bool);
+  like_comment_comment : (text, nat64) -> (bool);
   status : () -> (CanisterStatusResponse);
 }

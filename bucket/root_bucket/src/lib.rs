@@ -60,6 +60,10 @@ thread_local! {
 
 #[ic_cdk::update]
 async fn init() {
+    if !is_controller(&ic_cdk::caller()).await {
+        return;
+    }
+
     for _ in 0..3 {
         let canister_record = create_canister(
             CreateCanisterArgument {
@@ -69,7 +73,8 @@ async fn init() {
                     memory_allocation: None,
                     freezing_threshold: None,
                     reserved_cycles_limit: None,
-                    wasm_memory_limit: None
+                    wasm_memory_limit: None,
+                    log_visibility: None
                 })
             }, 
             4 * T_CYCLES
@@ -97,6 +102,49 @@ async fn init() {
         });
         BUCKET_INDEX.with(|index| index.borrow_mut().set(bucket_index + 1).unwrap());
     }
+}
+
+#[ic_cdk::update]
+async fn update_bucket_canister_controller(
+    controller: Principal
+) -> bool {
+    if !is_controller(&ic_cdk::caller()).await {
+        return false;
+    }
+
+    let controllers = vec![ic_cdk::api::id(), controller];
+
+    let bucket_vec = get_all_bucket();
+
+    for bucket in bucket_vec {
+        ic_cdk::api::management_canister::main::update_settings(
+            ic_cdk::api::management_canister::main::UpdateSettingsArgument {
+                canister_id: bucket,
+                settings: CanisterSettings {
+                    controllers: Some(controllers.clone()),
+                    compute_allocation: None,
+                    memory_allocation: None,
+                    freezing_threshold: None,
+                    reserved_cycles_limit: None,
+                    wasm_memory_limit: None,
+                    log_visibility: None
+                }
+            }
+        ).await.unwrap();
+    }
+
+    true
+}
+
+async fn is_controller(user: &Principal) -> bool {
+    let status = status().await;
+    let controllers = status.settings.controllers;
+
+    if !controllers.contains(user) {
+        return false;
+    }
+
+    true
 }
 
 #[ic_cdk::update]
@@ -290,7 +338,8 @@ async fn _create_bucket() -> Principal {
                 memory_allocation: None,
                 freezing_threshold: None,
                 reserved_cycles_limit: None,
-                wasm_memory_limit: None
+                wasm_memory_limit: None,
+                log_visibility: None
             })
         }, 
         4 * T_CYCLES

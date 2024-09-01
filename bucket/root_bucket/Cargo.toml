@@ -9,8 +9,8 @@ edition = "2021"
 crate-type = ["cdylib"]
 
 [dependencies]
-candid = "0.10.8"
-ic-cdk = "0.14.0"
-serde = "1.0.203"
+candid = "0.10.10"
+ic-cdk = "0.16.0"
+serde = "1.0.209"
 types = { path = "../../libraries/types" }
 ic-stable-structures = "0.6.5"

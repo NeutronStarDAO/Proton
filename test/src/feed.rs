@@ -58,10 +58,65 @@ pub async fn create_comment(
     Decode!(&response_blob, bool).unwrap()
 }
 
+pub async fn comment_comment(
+    agent: ic_agent::Agent,
+    feed_canister: Principal,
+    post_id: String,
+    to: u64,
+    content: String
+) -> bool {
+    let response_blob = agent
+        .update(
+            &feed_canister, 
+            "comment_comment"
+        )
+        .with_arg(Encode!(&post_id, &to, &content).unwrap())
+        .call_and_wait()
+        .await.unwrap();
+    
+    Decode!(&response_blob, bool).unwrap()
+}
+
+pub async fn like_comment(
+    agent: Agent,
+    feed_canister: Principal,
+    post_id: String,
+    comment_index: u64
+) -> bool {
+    let response_blob = agent
+        .update(
+            &feed_canister, 
+            "like_comment"
+        )
+        .with_arg(Encode!(&post_id, &comment_index).unwrap())
+        .call_and_wait()
+        .await.unwrap();
+    
+    Decode!(&response_blob, bool).unwrap()
+}
+
+pub async fn like_comment_comment(
+    agent: Agent,
+    feed_canister: Principal,
+    post_id: String,
+    comment_index: u64
+) -> bool {
+    let response_blob = agent
+        .update(
+            &feed_canister, 
+            "like_comment_comment"
+        )
+        .with_arg(Encode!(&post_id, &comment_index).unwrap())
+        .call_and_wait()
+        .await.unwrap();
+    
+    Decode!(&response_blob, bool).unwrap()
+}
+
 pub async fn create_like(
     agent: Agent,
     feed_canister: Principal,
-    post_id: String
+    post_id: String,
 ) -> bool {
     let response_blob = agent
         .update(
@@ -109,6 +164,23 @@ pub async fn get_all_post(
     Decode!(&response_blob, Vec<Post>).unwrap()
 }
 
+pub async fn get_post(
+    agent: ic_agent::Agent,
+    feed_canister: Principal,
+    post_id: String
+) -> Option<Post> {
+    let response_blob = agent
+        .query(
+            &feed_canister, 
+            "get_post"
+        )
+        .with_arg(Encode!(&post_id).unwrap())
+        .call()
+        .await.unwrap();
+    
+    Decode!(&response_blob,Option<Post>).unwrap()
+}
+
 pub async fn get_feed_number(
     agent: Agent,
     feed_canister: Principal,
@@ -123,4 +195,21 @@ pub async fn get_feed_number(
         .call().await.unwrap();
     
     Decode!(&response_blob, u64).unwrap()
+}
+
+pub async fn get_latest_feed(
+    agent: Agent,
+    feed_canister: Principal,
+    user: Principal,
+    n: u64
+) -> Vec<Post> {
+    let response_blob = agent
+        .query(
+            &feed_canister, 
+            "get_latest_feed"
+        )
+        .with_arg(Encode!(&user, &n).unwrap())
+        .call().await.unwrap();
+    
+    Decode!(&response_blob, Vec<Post>).unwrap()
 }

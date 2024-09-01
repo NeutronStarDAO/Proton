@@ -17,18 +17,31 @@ export type CanisterStatusType = { 'stopped' : null } |
   { 'running' : null };
 export interface Comment {
   'content' : string,
+  'like' : [] | [Array<Like>],
   'user' : Principal,
   'created_at' : bigint,
+  'index' : [] | [bigint],
+}
+export interface CommentToComment {
+  'content' : string,
+  'from_user' : Principal,
+  'like' : Array<Like>,
+  'created_at' : bigint,
+  'to_index' : bigint,
+  'index' : bigint,
 }
 export interface DefiniteCanisterSettings {
   'freezing_threshold' : bigint,
   'controllers' : Array<Principal>,
   'reserved_cycles_limit' : bigint,
+  'log_visibility' : LogVisibility,
   'wasm_memory_limit' : bigint,
   'memory_allocation' : bigint,
   'compute_allocation' : bigint,
 }
 export interface Like { 'user' : Principal, 'created_at' : bigint }
+export type LogVisibility = { 'controllers' : null } |
+  { 'public' : null };
 export interface Post {
   'repost' : Array<Like>,
   'post_id' : string,
@@ -39,7 +52,9 @@ export interface Post {
   'created_at' : bigint,
   'comment' : Array<Comment>,
   'feed_canister' : Principal,
+  'comment_index' : [] | [bigint],
   'index' : bigint,
+  'comment_to_comment' : [] | [Array<CommentToComment>],
 }
 export interface QueryStats {
   'response_payload_bytes_total' : bigint,
@@ -63,6 +78,7 @@ export interface _SERVICE {
   >,
   'init' : ActorMethod<[], undefined>,
   'status' : ActorMethod<[], CanisterStatusResponse>,
+  'update_bucket_canister_controller' : ActorMethod<[Principal], boolean>,
   'update_bucket_wasm' : ActorMethod<[Uint8Array | number[], bigint], boolean>,
 }
 export declare const idlFactory: IDL.InterfaceFactory;

@@ -1,9 +1,9 @@
 use candid::Principal;
 use std::cell::RefCell;
 use ic_cdk::api::management_canister::main::{CanisterStatusResponse, CanisterIdRecord};
-use types::{Post, NewRepost, NewComment, NewLike};
+use types::{Post, Comment};
 use ic_stable_structures::memory_manager::{MemoryId, MemoryManager, VirtualMemory};
-use ic_stable_structures::{DefaultMemoryImpl, StableBTreeMap, StableCell};
+use ic_stable_structures::{DefaultMemoryImpl, StableBTreeMap};
 
 type Memory = VirtualMemory<DefaultMemoryImpl>;
 
@@ -19,9 +19,61 @@ thread_local! {
 
 }
 
-#[ic_cdk::post_upgrade]
-fn post_upgrade() {
+#[ic_cdk::update]
+async fn complete_upgrade() -> bool {
+    if !is_controller(&ic_cdk::caller()).await {
+        return false;
+    }
 
+// FEED_MAP 
+    let feed_map_entries: Vec<(String, Post)> = FEED_MAP.with(|map| {
+        map.borrow().iter().collect()
+    });
+
+    for (k, v) in feed_map_entries {
+        let mut i = 0;
+        let mut new_comment: Vec<Comment> = Vec::new();
+        for comment in v.comment {
+            new_comment.push(Comment {
+                index: Some(i),
+                user: comment.user,
+                content: comment.content,
+                created_at: comment.created_at,
+                like: Some(Vec::new())
+            });
+            i += 1;
+        }
+        
+        FEED_MAP.with(|archieve_post_map| {
+            archieve_post_map.borrow_mut().insert(k, Post {
+                post_id: v.post_id,
+                feed_canister: v.feed_canister,
+                index: v.index,
+                user: v.user,
+                content: v.content,
+                photo_url: v.photo_url,
+                repost: v.repost,
+                like: v.like,
+                comment_index: Some(i),
+                comment: new_comment,
+                comment_to_comment: Some(Vec::new()),
+                created_at: v.created_at
+            })
+        });
+    }
+
+    true
+}
+
+async fn is_controller(user: &Principal) -> bool {
+    let status = status().await;
+    let controllers = status.settings.controllers;
+
+    if !controllers.contains(user) {
+        return false;
+    }
+
+    true
 }
 
 #[ic_cdk::update]
