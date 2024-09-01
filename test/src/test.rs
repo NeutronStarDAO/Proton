@@ -342,11 +342,12 @@ async fn test_comment_comment(
     ).await);
 
     // C 去评论 A 的评论
+    let post = feed::get_post(agent_a.clone(), feed_canister, post_id.clone()).await.unwrap();
     assert!(feed::comment_comment(
         agent_c, 
         feed_canister, 
         post_id.clone(), 
-        pr_a, 
+        post.comment[0].index.unwrap(), 
         "test_comment_comment : UserC comment_comment to UserA".to_string()
     ).await);
 

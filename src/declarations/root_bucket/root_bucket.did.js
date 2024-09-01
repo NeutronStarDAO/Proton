@@ -10,9 +10,9 @@ export const idlFactory = ({ IDL }) => {
   const CommentToComment = IDL.Record({
     'content' : IDL.Text,
     'from_user' : IDL.Principal,
-    'to_user' : IDL.Principal,
     'like' : IDL.Vec(Like),
     'created_at' : IDL.Nat64,
+    'to_index' : IDL.Nat64,
     'index' : IDL.Nat64,
   });
   const Post = IDL.Record({

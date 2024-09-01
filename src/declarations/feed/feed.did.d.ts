@@ -25,10 +25,16 @@ export interface Comment {
 export interface CommentToComment {
   'content' : string,
   'from_user' : Principal,
-  'to_user' : Principal,
   'like' : Array<Like>,
   'created_at' : bigint,
+  'to_index' : bigint,
   'index' : bigint,
+}
+export interface CommentTreeNode {
+  'dep' : bigint,
+  'comment' : [] | [Comment],
+  'comment_to_comment' : [] | [CommentToComment],
+  'father' : bigint,
 }
 export interface DefiniteCanisterSettings {
   'freezing_threshold' : bigint,
@@ -66,7 +72,7 @@ export interface _SERVICE {
   'batch_delete_feed' : ActorMethod<[Principal, Array<string>], undefined>,
   'batch_receive_feed' : ActorMethod<[Principal, Array<string>], undefined>,
   'check_available_bucket' : ActorMethod<[], boolean>,
-  'comment_comment' : ActorMethod<[string, Principal, string], boolean>,
+  'comment_comment' : ActorMethod<[string, bigint, string], boolean>,
   'complete_upgrade' : ActorMethod<[], boolean>,
   'create_comment' : ActorMethod<[string, string], boolean>,
   'create_like' : ActorMethod<[string], boolean>,
@@ -85,6 +91,7 @@ export interface _SERVICE {
   >,
   'get_latest_feed' : ActorMethod<[Principal, bigint], Array<Post>>,
   'get_post' : ActorMethod<[string], [] | [Post]>,
+  'get_post_comment_tree' : ActorMethod<[string], Array<CommentTreeNode>>,
   'get_post_fetch' : ActorMethod<[], Principal>,
   'get_post_index' : ActorMethod<[], bigint>,
   'get_post_number' : ActorMethod<[Principal], bigint>,

@@ -19,9 +19,9 @@ type Comment = record {
 type CommentToComment = record {
   content : text;
   from_user : principal;
-  to_user : principal;
   like : vec Like;
   created_at : nat64;
+  to_index : nat64;
   index : nat64;
 };
 type DefiniteCanisterSettings = record {

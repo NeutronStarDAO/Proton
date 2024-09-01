@@ -29,10 +29,18 @@ pub struct Comment {
 pub struct CommentToComment {
     pub index: u64,
     pub from_user: Principal,
-    pub to_user: Principal,
+    pub to_index: u64,
     pub content: String,
     pub created_at: u64,
     pub like: Vec<Like>
+}
+
+#[derive(CandidType, Deserialize, Debug, Clone)]
+pub struct CommentTreeNode {
+    pub dep: u64, // 第几层
+    pub father: u64, // father_index
+    pub comment: Option<Comment>,
+    pub comment_to_comment: Option<CommentToComment>
 }
 
 #[derive(CandidType, Deserialize, Debug, Clone)]

@@ -19,10 +19,16 @@ type Comment = record {
 type CommentToComment = record {
   content : text;
   from_user : principal;
-  to_user : principal;
   like : vec Like;
   created_at : nat64;
+  to_index : nat64;
   index : nat64;
+};
+type CommentTreeNode = record {
+  dep : nat64;
+  comment : opt Comment;
+  comment_to_comment : opt CommentToComment;
+  father : nat64;
 };
 type DefiniteCanisterSettings = record {
   freezing_threshold : nat;
@@ -59,7 +65,7 @@ service : (principal, principal, principal) -> {
   batch_delete_feed : (principal, vec text) -> ();
   batch_receive_feed : (principal, vec text) -> ();
   check_available_bucket : () -> (bool);
-  comment_comment : (text, principal, text) -> (bool);
+  comment_comment : (text, nat64, text) -> (bool);
   complete_upgrade : () -> (bool);
   create_comment : (text, text) -> (bool);
   create_like : (text) -> (bool);
@@ -75,6 +81,7 @@ service : (principal, principal, principal) -> {
   get_home_feed_by_length : (principal, nat64, nat64) -> (vec Post) query;
   get_latest_feed : (principal, nat64) -> (vec Post) query;
   get_post : (text) -> (opt Post) query;
+  get_post_comment_tree : (text) -> (vec CommentTreeNode) query;
   get_post_fetch : () -> (principal) query;
   get_post_index : () -> (nat64) query;
   get_post_number : (principal) -> (nat64) query;

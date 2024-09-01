@@ -62,7 +62,7 @@ pub async fn comment_comment(
     agent: ic_agent::Agent,
     feed_canister: Principal,
     post_id: String,
-    to: Principal,
+    to: u64,
     content: String
 ) -> bool {
     let response_blob = agent

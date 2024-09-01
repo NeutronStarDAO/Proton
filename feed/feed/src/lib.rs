@@ -1,4 +1,4 @@
-use types::{Comment, CommentToComment, Like, Post, Repost};
+use types::{Comment, CommentToComment, Like, Post, Repost, CommentTreeNode};
 
 use candid::{CandidType, Decode, Encode, Principal};
 use ic_cdk::api::management_canister::main::{CanisterStatusResponse, CanisterIdRecord};
@@ -530,7 +530,7 @@ async fn like_comment(post_id: String, comment_index: u64) -> bool {
 }
 
 #[ic_cdk::update]
-async fn comment_comment(post_id: String, to: Principal, content: String) -> bool {
+async fn comment_comment(post_id: String, to: u64, content: String) -> bool {
     assert!(ic_cdk::caller() != Principal::anonymous());
 
     let (bucket, _, _) = check_post_id(&post_id);
@@ -544,7 +544,7 @@ async fn comment_comment(post_id: String, to: Principal, content: String) -> boo
     old_comment_comment_vec.push(CommentToComment {
         index: post.comment_index.unwrap(),
         from_user: caller,
-        to_user: to,
+        to_index: to,
         content: content,
         created_at: ic_cdk::api::time(),
         like: Vec::new()
@@ -862,6 +862,59 @@ async fn check_available_bucket() -> bool {
     let availeable_bucket = call_result.unwrap();
     BUCKET.with(|bucket| bucket.borrow_mut().set(availeable_bucket).unwrap());
     true
+}
+
+#[ic_cdk::query]
+fn get_post_comment_tree(post_id: String) -> Vec<CommentTreeNode>{
+    let mut tree = Vec::new();
+
+    let post = ARCHIEVE_POST_MAP.with(|map| {
+        map.borrow().get(&post_id)
+    }).unwrap();
+
+    for comment in post.comment {
+        tree.push(CommentTreeNode {
+            dep: 0,
+            father: comment.index.unwrap(),
+            comment: Some(comment.clone()),
+            comment_to_comment: None
+        });
+        let mut son_tree = get_one_comment_tree(comment.index.unwrap(), 0, post.comment_to_comment.clone().unwrap());
+
+        if son_tree.len() > 0 {
+            tree.append(&mut son_tree)
+        }
+    }
+
+    tree
+}
+
+fn get_one_comment_tree(fa_index: u64, dep: u64, comment_vec: Vec<CommentToComment>) -> Vec<CommentTreeNode> {
+    let mut tree = vec![];
+    let mut son_index_vec = Vec::new();
+
+    for comment in comment_vec.clone() {
+        if comment.to_index == fa_index {
+            son_index_vec.push(comment.to_index);
+
+            tree.push(CommentTreeNode {
+                dep: dep + 1,
+                father: fa_index,
+                comment: None,
+                comment_to_comment: Some(comment)
+            });
+        }
+    }
+
+    for son_index in son_index_vec {
+        let mut son_tree = get_one_comment_tree(son_index, dep + 1, comment_vec.clone());
+
+        if son_tree.len() > 0 {
+            tree.append(&mut son_tree);
+        }
+    }
+
+    tree
 }
 
 #[ic_cdk::query]
