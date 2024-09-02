@@ -399,17 +399,25 @@ const CommentCon2 = React.memo(({comment1, commentToComment, commentCount, profi
     <ShowMoreTest content={comment1 ? comment1.content : commentToComment ? commentToComment.content : ''}
                   className={"tweet"}/>
     <div className={`post_bottom ${isDark ? "dark_post_bottom" : ""}`} onClick={e => e.stopPropagation()}>
-      <span style={{color: isLike || hoverOne === 0 ? "red" : "black", cursor: !isAuth ? "no-drop" : "pointer"}}
-            onClick={() => handleClick("like")}
-            onMouseEnter={e => setHoverOne(0)}
-            onMouseLeave={e => setHoverOne(-1)}>
-        <Icon name={hoverOne === 0 || isLike ? "like_click" : "like"}/> {likes.length}
-      </span>
       <Tooltip title={!isAuth ? "please login first" : ""}>
-        <span style={{color: hoverOne === 1 ? "#1C9BEF" : "black", cursor: !isAuth ? "no-drop" : "pointer"}}
+         <span style={{
+           color: !isAuth ? "black" : isLike || hoverOne === 0 ? "red" : "black",
+           cursor: !isAuth ? "no-drop" : "pointer"
+         }}
+               onClick={() => handleClick("like")}
+               onMouseEnter={e => setHoverOne(0)}
+               onMouseLeave={e => setHoverOne(-1)}>
+        <Icon name={!isAuth ? "like" : hoverOne === 0 || isLike ? "like_click" : "like"}/> {likes.length}
+      </span>
+      </Tooltip>
+      <Tooltip title={!isAuth ? "please login first" : ""}>
+        <span style={{
+          color: !isAuth ? "black" : hoverOne === 1 ? "#1C9BEF" : "black",
+          cursor: !isAuth ? "no-drop" : "pointer"
+        }}
               onClick={() => handleClick("comment")} onMouseEnter={e => setHoverOne(1)}
               onMouseLeave={e => setHoverOne(-1)}>
-       <Icon color={hoverOne === 1 ? "#1C9BEF" : "black"} name={"comment"}/> {"reply"}
+       <Icon color={!isAuth ? "black" : hoverOne === 1 ? "#1C9BEF" : "black"} name={"comment"}/> {"reply"}
       </span>
       </Tooltip>
     </div>

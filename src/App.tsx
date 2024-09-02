@@ -18,13 +18,14 @@ import Feed from "./actors/feed";
 import {CommentTreeNode} from "./declarations/feed/feed";
 import {Principal} from "@dfinity/principal";
 
+const userFeedCai = Principal.from("mai5z-6yaaa-aaaan-qmtmq-cai")
+
 function App() {
 
   const {post: selectPost} = useSelectPostStore()
-  const {principal, isAuth, isDark, userFeedCai} = useAuth()
+  const {principal, isAuth, isDark} = useAuth()
   const scrollContainerRef = useRef(null);
   const [open, setOpen] = useState(false)
-
 
   const getProfile = async (tree: CommentTreeNode[]) => {
     const profileIds: Principal[] = []
@@ -41,7 +42,7 @@ function App() {
   }
 
   const getCommentTree = async () => {
-    if (!userFeedCai || !selectPost) return
+    if (!selectPost) return
     const feedApi = new Feed(userFeedCai)
     const res = await feedApi.get_post_comment_tree(selectPost.post_id)
     getProfile(res)
@@ -51,7 +52,7 @@ function App() {
 
   useEffect(() => {
     getCommentTree()
-  }, [selectPost, userFeedCai]);
+  }, [selectPost]);
 
   useEffect(() => {
     if (principal && isAuth) {
