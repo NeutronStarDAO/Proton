@@ -61,11 +61,11 @@ export const ProfileModal = ({open, setOpen, canClose}: { open: boolean, setOpen
   }, [form1.ID]);
 
   const check = async () => {
-    const res = await userApi.is_handle_available("@" + form1.ID)
+    const res = await userApi.is_handle_available(form1.ID[0] === "@" ? form1.ID : "@" + form1.ID)
     if (res) {
       setIndex(2)
     } else {
-      if (profile.handle === "@" + form1.ID) setIndex(2)
+      if (profile.handle === (form1.ID[0] === "@" ? form1.ID : "@" + form1.ID)) setIndex(2)
       else setIndex(1)
     }
   }
