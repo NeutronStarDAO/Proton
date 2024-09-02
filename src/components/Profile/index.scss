@@ -7,6 +7,7 @@
   align-items: start;
   overflow: auto;
   border-left: 1px solid #679BF8;
+  border-right: .1px solid #679BF8;
 
   .profile_title {
     width: 100%;
@@ -15,7 +16,7 @@
     padding-left: 3rem;
     padding-top: 3rem;
     padding-bottom: 2rem;
-    border-right: .1px solid #679BF8;
+    
     position: sticky;
     top: 0;
     //background: white;
@@ -26,7 +27,6 @@
     height: 18.8rem;
     width: 100%;
     background: #F0F4FF;
-    border-right: 1px solid #679BF8;
   }
 
   .profile_body {
@@ -42,7 +42,6 @@
       align-items: start;
       gap: 1rem;
       padding: 1rem 3rem;
-      border-right: 1px solid #679BF8;
 
       .avatar_panel {
         width: 100%;
