@@ -366,14 +366,22 @@ const CommentCon2 = React.memo(({comment1, commentToComment, commentCount, profi
 
         <div style={{display: "flex", alignItems: "center", fontSize: "1.5rem", gap: "1rem"}}>
           {profile ?
-            <div style={{
-              fontSize: "1.7rem",
-              fontWeight: "500",
-              color: "rgba(0,0,0,0.5)"
-            }}>
-              {profile ? shortenString(profile.handle.toString(), 10) : ""}
-            </div> :
-            <div className="skeleton skeleton-text"/>
+            commentToComment ?
+              <div style={{
+                fontSize: "1.7rem",
+                fontWeight: "500",
+                color: "rgba(0,0,0,0.5)"
+              }}>
+                {profile ? shortenString(profile.handle.toString(), 10) : ""} Reply {profiles && profiles[Number(commentToComment.to_index)].handle}
+              </div>
+              : <div style={{
+                fontSize: "1.7rem",
+                fontWeight: "500",
+                color: "rgba(0,0,0,0.5)"
+              }}>
+                {profile ? shortenString(profile.handle.toString(), 10) : ""}
+              </div>
+            : <div className="skeleton skeleton-text"/>
           }
 
           <span style={{
