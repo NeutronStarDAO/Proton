@@ -26,7 +26,7 @@ type form_type = {
   Network: string
 }
 export const ProfileModal = ({open, setOpen, canClose}: { open: boolean, setOpen: Function, canClose: boolean }) => {
-  const {principal, userFeedCai,isDark} = useAuth()
+  const {principal, userFeedCai, isDark} = useAuth()
   const [backFile, setBackFile] = useState<File>()
   const [avatarFile, setAvatarFile] = useState<File>()
   const [api, contextHolder] = notification.useNotification();
@@ -42,10 +42,11 @@ export const ProfileModal = ({open, setOpen, canClose}: { open: boolean, setOpen
   const [protocol, setProtocol] = useState("https://")
 
   const onChange = (title: keyof form_type, e: any) => {
-    setForm1(prevForm => ({
-      ...prevForm,
-      [title]: e.target.value
-    }));
+    const newForm = {
+      ...form1, [title]:
+      e.target.value
+    }
+    setForm1(newForm);
   };
 
   useEffect(() => {
@@ -64,7 +65,8 @@ export const ProfileModal = ({open, setOpen, canClose}: { open: boolean, setOpen
     if (res) {
       setIndex(2)
     } else {
-      setIndex(1)
+      if (profile.handle === "@" + form1.ID) setIndex(2)
+      else setIndex(1)
     }
   }
 
@@ -74,18 +76,18 @@ export const ProfileModal = ({open, setOpen, canClose}: { open: boolean, setOpen
     try {
       const a_url = avatarFile ? await getBase64(avatarFile) : profile.avatar_url ? profile.avatar_url : ""
       const b_url = backFile ? await getBase64(backFile) : profile.back_img_url ? profile.back_img_url : ""
-      updateProfile({
-        id: principal,
-        avatar_url: a_url,
-        name: form1.Name,
-        location: form1.Location,
-        biography: form1.Bio,
-        website: form1.Network.length > 0 ? protocol + form1.Network : form1.Network,
-        feed_canister: [userFeedCai],
-        back_img_url: b_url,
-        handle: form1.ID,
-        created_at: []
-      })
+      // updateProfile({
+      //   id: principal,
+      //   avatar_url: a_url,
+      //   name: form1.Name,
+      //   location: form1.Location,
+      //   biography: form1.Bio,
+      //   website: form1.Network.length > 0 ? protocol + form1.Network : form1.Network,
+      //   feed_canister: [userFeedCai],
+      //   back_img_url: b_url,
+      //   handle: "@" + form1.ID,
+      //   created_at: []
+      // })
       const res = await aApi.upload_photo([backFile ?? new File([], ""), avatarFile ?? new File([], "")])
       const newProfile: Profile = {
         id: principal,
@@ -96,21 +98,23 @@ export const ProfileModal = ({open, setOpen, canClose}: { open: boolean, setOpen
         website: form1.Network.length > 0 ? protocol + form1.Network : form1.Network,
         feed_canister: [userFeedCai],
         back_img_url: res[0] ? res[0] : b_url ? b_url : "",
-        handle: form1.ID,
+        handle: profile.handle,
         created_at: []
       }
-      canClose ? userApi.updateProfile(newProfile).then(() => window.location.reload()) : await userApi.createProfile({
-        ...newProfile,
-        handle: "@" + newProfile.handle
-      })
-      if (profile) updateProfile(newProfile)
+      if (canClose) {
+        await userApi.updateProfile(newProfile)
+        await userApi.update_handle(form1.ID[0] === "@" ? form1.ID : "@" + form1.ID)
+      } else {
+        await userApi.createProfile({
+          ...newProfile,
+          handle: "@" + newProfile.handle
+        })
+      }
     } catch (e) {
-      api.error({
-        message: 'Edit failed !',
-        key: 'edit',
-        description: '',
-        icon: <CloseOutlined/>
-      })
+      console.log(e)
+      api.error({message: "Error"})
+    } finally {
+      window.location.reload()
     }
   }
 
@@ -120,20 +124,21 @@ export const ProfileModal = ({open, setOpen, canClose}: { open: boolean, setOpen
       network = profile.website.split("://")[1]
       setProtocol(profile.website.split("://")[0] + "://")
     }
-    setForm1({
+    const a = {
       ID: profile.handle ? profile.handle : "",
       Name: profile.name ? profile.name : "",
       Bio: profile.biography ? profile.biography : "",
       Location: profile.location ? profile.location : "",
       Network: network
-    })
+    }
+    setForm1(a)
   }, [open]);
 
   return <>
     {contextHolder}
     <Modal setOpen={setOpen} open={open} canClose={canClose}>
 
-      <div className={`login_modal ${isDark?"dark_login_modal":""}`}>
+      <div className={`login_modal ${isDark ? "dark_login_modal" : ""}`}>
         <div style={{display: "flex", justifyContent: "space-between", width: "100%", alignItems: "center"}}>
           <div className={"title"}>
             <Icon name={"edit"}/>
@@ -151,9 +156,7 @@ export const ProfileModal = ({open, setOpen, canClose}: { open: boolean, setOpen
             gap: "1rem",
             marginLeft: "2rem"
           }}>
-            <InfoItem onchange={onChange} canClose={canClose} t={"ID"} index={index} value={profile.handle}
-                      readOnly={!!profile.handle}
-                      flag={true}/>
+            <InfoItem onchange={onChange} t={"ID"} index={index} value={form1.ID} flag={true}/>
             <InfoItem onchange={onChange} t={"Name"} value={form1.Name} placeholder={"Your name"} flag={true}/>
           </div>
         </div>
@@ -190,12 +193,12 @@ const InfoItem = ({
                     t,
                     value,
                     flag,
-                    placeholder, onchange, readOnly, index, canClose, setProtocol, protocol
+                    placeholder, onchange, index, setProtocol, protocol
                   }: {
   t: keyof form_type,
   value?: string,
-  flag: boolean, canClose?: boolean,
-  placeholder?: string, readOnly?: boolean, index?: number, setProtocol?: Function, protocol?: string
+  flag: boolean,
+  placeholder?: string, index?: number, setProtocol?: Function, protocol?: string
   onchange: (arg0: keyof form_type, e: any) => void
 }) => {
 
@@ -205,7 +208,8 @@ const InfoItem = ({
                 alignItems: flag ? "center" : "start",
                 position: "relative"
               }}>
-    <div className={"id_and_name_prof_mod"} style={{fontWeight: "500", width: "14%", display: "flex", marginRight: "1rem"}}>
+    <div className={"id_and_name_prof_mod"}
+         style={{fontWeight: "500", width: "14%", display: "flex", marginRight: "1rem"}}>
       <span
         style={{
           color: "#f87d7d",
@@ -219,27 +223,26 @@ const InfoItem = ({
       if (t === "ID") {
         return (
           <>
-            { !canClose && <TipInfo index={index === undefined ? 0 : index}/> }
+            {<TipInfo index={index === undefined ? 0 : index}/>}
             <input
               onChange={(e) => onchange(t, e)}
-              defaultValue={value}
-              readOnly={readOnly}
+              value={value}
               placeholder={placeholder}
               type="text"/>
           </>
         )
       }
-      if (t === "Bio") return <textarea onChange={(e) => onchange(t, e)} defaultValue={value} placeholder={placeholder}
+      if (t === "Bio") return <textarea onChange={(e) => onchange(t, e)} value={value} placeholder={placeholder}
                                         name=""
-                                        id=""></textarea>
+                                        id=""/>
       if (t === "Network") return <div style={{display: "flex", width: "100%", alignItems: "center", gap: "1rem"}}>
         <Dropdown item={protocol} dropdownList={["https://", "http://"]} setItem={setProtocol}/>
         <input style={{border: "0.2rem solid rgb(214 195 255)", borderRadius: "1.5rem"}}
                onChange={(e) => onchange(t, e)}
-               defaultValue={value} readOnly={readOnly} placeholder={placeholder}
+               value={value} placeholder={placeholder}
                type="text"/>
       </div>
-      return <input onChange={(e) => onchange(t, e)} defaultValue={value} readOnly={readOnly} placeholder={placeholder}
+      return <input onChange={(e) => onchange(t, e)} value={value} placeholder={placeholder}
                     type="text"/>
     })()}
   </div>

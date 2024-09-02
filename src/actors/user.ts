@@ -135,6 +135,16 @@ class User {
       throw e
     }
   }
+
+  async update_handle(handle: string) {
+    const actor = await User.getActor()
+    try {
+      return await actor.update_handle(handle) as boolean
+    } catch (e) {
+      console.log("update_handle", e)
+      throw e
+    }
+  }
 }
 
 
