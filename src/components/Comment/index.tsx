@@ -340,7 +340,7 @@ const CommentCon2 = React.memo(({comment1, commentToComment, commentCount, profi
 
   return <div className={"comment_main"}
               style={{
-                width: commentToComment ? "88%" : "",
+                width: commentToComment ? "90%" : "",
                 border: commentToComment ? "none" : "",
                 float: commentToComment ? "right" : "none"
               }}>
@@ -358,7 +358,7 @@ const CommentCon2 = React.memo(({comment1, commentToComment, commentCount, profi
         {profile ?
           commentToComment ?
             <div style={{fontSize: "2rem"}}>{profile?.name} <span
-              style={{color: "#10499F"}}>Reply</span> {profiles && profiles[Number(commentToComment.to_index)].name}
+              style={{fontWeight: "500", color: "#10499F"}}>Reply</span> {profiles && profiles[Number(commentToComment.to_index)].name}
             </div> :
             <div style={{fontSize: "2rem"}}>{profile?.name}</div>
           : <div className="skeleton skeleton-title"/>
@@ -417,7 +417,7 @@ const CommentCon2 = React.memo(({comment1, commentToComment, commentCount, profi
         }}
               onClick={() => handleClick("comment")} onMouseEnter={e => setHoverOne(1)}
               onMouseLeave={e => setHoverOne(-1)}>
-       <Icon color={!isAuth ? "black" : hoverOne === 1 ? "#1C9BEF" : "black"} name={"comment"}/> {"reply"}
+       <Icon color={!isAuth ? "black" : hoverOne === 1 ? "#1C9BEF" : "black"} name={"comment"}/>
       </span>
       </Tooltip>
     </div>
