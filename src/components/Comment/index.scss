@@ -27,7 +27,12 @@
     padding: 1rem 0 1rem 0;
     flex-direction: column;
     align-items: center;
+    overflow: auto;
     gap: 2rem;
+
+    .comment-tree-node, .comment-list {
+      width: 100%;
+    }
 
     .comment_header {
       display: flex;
@@ -68,10 +73,9 @@
 .comment_main {
   width: 100%;
   display: flex;
-  cursor: pointer;
   padding: 1rem;
   flex-direction: column;
-  border-bottom: 1px rgb(103, 155, 248) solid;
+  border-top: 1px rgb(103, 155, 248) solid;
 
   .author {
     display: flex;
@@ -142,6 +146,8 @@
   .com_user_info {
     color: #b9c9de !important;
   }
+
+
 }
 
 @keyframes slideLeft {

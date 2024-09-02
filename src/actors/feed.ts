@@ -124,36 +124,36 @@ export default class Feed {
     }
   }
 
-  async comment_comment(postID: string, index: number, content: string) {
+  async comment_comment(postID: string, index: bigint, content: string) {
     const actor = await this.getActor()
     try {
-      return await actor.comment_comment(postID, BigInt(index), content) as boolean
+      return await actor.comment_comment(postID, index, content) as boolean
     } catch (e) {
       console.log("comment_comment error", e)
       throw e
     }
   }
 
-  async like_comment(postID: string, index: number) {
+  async like_comment(postID: string, index: bigint) {
     const actor = await this.getActor()
     try {
-      return await actor.like_comment(postID, BigInt(index)) as boolean
+      return await actor.like_comment(postID, index) as boolean
     } catch (e) {
       console.log("like_comment error", e)
       throw e
     }
   }
 
-  async like_comment_comment(postID: string, index: number) {
+  async like_comment_comment(postID: string, index: bigint) {
     const actor = await this.getActor()
     try {
-      return await actor.like_comment_comment(postID, BigInt(index)) as boolean
+      return await actor.like_comment_comment(postID, index) as boolean
     } catch (e) {
       console.log("like_comment_comment error", e)
     }
   }
 
-  async get_post_comment_tree(postID:string) {
+  async get_post_comment_tree(postID: string) {
     const actor = await this.getActor()
     try {
       return await actor.get_post_comment_tree(postID) as Array<CommentTreeNode>

@@ -28,7 +28,7 @@ export const Profile = ({
   const {id}: { id?: string } = useParams()
   const [profile, setProfile] = useState<profile_type>()
   const [posts, setPosts] = useState<post_type[]>()
-  const selectPost = useSelectPostStore()
+  const {post: selectPost} = useSelectPostStore()
   const {isDark} = useAuth()
   const titleRef = useRef<any>(null)
 
@@ -85,7 +85,7 @@ export const Profile = ({
         <UserPanel profile={profile}/>
         {
           posts ? posts.map((v, k) => {
-            return <Post profile={profile} selectedID={"post_id" in selectPost ? selectPost.post_id : ""} post={v}
+            return <Post profile={profile} selectedID={selectPost ? selectPost.post_id : ""} post={v}
                          updateFunction={() => {
                          }} key={k}/>
           }) : <Spin spinning={true} style={{width: "100%"}}/>

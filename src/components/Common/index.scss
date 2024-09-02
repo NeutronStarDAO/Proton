@@ -1,0 +1,36 @@
+.common_reply_wrap {
+  display: flex;
+  justify-content: space-between;
+  gap: 2rem;
+  margin-top: 2rem;
+  margin-left: 5rem;
+  align-items: stretch;
+  background: #D7E4FF;
+  border-radius: 2rem;
+  padding: 1rem 1rem 1rem 2rem;
+  animation: slideDown 0.2s linear;
+
+  textarea {
+    width: 100%;
+    font-size: 2rem;
+    outline: none;
+    border: none;
+    resize: none;
+    background: inherit;
+  }
+
+  div {
+    background: #10499F;
+    font-size: 2.3rem;
+    display: flex;
+    align-items: center;
+    align-self: end;
+    justify-content: center;
+    padding: 0 3rem;
+    border-radius: 2rem;
+    color: white;
+    height: 4.6rem;
+    cursor: pointer;
+  }
+
+}

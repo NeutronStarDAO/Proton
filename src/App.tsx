@@ -10,17 +10,48 @@ import {useAuth} from "./utils/useAuth";
 import {userApi} from "./actors/user";
 import {updateProfile, useProfileStore} from "./redux";
 import {Sidebar} from "./components/Sidebar";
-import {useSelectPostStore} from "./redux/features/SelectPost";
+import {updateSelectPost, useSelectPostStore} from "./redux/features/SelectPost";
 import {ProfileModal} from "./components/Modal/Profile";
 import {FollowList} from "./components/FollowList";
 import {Wallet} from "./components/Wallet";
+import Feed from "./actors/feed";
+import {CommentTreeNode} from "./declarations/feed/feed";
+import {Principal} from "@dfinity/principal";
 
 function App() {
 
-  const selectPost = useSelectPostStore()
-  const {principal, isAuth, isDark, account} = useAuth()
+  const {post: selectPost} = useSelectPostStore()
+  const {principal, isAuth, isDark, userFeedCai} = useAuth()
   const scrollContainerRef = useRef(null);
   const [open, setOpen] = useState(false)
+
+
+  const getProfile = async (tree: CommentTreeNode[]) => {
+    const profileIds: Principal[] = []
+    tree.forEach(e => {
+      e.comment.forEach(e => {
+        profileIds.push(e.user)
+      })
+      e.comment_to_comment.forEach(e => {
+        profileIds.push(e.from_user)
+      })
+    })
+    const res = await userApi.batchGetProfile(profileIds)
+    updateSelectPost({profiles: res})
+  }
+
+  const getCommentTree = async () => {
+    if (!userFeedCai || !selectPost) return
+    const feedApi = new Feed(userFeedCai)
+    const res = await feedApi.get_post_comment_tree(selectPost.post_id)
+    getProfile(res)
+    // feedApi.comment_comment(selectPost.post_id, BigInt(3),"评论的评论的评论")
+    updateSelectPost({CommentTree: res})
+  }
+
+  useEffect(() => {
+    getCommentTree()
+  }, [selectPost, userFeedCai]);
 
   useEffect(() => {
     if (principal && isAuth) {
@@ -44,6 +75,7 @@ function App() {
       });
     }
   };
+
 
   useEffect(() => {
     if (isDark) {
@@ -71,11 +103,7 @@ function App() {
                element={<Profile scrollContainerRef={scrollContainerRef} scrollToTop={scrollToTop}/>}/>
         {/*<Route path="*" element={<ErrorPage/>}/>*/}
       </Routes>
-      {"comment" in selectPost ?
-        <Comment comments={selectPost.comment}/>
-        : <Sidebar/>
-      }
-
+      {selectPost ? <Comment/> : <Sidebar/>}
     </div>
   );
 }

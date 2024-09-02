@@ -1,6 +1,6 @@
 import "./index.scss"
 
-import React, {CSSProperties, useEffect, useMemo, useRef, useState} from 'react';
+import React, {useEffect, useMemo, useRef, useState} from 'react';
 import Icon from "../../Icons/Icon";
 import {useLocation, useNavigate} from "react-router-dom";
 import {Post as postType} from "../../declarations/feed/feed";
@@ -14,9 +14,8 @@ import {shortenString} from "../Sider";
 import {CloseOutlined} from "@ant-design/icons";
 import {updateSelectPost, useSelectPostStore} from "../../redux/features/SelectPost";
 import {getTime, isIn} from "../../utils/util";
-import autosize from "autosize"
 import {ShowMoreTest} from "../Comment";
-import InfiniteScroll from 'react-infinite-scroll-component';
+import {CommentInput} from "../Common";
 
 const pageCount = 30
 
@@ -29,7 +28,7 @@ export const Main = ({scrollContainerRef}: { scrollContainerRef: React.MutableRe
   const [page, setPage] = useState(0);
   const [isEnd, setIsEnd] = useState(false)
   const [profiles, setProfiles] = useState<Profile[]>([])
-  const selectPost = useSelectPostStore()
+  const {post: selectPost} = useSelectPostStore()
   const loader = useRef(null)
 
   const data = React.useMemo(() => {
@@ -84,28 +83,6 @@ export const Main = ({scrollContainerRef}: { scrollContainerRef: React.MutableRe
     if (Title === "Home") getHomeData()
   }, [Title, getHomeData]);
 
-  // return <div ref={scrollContainerRef} id={"content_main"} className={"main_wrap scroll_main"}>
-  //   <div className={"title"}>{Title}</div>
-  //   <InfiniteScroll
-  //     dataLength={data ? data.length : 0} //This is important field to render the next data
-  //     next={() => {
-  //       const newPage = page + 1
-  //       setPage(newPage)
-  //     }}
-  //     style={{width: "100%"}}
-  //     scrollThreshold={0.9}
-  //     hasMore={!isEnd}
-  //     scrollableTarget={"content_main"}
-  //     loader={<Spin spinning={true} style={{width: "100%", height: "10rem", display: data ? "" : "none"}}/>}>
-  //     {data ? data.length === 0 ? <Empty style={{width: "100%"}}/>
-  //       : data.map((v, k) => {
-  //         return <Post key={k} profile={profiles[k]} selectedID={"post_id" in selectPost ? selectPost.post_id : ""}
-  //                      updateFunction={Title === "Explore" ? getExploreData : getHomeData}
-  //                      post={v}/>
-  //       }) : <Spin spinning={true} style={{width: "100%"}}/>}
-  //
-  //   </InfiniteScroll>
-  // </div>
 
   useEffect(() => {
     const ob = new IntersectionObserver((entries) => {
@@ -125,7 +102,7 @@ export const Main = ({scrollContainerRef}: { scrollContainerRef: React.MutableRe
     <div className={"title"}>{Title}</div>
     {data ? data.length === 0 ? <Empty style={{width: "100%"}}/>
       : data.map((v, k) => {
-        return <Post key={k} profile={profiles[k]} selectedID={"post_id" in selectPost ? selectPost.post_id : ""}
+        return <Post key={k} profile={profiles[k]} selectedID={selectPost ? selectPost.post_id : ""}
                      updateFunction={Title === "Explore" ? getExploreData : getHomeData}
                      post={v}/>
       }) : <Spin spinning={true} style={{width: "100%"}}/>}
@@ -135,7 +112,6 @@ export const Main = ({scrollContainerRef}: { scrollContainerRef: React.MutableRe
   </div>
 
 }
-
 
 export const Post = ({post, updateFunction, selectedID, profile}: {
   post: postType,
@@ -147,31 +123,18 @@ export const Post = ({post, updateFunction, selectedID, profile}: {
   const [hoverOne, setHoverOne] = useState(-1)
   const [replyContent, setReplyContent] = useState("")
   const [open, setOpen] = useState(false)
-  const selectPost = useSelectPostStore()
-  const specifiedElementRef = useRef(null);
+  const {post: selectPost} = useSelectPostStore()
   const moreButton = useRef(null);
   const [showMore, setShowMore] = useState(false)
   const postRef = useRef(null)
-  const navigate = useNavigate()
   const [api, contextHolder] = notification.useNotification();
   const [like, setLike] = useState(false)
-  const textareaRef = useRef<any>(null);
   const isMy = useMemo(() => {
     if (!user_id) return false
     return user_id.toText() === principal.toText()
   }, [user_id, principal])
   const [isLoad, setIsLoad] = useState(false)
   const [avatar, setAvatar] = useState("")
-
-  useEffect(() => {
-    if (textareaRef.current) {
-      autosize(textareaRef.current);
-
-      return () => {
-        autosize.destroy(textareaRef.current);
-      };
-    }
-  }, [textareaRef, open]);
 
   const arg = useMemo(() => {
     const res = {
@@ -193,7 +156,10 @@ export const Post = ({post, updateFunction, selectedID, profile}: {
       setOpen(false)
       await feedApi.createComment(post.post_id, replyContent)
       updateFunction()
-      "comment" in selectPost && updateSelectPost(post)
+      const res = await feedApi.getPost(post.post_id)
+      if (res.length !== 0) {
+        updateSelectPost({post: res[0]})
+      }
     } catch (e) {
       api.error({
         message: 'Sent failed !',
@@ -231,10 +197,6 @@ export const Post = ({post, updateFunction, selectedID, profile}: {
 
   const click = (event: any) => {
     //@ts-ignore
-    if (!(specifiedElementRef.current && specifiedElementRef.current.contains(event.target))) {
-      setOpen(false)
-    }
-    //@ts-ignore
     if (!(moreButton.current && moreButton.current.contains(event.target))) {
       setShowMore(false)
     } else {
@@ -254,7 +216,7 @@ export const Post = ({post, updateFunction, selectedID, profile}: {
   }, [open])
 
   useEffect(() => {
-    if ("comment" in selectPost && selectPost.post_id === post.post_id) {
+    if (selectPost && selectPost.post_id === post.post_id) {
       const observer = new IntersectionObserver(
         ([entry]) => {
           if (!entry.isIntersecting)
@@ -312,7 +274,7 @@ export const Post = ({post, updateFunction, selectedID, profile}: {
                 if ("className" in e.target && e.target.className === "show-more-less-clickable") {
                   return 0
                 }
-                updateSelectPost(post)
+                updateSelectPost({}).then(() => updateSelectPost({post}))
               }}
   >
     {contextHolder}
@@ -380,28 +342,9 @@ export const Post = ({post, updateFunction, selectedID, profile}: {
 
     <BottomButton post={post} like={like} arg={arg} handleClick={handleClick} hoverOne={hoverOne}
                   setHoverOne={setHoverOne}/>
+    <CommentInput setOpen={setOpen} open={open} replyContent={replyContent} setReplyContent={setReplyContent}
+                  callBack={sendReply}/>
 
-    <div onClick={e => {
-      e.stopPropagation()
-    }} ref={specifiedElementRef} style={{display: open ? "flex" : "none"}} className={"reply_wrap"}>
-      <textarea ref={textareaRef} onChange={e => setReplyContent(e.target.value)}
-                value={replyContent}
-                name=""
-                id=""
-                rows={3}
-                placeholder={"Reply"}/>
-
-      <div onClick={sendReply} style={(() => {
-        const canSend = replyContent.length > 0
-        if (!canSend)
-          return {
-            background: "gray", cursor: "no-drop"
-          }
-      })()}>
-        Send
-      </div>
-
-    </div>
   </div>
 }
 
