@@ -417,7 +417,7 @@ const CommentCon2 = React.memo(({comment1, commentToComment, commentCount, profi
         }}
               onClick={() => handleClick("comment")} onMouseEnter={e => setHoverOne(1)}
               onMouseLeave={e => setHoverOne(-1)}>
-       <Icon color={!isAuth ? "black" : hoverOne === 1 ? "#1C9BEF" : "black"} name={"comment"}/>
+       <Icon color={!isAuth ? "black" : hoverOne === 1 ? "#1C9BEF" : "black"} name={"comment"}/> Reply
       </span>
       </Tooltip>
     </div>
