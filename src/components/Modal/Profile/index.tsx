@@ -107,7 +107,7 @@ export const ProfileModal = ({open, setOpen, canClose}: { open: boolean, setOpen
       } else {
         await userApi.createProfile({
           ...newProfile,
-          handle: "@" + newProfile.handle
+          handle: form1.ID[0] === "@" ? form1.ID : "@" + form1.ID
         })
       }
     } catch (e) {
