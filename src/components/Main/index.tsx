@@ -4,7 +4,7 @@ import React, {useEffect, useMemo, useRef, useState} from 'react';
 import Icon from "../../Icons/Icon";
 import {useLocation, useNavigate} from "react-router-dom";
 import {Post as postType} from "../../declarations/feed/feed";
-import {Empty, notification, Spin, Tooltip} from "antd";
+import {Empty, notification, Tooltip} from "antd";
 import {useAuth} from "../../utils/useAuth";
 import Feed from "../../actors/feed";
 import {rootPostApi} from "../../actors/root_bucket";
@@ -16,6 +16,7 @@ import {updateSelectPost, useSelectPostStore} from "../../redux/features/SelectP
 import {getTime, isIn} from "../../utils/util";
 import {ShowMoreTest} from "../Comment";
 import {CommentInput} from "../Common";
+import {Loading} from "../Loading";
 
 const pageCount = 30
 
@@ -98,6 +99,7 @@ export const Main = ({scrollContainerRef}: { scrollContainerRef: React.MutableRe
     }
   }, [loader.current])
 
+
   return <div ref={scrollContainerRef} id={"content_main"} className={"main_wrap scroll_main"}>
     <div className={"title"}>{Title}</div>
     {data ? data.length === 0 ? <Empty style={{width: "100%"}}/>
@@ -105,9 +107,9 @@ export const Main = ({scrollContainerRef}: { scrollContainerRef: React.MutableRe
         return <Post key={k} profile={profiles[k]} selectedID={selectPost ? selectPost.post_id : ""}
                      updateFunction={Title === "Explore" ? getExploreData : getHomeData}
                      post={v}/>
-      }) : <Spin spinning={true} style={{width: "100%"}}/>}
+      }) : <Loading isShow={true} style={{width: "100%"}}/>}
     <div ref={loader} style={{width: "100%", display: data && !isEnd ? "" : "none"}}>
-      <Spin spinning={true} style={{width: "100%"}}/>
+      <Loading isShow={true} style={{width: "100%"}}/>
     </div>
   </div>
 

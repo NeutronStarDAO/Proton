@@ -1,6 +1,6 @@
 import "./index.scss"
 
-import React, {MouseEventHandler, useEffect, useRef, useState} from "react"
+import React, {useEffect, useRef, useState} from "react"
 import {Modal} from "../index";
 import Icon, {Name} from "../../../Icons/Icon";
 import {useAuth} from "../../../utils/useAuth";
@@ -9,8 +9,7 @@ import {maxSize} from "../Post";
 import {message, notification} from "antd";
 import {aApi} from "../../../actors/photo_storage";
 import {userApi} from "../../../actors/user";
-import {updateProfile, useProfileStore} from "../../../redux";
-import {CloseOutlined} from "@ant-design/icons";
+import {useProfileStore} from "../../../redux";
 import {Profile} from "../../../declarations/user/user";
 import {getBase64} from "../../../utils/util";
 import {Done, UnDone} from "./Done";
@@ -76,18 +75,6 @@ export const ProfileModal = ({open, setOpen, canClose}: { open: boolean, setOpen
     try {
       const a_url = avatarFile ? await getBase64(avatarFile) : profile.avatar_url ? profile.avatar_url : ""
       const b_url = backFile ? await getBase64(backFile) : profile.back_img_url ? profile.back_img_url : ""
-      // updateProfile({
-      //   id: principal,
-      //   avatar_url: a_url,
-      //   name: form1.Name,
-      //   location: form1.Location,
-      //   biography: form1.Bio,
-      //   website: form1.Network.length > 0 ? protocol + form1.Network : form1.Network,
-      //   feed_canister: [userFeedCai],
-      //   back_img_url: b_url,
-      //   handle: "@" + form1.ID,
-      //   created_at: []
-      // })
       const res = await aApi.upload_photo([backFile ?? new File([], ""), avatarFile ?? new File([], "")])
       const newProfile: Profile = {
         id: principal,

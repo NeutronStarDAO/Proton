@@ -1,0 +1,32 @@
+.loading_wrap {
+  $length: 2rem;
+  display: flex;
+  margin-top: 2rem;
+  flex-direction: column;
+  align-items: center;
+
+  img {
+    $width: 3rem;
+    width: $width;
+    height: $width;
+    animation: upDown 3s infinite;
+  }
+  span{
+    font-size: 1.3rem;
+    font-weight: 500;
+    color: #333;
+  }
+
+  @keyframes upDown {
+    0% {
+      transform: translateY(-$length);
+    }
+    50% {
+      transform: translateY(0);
+    }
+    100% {
+      transform: translateY(-$length);
+    }
+  }
+
+}

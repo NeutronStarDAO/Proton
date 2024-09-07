@@ -5,7 +5,7 @@ import {Comment as comment_type} from "../../declarations/bucket/bucket";
 import {shortenString} from "../Sider";
 import Icon from "../../Icons/Icon";
 import {Profile} from "../../declarations/user/user";
-import {message, Spin, Tooltip} from "antd";
+import {message, Tooltip} from "antd";
 import {useNavigate} from "react-router-dom";
 import {getTime} from "../../utils/util";
 import {updateSelectPost, useSelectPostStore} from "../../redux/features/SelectPost";
@@ -14,6 +14,7 @@ import Feed from "../../actors/feed";
 import {CommentInput} from "../Common";
 import {CommentToComment, CommentTreeNode, Like} from "../../declarations/feed/feed";
 import {Principal} from "@dfinity/principal";
+import {Loading} from "../Loading";
 
 export const Comment = () => {
   const {isDark} = useAuth()
@@ -30,7 +31,7 @@ export const Comment = () => {
           </span>
           <div className={"title"} style={{padding: "0"}}>Comment</div>
         </div>
-        {CommentTree ? <CommentList commentTree={CommentTree}/> : <Spin spinning={true}/>}
+        {CommentTree ? <CommentList commentTree={CommentTree}/> : <Loading isShow={true}/>}
       </div>
       <div className="close_comment_button" style={{cursor: "pointer"}}
            onClick={() => updateSelectPost({})}>
@@ -358,7 +359,10 @@ const CommentCon2 = React.memo(({comment1, commentToComment, commentCount, profi
         {profile ?
           commentToComment ?
             <div style={{fontSize: "2rem"}}>{profile?.name} <span
-              style={{fontWeight: "500", color: "#10499F"}}>Reply</span> {profiles && profiles[Number(commentToComment.to_index)].name}
+              style={{
+                fontWeight: "500",
+                color: "#10499F"
+              }}>Reply</span> {profiles && profiles[Number(commentToComment.to_index)].name}
             </div> :
             <div style={{fontSize: "2rem"}}>{profile?.name}</div>
           : <div className="skeleton skeleton-title"/>

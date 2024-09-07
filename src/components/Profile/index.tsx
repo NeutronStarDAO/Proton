@@ -9,7 +9,7 @@ import {shortenString} from "../Sider";
 import {useNavigate, useParams} from "react-router-dom";
 import {Principal} from "@dfinity/principal";
 import {Post as post_type} from "../../declarations/feed/feed";
-import {message, Skeleton, Spin} from "antd";
+import {message} from "antd";
 import {Post} from "../Main";
 import Feed from "../../actors/feed";
 import {useAuth} from "../../utils/useAuth";
@@ -18,6 +18,7 @@ import gsap from 'gsap';
 import {useSelectPostStore} from "../../redux/features/SelectPost";
 import {nanosecondsToDate} from "../../utils/util";
 import ScrollTrigger from 'gsap/ScrollTrigger';
+import {Loading} from "../Loading";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -88,7 +89,7 @@ export const Profile = ({
             return <Post profile={profile} selectedID={selectPost ? selectPost.post_id : ""} post={v}
                          updateFunction={() => {
                          }} key={k}/>
-          }) : <Spin spinning={true} style={{width: "100%"}}/>
+          }) : <Loading isShow={true} style={{width: "100%", color: "black"}}/>
         }
       </div>
     </div>
