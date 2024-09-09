@@ -145,6 +145,14 @@
             &:hover {
               background: #DAE0F7;
             }
+
+            .copy {
+              display: none;
+            }
+
+            &:hover .copy {
+              display: block;
+            }
           }
         }
 

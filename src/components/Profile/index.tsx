@@ -269,7 +269,7 @@ const WalletAddress = () => {
       }, 2000)
     }
   }
-  return <div className={"label "} style={{display: !!account ? "flex" : "none", padding: "0"}}>
+  return <div className={"label"} style={{display: !!account ? "flex" : "none", padding: "0"}}>
     <div className={"wallet_address"} onClick={copy}>
       {!copied ? <Icon width={"3rem"} height={"2.4rem"} name={"Wallet"}/> :
         <Icon name={"copied"}/>
