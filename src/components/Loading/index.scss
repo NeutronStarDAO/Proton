@@ -1,20 +1,15 @@
 .loading_wrap {
-  $length: 2rem;
+  $length: 2.6rem;
   display: flex;
   margin-top: 2rem;
   flex-direction: column;
   align-items: center;
 
   img {
-    $width: 3rem;
+    $width: 3.9rem;
     width: $width;
     height: $width;
     animation: upDown 3s infinite;
-  }
-  span{
-    font-size: 1.3rem;
-    font-weight: 500;
-    color: #333;
   }
 
   @keyframes upDown {

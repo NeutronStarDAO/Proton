@@ -7,14 +7,13 @@ export const Loading = ({isShow, style}: { isShow: boolean, style?: CSSPropertie
   useEffect(() => {
     const interval = setInterval(() => {
       setDots((prevDots) => (prevDots.length < 3 ? prevDots + "." : ""));
-    }, 500); //
+    }, 500);
     return () => {
       clearInterval(interval)
     };
   }, []);
 
   return <div className={"loading_wrap"} style={{display: isShow ? "flex" : "none", ...style}}>
-    <img src="/img_1.png" alt=""/>
-    <span>Loading{dots}</span>;
+    <img src="/img_1.png" alt="Loading"/>
   </div>
 }
