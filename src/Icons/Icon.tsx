@@ -2,14 +2,14 @@ export type Name = "Home" | "Home_Click" | "Explore" | "Explore_Click" | "link" 
   "Wallet" | "Wallet_Click" | "Settings" | "Settings_Click" | "edit" | "location" | "email" | "calendar"
   | "search" | "like" | "comment" | "repost" | "user" | "tx" | "receive" | "theme" | "account"
   | "picture" | "smile" | "like_click" | "more" | "trash" | "pin" | "dark_user" | "back" | "deletePhoto"
-  | "deletePhotoHover" | "info" | "red_info" | "green_info" | "join_time"|"copy"|"record"
+  | "deletePhotoHover" | "info" | "red_info" | "green_info" | "join_time" | "copy" | "record" | "copied"
 
 
 interface Props {
   name: Name
   bg?: string
-  width?: number
-  height?: number
+  width?: string
+  height?: string
   color?: string
   spin?: boolean
   className?: string
@@ -17,6 +17,13 @@ interface Props {
 
 const Icon = ({name, bg, color, width, height, spin, className}: Props) => {
   switch (name) {
+    case "copied":
+      return <svg width="2.5rem" height="2.5rem" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path fillRule="evenodd" clipRule="evenodd"
+              d="M12.5 25C19.4036 25 25 19.4036 25 12.5C25 5.59644 19.4036 0 12.5 0C5.59644 0 0 5.59644 0 12.5C0 19.4036 5.59644 25 12.5 25ZM19.4129 9.41291C19.779 9.0468 19.779 8.4532 19.4129 8.08709C19.0468 7.72097 18.4532 7.72097 18.0871 8.08709L10 16.1742L6.91291 13.0871C6.5468 12.721 5.9532 12.721 5.58709 13.0871C5.22097 13.4532 5.22097 14.0468 5.58709 14.4129L9.33709 18.1629C9.7032 18.529 10.2968 18.529 10.6629 18.1629L19.4129 9.41291Z"
+              fill="#428EFF"/>
+      </svg>
+
     case "record":
       return <svg width="2.5rem" height="3.2rem" viewBox="0 0 25 32" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path
@@ -270,7 +277,8 @@ const Icon = ({name, bg, color, width, height, spin, className}: Props) => {
               fill="#1F1F1F"/>
       </svg>
     case "Wallet":
-      return <svg width="3.5rem" height="2.9rem" viewBox="0 0 35 29" fill="none" xmlns="http://www.w3.org/2000/svg">
+      return <svg width={width ? width : "3.5rem"} height={height ? height : "2.9rem"} viewBox="0 0 35 29" fill="none"
+                  xmlns="http://www.w3.org/2000/svg">
         <path
           d="M33.3309 17.8148V24.0918C33.3309 25.8251 31.9257 27.2302 30.1924 27.2302H5.08475C3.35142 27.2302 1.94629 25.8251 1.94629 24.0918V17.8148M33.3309 17.8148C33.3309 16.9482 32.6283 16.2456 31.7616 16.2456H27.6883C27.2814 16.2456 26.891 16.4067 26.5906 16.6812C20.8652 21.9134 14.7409 21.9608 8.68026 16.6559C8.38404 16.3967 8.0047 16.2456 7.61103 16.2456H3.51552C2.64886 16.2456 1.94629 16.9482 1.94629 17.8148M33.3309 17.8148V12.3225C33.3309 10.5892 31.9257 9.18409 30.1924 9.18409H5.08475C3.35142 9.18409 1.94629 10.5892 1.94629 12.3225V17.8148M1.94629 13.1072V5.26102C1.94629 3.52769 3.35142 2.12256 5.08475 2.12256H30.1924C31.9257 2.12256 33.3309 3.52769 33.3309 5.26102V13.1072"
           stroke="#1F1F1F" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round"/>

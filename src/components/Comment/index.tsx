@@ -11,7 +11,7 @@ import {getTime} from "../../utils/util";
 import {updateSelectPost, useSelectPostStore} from "../../redux/features/SelectPost";
 import {useAuth} from "../../utils/useAuth";
 import Feed from "../../actors/feed";
-import {CommentInput} from "../Common";
+import {CommentInput, ShowMoreTest} from "../Common";
 import {CommentToComment, CommentTreeNode, Like} from "../../declarations/feed/feed";
 import {Principal} from "@dfinity/principal";
 import {Loading} from "../Loading";
@@ -432,25 +432,3 @@ const CommentCon2 = React.memo(({comment1, commentToComment, commentCount, profi
 })
 
 
-export const ShowMoreTest = React.memo(({content, className}: { content: string, className?: string }) => {
-    const formattedText = content.split('\n').map((line, index) => (
-      <React.Fragment key={index}>
-        {line}
-        <br/>
-      </React.Fragment>
-    ));
-    return (
-      <div>
-        <ShowMoreText
-          lines={7}
-          more={"Show more"}
-          less={"Show less"}
-          truncatedEndingComponent={"...   "}
-          className={className}
-        >
-          {formattedText}
-        </ShowMoreText>
-      </div>
-    );
-  }
-)

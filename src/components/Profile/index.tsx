@@ -100,7 +100,7 @@ export const Profile = ({
 
 const UserPanel = ({profile}: { profile?: profile_type }) => {
   const {id}: { id?: string } = useParams()
-  const {principal, isAuth} = useAuth()
+  const {principal, isAuth, account} = useAuth()
   const [followers, setFollowers] = useState<number>(0)
   const [followings, setFollowings] = useState<number>(0)
   const [isFollowed, setIsFollowed] = useState(false)
@@ -200,29 +200,33 @@ const UserPanel = ({profile}: { profile?: profile_type }) => {
         {isFollowed ? "Following" : "Follow"}
       </span>}
     </div>
-    {profile ? <div className={"des"}>
+    {profile ? <div className={"des"} style={{padding: "0 2rem"}}>
       {profile?.biography}
     </div> : <div className="skeleton skeleton-text" style={{height: "2rem", width: "10rem"}}/>}
 
 
     <div className={"aa"} ref={ref}>
 
-      {profile ? <div className={"label"} style={{display: !!profile?.location ? "block" : "none"}}>
+      {/*<div style={{display: "flex", alignItems: "center", gap: "3rem"}}>*/}
+      {profile ? <div className={"label"} style={{display: !!profile?.location ? "flex" : "none"}}>
         <Icon name={"location"}/> {profile?.location}
-      </div> : <div className="skeleton skeleton-text" style={{height: "2rem", width: "5rem"}}/>}
-
-      {profile ? <div className={"label"} style={{display: !!profile?.location ? "block" : "none"}}>
-        <Icon name={"join_time"}/> {profile.created_at[0] ? "Joined " + nanosecondsToDate(profile.created_at[0]) : ''}
       </div> : <div className="skeleton skeleton-text" style={{height: "2rem", width: "5rem"}}/>}
 
       {profile ? <div onClick={() => window.open(profile?.website)} className={"label label-link"}
-                      style={{display: !!profile?.website ? "block" : "none"}}>
+                      style={{display: !!profile?.website ? "flex" : "none"}}>
         <Icon name={"link"}/> {profile?.website}
       </div> : <div className="skeleton skeleton-text" style={{height: "2rem", width: "5rem"}}/>}
+      {/*</div>*/}
 
-      <div className={"label"} style={{display: "none"}}>
-        <Icon name={"location"}/> {profile?.location}
-      </div>
+      {/*<div style={{display: "flex", alignItems: "center", gap: "3rem"}}>*/}
+      {account ? <WalletAddress/> : <div className="skeleton skeleton-text" style={{height: "2rem", width: "5rem"}}/>}
+
+      {profile ? <div className={"label"} style={{display: !!profile?.location ? "flex" : "none"}}>
+        <Icon name={"join_time"}/> {profile.created_at[0] ? "Joined " + nanosecondsToDate(profile.created_at[0]) : ''}
+      </div> : <div className="skeleton skeleton-text" style={{height: "2rem", width: "5rem"}}/>}
+
+
+      {/*</div>*/}
 
       <div className={"label"}>
         <span className={"wrap"}>
@@ -246,5 +250,31 @@ const UserPanel = ({profile}: { profile?: profile_type }) => {
     </div>
 
 
+  </div>
+}
+
+const WalletAddress = () => {
+  const [copied, setCopied] = React.useState(false)
+  const {account} = useAuth()
+
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(account ?? "");
+      setCopied(true)
+    } catch (e) {
+      setCopied(false)
+    } finally {
+      setTimeout(() => {
+        setCopied(false)
+      }, 2000)
+    }
+  }
+  return <div className={"label "} style={{display: !!account ? "flex" : "none", padding: "0"}}>
+    <div className={"wallet_address"} onClick={copy}>
+      {!copied ? <Icon width={"3rem"} height={"2.4rem"} name={"Wallet"}/> :
+        <Icon name={"copied"}/>
+      } {copied ? "Copied!" : "ICP Address"}
+      {!copied && <Icon name={"copy"}/>}
+    </div>
   </div>
 }

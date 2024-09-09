@@ -14,8 +14,7 @@ import {shortenString} from "../Sider";
 import {CloseOutlined} from "@ant-design/icons";
 import {updateSelectPost, useSelectPostStore} from "../../redux/features/SelectPost";
 import {getTime, isIn} from "../../utils/util";
-import {ShowMoreTest} from "../Comment";
-import {CommentInput} from "../Common";
+import {CommentInput, ShowMoreTest} from "../Common";
 import {Loading} from "../Loading";
 
 const pageCount = 30

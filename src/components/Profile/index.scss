@@ -16,7 +16,7 @@
     padding-left: 3rem;
     padding-top: 3rem;
     padding-bottom: 2rem;
-    
+
     position: sticky;
     top: 0;
     //background: white;
@@ -93,15 +93,9 @@
       }
 
       .aa {
-        display: flex;
-        gap: 3rem;
-        column-gap: 3rem;
-        justify-items: start;
-        flex-direction: row;
-        flex-wrap: wrap;
-        align-items: center;
-        align-content: center;
-        justify-content: flex-start;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        grid-template-rows: repeat(2, 1fr);
 
         .label-link {
           cursor: pointer;
@@ -112,6 +106,7 @@
           align-items: center;
           gap: 1rem;
           font-size: 2.1rem;
+          padding: 1rem 2rem;
 
           .wrap {
             display: flex;
@@ -138,16 +133,32 @@
             font-weight: bold;
             margin-right: 1rem;
           }
+
+          .wallet_address {
+            display: flex;
+            gap: 1rem;
+            padding: 1rem 2rem;
+            border-radius: 5rem;
+            align-items: center;
+            cursor: pointer;
+
+            &:hover {
+              background: #DAE0F7;
+            }
+          }
         }
+
+
       }
     }
   }
 }
 
-.dark_profile_main{
+.dark_profile_main {
   .profile_body .user_panel .avatar_panel .edit {
     color: black;
   }
+
   .profile_body .user_panel .aa .label svg path {
     fill: #b9c9de;
   }
