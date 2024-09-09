@@ -271,7 +271,7 @@ const WalletAddress = () => {
   }
   return <div className={"label"} style={{display: !!account ? "flex" : "none", padding: "0"}}>
     <div className={"wallet_address"} onClick={copy}>
-      {!copied ? <Icon width={"3rem"} height={"2.4rem"} name={"Wallet"}/> :
+      {!copied ? <Icon width={"3rem"} height={"2.3rem"} name={"Wallet"}/> :
         <Icon name={"copied"}/>
       } {copied ? "Copied!" : "ICP Address"}
       {!copied && <Icon name={"copy"}/>}
