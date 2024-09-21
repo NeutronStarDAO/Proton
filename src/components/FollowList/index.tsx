@@ -67,15 +67,15 @@ export const FollowList = React.memo(() => {
   </div>
 })
 
-const UserCard = React.memo(({profile, isOwner, isFollowerList, init}: {
+export const UserCard = React.memo(({profile, isOwner, isFollowerList, init}: {
   profile: Profile,
   isOwner: boolean,
-  isFollowerList: boolean, init: Function
+  isFollowerList: boolean, init?: Function
 }) => {
   const ref = useRef(null)
   const {contextSafe} = useGSAP({scope: ref})
   const tl = useRef<any>()
-const {isDark} = useAuth()
+  const {isDark} = useAuth()
   const enter = contextSafe(() => {
     tl.current = gsap.timeline()
     tl.current.to(".down_line", {width: "100%", autoAlpha: 1, duration: 0.2})
@@ -86,12 +86,13 @@ const {isDark} = useAuth()
   })
 
   const cancel_follow = () => {
-    userApi.cancel_follow(profile.id).then(() => init())
+    userApi.cancel_follow(profile.id).then(() => init?.())
   }
 
   const navigate = useNavigate()
 
-  return <div ref={ref} className={`user_card ${isDark?"dark_user_card":""}`} onClick={() => navigate(`/profile/${profile.id.toString()}`)}>
+  return <div ref={ref} className={`user_card ${isDark ? "dark_user_card" : ""}`}
+              onClick={() => navigate(`/profile/${profile.id.toString()}`)}>
     <img style={{objectFit: "cover"}} src={profile.avatar_url ? profile.avatar_url : "/img_3.png"} alt=""/>
     <div style={{width: "100%"}}>
       <div className={"card_head"}>

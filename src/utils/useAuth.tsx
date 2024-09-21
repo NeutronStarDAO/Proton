@@ -2,7 +2,7 @@ import React, {createContext, useContext, useEffect, useState} from "react";
 import {authClient, IIForIdentity} from "./IIForIdentity";
 import {DelegationIdentity} from "@dfinity/identity";
 import {Principal} from "@dfinity/principal";
-import {notification} from "antd";
+import {message, notification} from "antd";
 import {NotificationInstance} from "antd/es/notification/interface";
 import {CheckOutlined, CloseOutlined, LoadingOutlined} from "@ant-design/icons";
 import {rootFeedApi} from "../actors/root_feed";
@@ -26,7 +26,7 @@ export interface Props {
   readonly account?: string
 }
 
-export const useProvideAuth = (api: NotificationInstance, authClient: IIForIdentity): Props => {
+export const useProvideAuth = (authClient: IIForIdentity): Props => {
   const [_identity, _setIdentity] = useState<DelegationIdentity | undefined>(undefined);
   const [isAuthClientReady, setAuthClientReady] = useState(false);
   const [principal, setPrincipal] = useState<Principal | undefined>(undefined);
@@ -98,12 +98,7 @@ export const useProvideAuth = (api: NotificationInstance, authClient: IIForIdent
       try {
         cai = await rootFeedApi.init_user_feed()
       } catch (e) {
-        api.error({
-          message: 'Create Failed !',
-          key: 'createFeed',
-          description: '',
-          icon: <CloseOutlined/>
-        })
+        message.error('Create Failed !')
       }
     }
     setUserFeedCai(cai)
@@ -174,11 +169,9 @@ const props: Props = {
 const authContext = createContext(props);
 
 export function ProvideAuth({children}: any) {
-  const [api, contextHolder] = notification.useNotification();
-  const auth = useProvideAuth(api, authClient);
+  const auth = useProvideAuth(authClient);
   return (
     <authContext.Provider value={Object.assign(auth)}>
-      {contextHolder}
       {children}
     </authContext.Provider>
   );

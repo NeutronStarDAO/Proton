@@ -102,7 +102,7 @@ function App() {
         <Route path="following/:id" element={<FollowList/>}/>
         <Route path="profile/:id"
                element={<Profile scrollContainerRef={scrollContainerRef} scrollToTop={scrollToTop}/>}/>
-        {/*<Route path="*" element={<ErrorPage/>}/>*/}
+        <Route path="*" element={<Navigate to={"home"}/>}/>
       </Routes>
       {selectPost ? <Comment/> : <Sidebar/>}
     </div>

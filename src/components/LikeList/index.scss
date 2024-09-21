@@ -1,0 +1,99 @@
+.like_list {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  padding: 3rem 2rem;
+  overflow: auto;
+  border-right: 1px solid #679BF8;
+  border-left: 1px solid #679BF8;
+  gap: 1rem;
+  font-family: "Fredoka", sans-serif;
+
+  .title {
+    padding: 2rem;
+    font-size: 3.7rem;
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+  }
+
+  .user_card {
+    width: 100%;
+    padding: 2rem;
+    display: flex;
+    cursor: pointer;
+    border-radius: 1.7rem;
+
+    &:hover {
+      background: #F0F4FF;
+    }
+
+    img {
+      width: 7rem;
+      height: 7rem;
+      margin-right: 1rem;
+      border-radius: 50%;
+    }
+
+    .card_head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-radius: 5rem;
+
+      p {
+        margin: 0;
+      }
+
+      p:first-child {
+        font-size: 2.5rem;
+        font-weight: 500;
+      }
+
+      .user_info {
+        display: flex;
+        align-items: center;
+      }
+
+      .name, .following_button {
+        font-size: 2rem;
+        display: flex;
+        flex-direction: column;
+        align-items: start;
+      }
+
+      .following_button {
+        align-items: center;
+      }
+
+      .down_line {
+        width: 0;
+        height: 1px;
+        background: black;
+      }
+    }
+
+    .des {
+      text-align: left;
+      font-size: 2rem;
+      width: 90%;
+      margin-top: 1.5rem;
+    }
+  }
+
+  .dark_user_card:hover {
+    background: #a8b3d3;
+
+  }
+
+  .dark_user_card:hover div p {
+    color: black;
+  }
+
+  .dark_user_card:hover div {
+    color: black;
+  }
+}
+
+

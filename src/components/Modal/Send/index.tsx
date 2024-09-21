@@ -27,13 +27,13 @@ export const Send = ({open, setOpen, balance, token, getBalance, setIcpLoading, 
 
   const send = () => {
     let newAmount: bigint = parseUnits(amount + "", 8)
+    if (amount > balance) return message.warning("insufficient balance")
     if (token === "ICP" && amount === balance) {
       newAmount = newAmount - BigInt(0.0001 * 1e8) // -fee
     }
     if (token === "ckBTC" && amount === balance) {
       newAmount = newAmount - BigInt(10) // -fee
     }
-    console.log(newAmount)
     if (newAmount <= 0) {
       return message.error("invalid amount")
     }
@@ -99,7 +99,8 @@ export const Send = ({open, setOpen, balance, token, getBalance, setIcpLoading, 
       <div className={`account ${isDark ? "dark_account" : ""}`}>
         Destination
         <div className={"send_address"}>
-          <input value={to} onChange={e => setTo(e.target.value)} placeholder={token === "ICP" ? "Account ID / Principal ID" : "Principal ID"}
+          <input value={to} onChange={e => setTo(e.target.value)}
+                 placeholder={token === "ICP" ? "Account ID / Principal ID" : "Principal ID"}
                  type="text"/>
         </div>
         <div className={"amount"}>

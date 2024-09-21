@@ -24,7 +24,6 @@ export const PostModal = ({open, setOpen}: { open: boolean, setOpen: Function })
   const profile = useProfileStore()
   const textareaRef = useRef(null);
   const {userFeedCai, principal, isDark} = useAuth()
-  const [api, contextHolder] = notification.useNotification();
   const ref = useRef(null)
   const [canSend, setCanSend] = useState(false)
   const [hoverOne, setHoverOne] = useState(-1)
@@ -163,12 +162,7 @@ export const PostModal = ({open, setOpen}: { open: boolean, setOpen: Function })
       await feedApi.createPost(text, urls)
       updateData()
     } catch (e) {
-      api.error({
-        message: 'Create Post failed !',
-        key: 'createPost',
-        description: '',
-        icon: <CloseOutlined/>
-      })
+      message.error('Create Post failed !')
     }
   }
 
@@ -231,7 +225,6 @@ export const PostModal = ({open, setOpen}: { open: boolean, setOpen: Function })
   }, [files])
 
   return <>
-    {contextHolder}
     <Modal canClose={true} setOpen={setOpen} open={open}>
       <div className={`post_modal ${isDark ? "dark_post_modal" : ""}`}>
         <div className={"post_head"}>

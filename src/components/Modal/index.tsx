@@ -25,7 +25,7 @@ export const Modal = ({open, children, setOpen, canClose = true}: {
 
   return (
     <>
-      <div className={`modal_overlay ${isDark ? "dark_modal_overlay" : ""}`} ref={ref} onClick={(e) => {
+      {<div className={`modal_overlay ${isDark ? "dark_modal_overlay" : ""}`} ref={ref} onClick={(e) => {
         if (e.currentTarget === e.target && canClose) {
           setOpen(false)
         }
@@ -35,8 +35,8 @@ export const Modal = ({open, children, setOpen, canClose = true}: {
             {children}
           </div>
         </div>
-      </div>
+      </div>}
     </>
-  );
-};
+  )
+}
 

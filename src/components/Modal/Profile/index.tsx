@@ -28,7 +28,6 @@ export const ProfileModal = ({open, setOpen, canClose}: { open: boolean, setOpen
   const {principal, userFeedCai, isDark} = useAuth()
   const [backFile, setBackFile] = useState<File>()
   const [avatarFile, setAvatarFile] = useState<File>()
-  const [api, contextHolder] = notification.useNotification();
   const profile = useProfileStore()
   const [index, setIndex] = useState(0)
   const [form1, setForm1] = useState<form_type>({
@@ -99,7 +98,6 @@ export const ProfileModal = ({open, setOpen, canClose}: { open: boolean, setOpen
       }
     } catch (e) {
       console.log(e)
-      api.error({message: "Error"})
     } finally {
       window.location.reload()
     }
@@ -122,7 +120,6 @@ export const ProfileModal = ({open, setOpen, canClose}: { open: boolean, setOpen
   }, [open]);
 
   return <>
-    {contextHolder}
     <Modal setOpen={setOpen} open={open} canClose={canClose}>
 
       <div className={`login_modal ${isDark ? "dark_login_modal" : ""}`}>

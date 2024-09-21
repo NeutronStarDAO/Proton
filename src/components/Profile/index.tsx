@@ -19,6 +19,8 @@ import {useSelectPostStore} from "../../redux/features/SelectPost";
 import {nanosecondsToDate} from "../../utils/util";
 import ScrollTrigger from 'gsap/ScrollTrigger';
 import {Loading} from "../Loading";
+import {Profile as ProfileType} from "../../declarations/user/user";
+import {LikeList} from "../LikeList";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -32,7 +34,8 @@ export const Profile = ({
   const {post: selectPost} = useSelectPostStore()
   const {isDark} = useAuth()
   const titleRef = useRef<any>(null)
-
+  const [showLikeList, setShowLikeList] = useState(false)
+  const [likeUsers, setLikeUsers] = useState<ProfileType[]>()
   const getData = async () => {
     if (!profile || !id) return 0
     if (profile.feed_canister.length === 0) return 0
@@ -84,13 +87,20 @@ export const Profile = ({
       }}></div>
       <div className={"profile_body"}>
         <UserPanel profile={profile}/>
-        {
-          posts ? posts.map((v, k) => {
-            return <Post profile={profile} selectedID={selectPost ? selectPost.post_id : ""} post={v}
-                         updateFunction={() => {
-                         }} key={k}/>
-          }) : <Loading isShow={true} style={{width: "100%", color: "black"}}/>
-        }
+        <>
+          <div style={{display: showLikeList ? "none" : "flex", flexDirection: "column", width: "100%"}}>
+            {posts ? posts.map((v, k) => {
+              return <Post setLikeUsers={setLikeUsers} setShowLikeList={setShowLikeList} profile={profile}
+                           selectedID={selectPost ? selectPost.post_id : ""} post={v}
+                           updateFunction={() => {
+                           }} key={k}/>
+            }) : <Loading isShow={true} style={{width: "100%", color: "black"}}/>}
+          </div>
+          <LikeList style={{display: showLikeList ? "flex" : "none", width: "100%"}} backApi={() => {
+            setShowLikeList(false)
+            setLikeUsers(undefined)
+          }} users={likeUsers}/>
+        </>
       </div>
     </div>
 

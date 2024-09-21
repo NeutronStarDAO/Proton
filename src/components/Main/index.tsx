@@ -4,7 +4,7 @@ import React, {useEffect, useMemo, useRef, useState} from 'react';
 import Icon from "../../Icons/Icon";
 import {useLocation, useNavigate} from "react-router-dom";
 import {Post as postType} from "../../declarations/feed/feed";
-import {Empty, notification, Tooltip} from "antd";
+import {Empty, message, notification, Tooltip} from "antd";
 import {useAuth} from "../../utils/useAuth";
 import Feed from "../../actors/feed";
 import {rootPostApi} from "../../actors/root_bucket";
@@ -16,6 +16,7 @@ import {updateSelectPost, useSelectPostStore} from "../../redux/features/SelectP
 import {getTime, isIn} from "../../utils/util";
 import {CommentInput, ShowMoreTest} from "../Common";
 import {Loading} from "../Loading";
+import {LikeList} from "../LikeList";
 
 const pageCount = 30
 
@@ -28,8 +29,11 @@ export const Main = ({scrollContainerRef}: { scrollContainerRef: React.MutableRe
   const [page, setPage] = useState(0);
   const [isEnd, setIsEnd] = useState(false)
   const [profiles, setProfiles] = useState<Profile[]>([])
+  const [showLikeList, setShowLikeList] = useState(false)
+  const [likeUsers, setLikeUsers] = useState<Profile[]>()
   const {post: selectPost} = useSelectPostStore()
   const loader = useRef(null)
+
 
   const data = React.useMemo(() => {
     return location.pathname === "/explore" ? exploreData : homeData
@@ -45,6 +49,7 @@ export const Main = ({scrollContainerRef}: { scrollContainerRef: React.MutableRe
     setProfiles([])
     setPage(0)
     setIsEnd(false)
+    setShowLikeList(false)
     if (location.pathname === "/explore") return "Explore"
     return "Home"
   }, [location.pathname])
@@ -99,25 +104,34 @@ export const Main = ({scrollContainerRef}: { scrollContainerRef: React.MutableRe
   }, [loader.current])
 
 
-  return <div ref={scrollContainerRef} id={"content_main"} className={"main_wrap scroll_main"}>
-    <div className={"title"}>{Title}</div>
-    {data ? data.length === 0 ? <Empty style={{width: "100%"}}/>
-      : data.map((v, k) => {
-        return <Post key={k} profile={profiles[k]} selectedID={selectPost ? selectPost.post_id : ""}
-                     updateFunction={Title === "Explore" ? getExploreData : getHomeData}
-                     post={v}/>
-      }) : <Loading isShow={true} style={{width: "100%"}}/>}
-    <div ref={loader} style={{width: "100%", display: data && !isEnd ? "" : "none"}}>
-      <Loading isShow={true} style={{width: "100%"}}/>
+  return <>
+    <LikeList style={{display: showLikeList ? "flex" : "none"}} backApi={() => {
+      setShowLikeList(false)
+      setLikeUsers(undefined)
+    }}
+              users={likeUsers}/>
+    <div ref={scrollContainerRef} style={{display: showLikeList ? "none" : "flex"}} id={"content_main"}
+         className={"main_wrap scroll_main"}>
+      <div className={"title"}>{Title}</div>
+      {data ? data.length === 0 ? <Empty style={{width: "100%"}}/>
+        : data.map((v, k) => {
+          return <Post setLikeUsers={setLikeUsers} key={k} profile={profiles[k]}
+                       selectedID={selectPost ? selectPost.post_id : ""}
+                       updateFunction={Title === "Explore" ? getExploreData : getHomeData}
+                       post={v} setShowLikeList={setShowLikeList}/>
+        }) : <Loading isShow={true} style={{width: "100%"}}/>}
+      <div ref={loader} style={{width: "100%", display: data && !isEnd ? "" : "none"}}>
+        <Loading isShow={true} style={{width: "100%"}}/>
+      </div>
     </div>
-  </div>
+  </>
 
 }
 
-export const Post = ({post, updateFunction, selectedID, profile}: {
+export const Post = ({post, updateFunction, selectedID, profile, setShowLikeList, setLikeUsers}: {
   post: postType,
   updateFunction: Function,
-  selectedID: string, profile?: Profile
+  selectedID: string, profile?: Profile, setShowLikeList: Function, setLikeUsers: Function
 }) => {
   const principal = post.user
   const {principal: user_id, isDark} = useAuth()
@@ -128,14 +142,10 @@ export const Post = ({post, updateFunction, selectedID, profile}: {
   const moreButton = useRef(null);
   const [showMore, setShowMore] = useState(false)
   const postRef = useRef(null)
-  const [api, contextHolder] = notification.useNotification();
   const [like, setLike] = useState(false)
-  const isMy = useMemo(() => {
-    if (!user_id) return false
-    return user_id.toText() === principal.toText()
-  }, [user_id, principal])
   const [isLoad, setIsLoad] = useState(false)
   const [avatar, setAvatar] = useState("")
+  const [showSending, setShowSending] = useState(false)
 
   const arg = useMemo(() => {
     const res = {
@@ -150,25 +160,35 @@ export const Post = ({post, updateFunction, selectedID, profile}: {
     return res
   }, [post, user_id])
 
+  const isMy = useMemo(() => {
+    if (!user_id) return false
+    return user_id.toText() === principal.toText()
+  }, [user_id, principal])
+
   const sendReply = async () => {
     if (replyContent.length <= 0) return 0
     const feedApi = new Feed(post.feed_canister)
     try {
+      setShowSending(true)
       setOpen(false)
       await feedApi.createComment(post.post_id, replyContent)
-      updateFunction()
       const res = await feedApi.getPost(post.post_id)
       if (res.length !== 0) {
         updateSelectPost({post: res[0]})
       }
     } catch (e) {
-      api.error({
-        message: 'Sent failed !',
-        key: 'comment',
-        description: '',
-        icon: <CloseOutlined/>
-      })
+      message.error('Send failed !')
+    } finally {
+      updateFunction()
+      setShowSending(false)
     }
+  }
+
+  const getLikeUsers = async () => {
+    const likes = post.like
+    const ids = likes.map(v => v.user)
+    const res = await userApi.batchGetProfile(ids)
+    setLikeUsers(res)
   }
 
   const handleClick = async (index: number) => {
@@ -176,6 +196,11 @@ export const Post = ({post, updateFunction, selectedID, profile}: {
 
     if (index === 1) {
       setOpen(true)
+      return
+    }
+    if (index === 3) {
+      getLikeUsers()
+      setShowLikeList(true)
       return
     }
     try {
@@ -187,12 +212,7 @@ export const Post = ({post, updateFunction, selectedID, profile}: {
       }
       updateFunction()
     } catch (e) {
-      api.error({
-        message: 'failed !',
-        key: 'post_op',
-        description: '',
-        icon: <CloseOutlined/>
-      })
+      message.error("failed !")
     }
   }
 
@@ -256,12 +276,7 @@ export const Post = ({post, updateFunction, selectedID, profile}: {
       await feedApi.deletePost(post.post_id)
       updateFunction()
     } catch (e) {
-      api.error({
-        message: 'failed !',
-        key: 'delete_post',
-        description: '',
-        icon: <CloseOutlined/>
-      })
+      message.error('failed !')
     }
   }
 
@@ -278,7 +293,6 @@ export const Post = ({post, updateFunction, selectedID, profile}: {
                 updateSelectPost({}).then(() => updateSelectPost({post}))
               }}
   >
-    {contextHolder}
     <div style={{display: "flex", justifyContent: "space-between", alignItems: "center"}}>
       <div className={"author"}>
         <div style={{position: "relative"}}>
@@ -342,7 +356,7 @@ export const Post = ({post, updateFunction, selectedID, profile}: {
     </div>
 
     <BottomButton post={post} like={like} arg={arg} handleClick={handleClick} hoverOne={hoverOne}
-                  setHoverOne={setHoverOne}/>
+                  setHoverOne={setHoverOne} showSending={showSending}/>
     <CommentInput setOpen={setOpen} open={open} replyContent={replyContent} setReplyContent={setReplyContent}
                   callBack={sendReply}/>
 
@@ -387,10 +401,14 @@ const ImagePreview = ({src, imageCount}: { src: string, imageCount: number }) =>
   );
 };
 
-const BottomButton = React.memo(({handleClick, hoverOne, setHoverOne, arg, post, like}: {
+const BottomButton = React.memo(({handleClick, hoverOne, setHoverOne, arg, post, like, showSending}: {
   handleClick: Function,
   hoverOne: number,
-  setHoverOne: Function, arg: { isLike: boolean, isRepost: boolean }, post: postType, like: boolean
+  setHoverOne: Function,
+  arg: { isLike: boolean, isRepost: boolean },
+  post: postType,
+  like: boolean,
+  showSending: boolean
 }) => {
 
   const {isAuth} = useAuth()
@@ -429,6 +447,12 @@ const BottomButton = React.memo(({handleClick, hoverOne, setHoverOne, arg, post,
               onMouseLeave={e => setHoverOne(-1)}>
            <Icon color={hoverOne === 1 ? "#1C9BEF" : "black"} name={"comment"}/>
           {post.comment.length}
+          <span style={{
+            display: showSending ? "block" : "none",
+            background: "#D7E4FF",
+            borderRadius: "2rem",
+            padding: "1rem"
+          }}>Sending</span>
       </span>
     </Tooltip>
 
@@ -448,7 +472,19 @@ const BottomButton = React.memo(({handleClick, hoverOne, setHoverOne, arg, post,
            {post.repost.length}
       </span>
     </Tooltip>
-
+    <span onClick={(e) => {
+      e.stopPropagation()
+      handleClick(3)
+    }}
+          style={{
+            background: hoverOne === 3 ? "#D9D9D9" : "",
+            borderRadius: "50%",
+            padding: "0.5rem"
+          }}
+          onMouseEnter={() => handleHover(3)}
+          onMouseLeave={e => setHoverOne(-1)}>
+           <Icon name={"heartbeat"}/>
+      </span>
   </div>
 })
 

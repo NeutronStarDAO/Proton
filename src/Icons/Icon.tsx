@@ -2,7 +2,7 @@ export type Name = "Home" | "Home_Click" | "Explore" | "Explore_Click" | "link" 
   "Wallet" | "Wallet_Click" | "Settings" | "Settings_Click" | "edit" | "location" | "email" | "calendar"
   | "search" | "like" | "comment" | "repost" | "user" | "tx" | "receive" | "theme" | "account"
   | "picture" | "smile" | "like_click" | "more" | "trash" | "pin" | "dark_user" | "back" | "deletePhoto"
-  | "deletePhotoHover" | "info" | "red_info" | "green_info" | "join_time" | "copy" | "record" | "copied"
+  | "deletePhotoHover" | "info" | "red_info" | "green_info" | "join_time" | "copy" | "record" | "copied"|"heartbeat"
 
 
 interface Props {
@@ -17,6 +17,13 @@ interface Props {
 
 const Icon = ({name, bg, color, width, height, spin, className}: Props) => {
   switch (name) {
+    case "heartbeat":
+      return <svg width="2.5rem" height="2.6rem" viewBox="0 0 25 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path
+          d="M1.0355 14.7698H6.50888C7.13757 14.7698 7.51972 14.4863 7.65533 13.9316L9.34418 6.15298L12.4507 24.8907C12.6233 25.9385 14.2258 25.9262 14.4354 24.903L17.4186 10.8251L18.0104 13.8206C18.146 14.4617 18.5158 14.7698 19.1691 14.7698H23.9768C24.5439 14.7698 25 14.3261 25 13.759C25 13.1796 24.5562 12.7358 23.9768 12.7358H19.6992L18.3185 6.57212C18.0966 5.5736 16.5927 5.5736 16.3585 6.6091L13.4369 19.7131L10.318 0.77823C10.1578 -0.244945 8.66617 -0.2696 8.44428 0.765903L5.85552 12.7358H1.0355C0.456114 12.7358 0 13.1919 0 13.759C0 14.3261 0.456114 14.7698 1.0355 14.7698Z"
+          fill="#1C1C1E"/>
+      </svg>
+
     case "copied":
       return <svg width="2.5rem" height="2.5rem" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path fillRule="evenodd" clipRule="evenodd"
