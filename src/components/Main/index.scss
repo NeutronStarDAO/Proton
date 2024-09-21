@@ -1,3 +1,5 @@
+@import "../../index.scss";
+
 .main_wrap {
   flex: 1;
   display: flex;
@@ -9,6 +11,10 @@
   border-left: 1px solid #79aaff;
   border-right: 1px solid #79aaff;
   padding-bottom: 10rem;
+  @include respond-to("phone") {
+    border-right: 0;
+    border-left: 0;
+  }
 
   .title {
     display: flex;
@@ -19,6 +25,10 @@
     padding-bottom: 2rem;
     padding-top: 3rem;
     padding-left: 2rem;
+    @include respond-to("phone") {
+      border-right: 0;
+    }
+
   }
 }
 
@@ -38,6 +48,9 @@
   border-bottom: 1px rgb(197, 217, 251) solid;
   flex-direction: column;
   transition: 0.7s ease;
+  @include respond-to("phone") {
+    border-right: 0;
+  }
 
   .author {
     display: flex;
@@ -232,24 +245,3 @@
     }
   }
 }
-
-@media screen and (max-width: 500px) {
-
-  .main_wrap {
-    border-right: 0;
-    border-left: 0;
-
-    .title {
-      border-right: 0;
-    }
-  }
-
-  .post_main {
-    border-right: 0;
-
-    .post_bottom {
-      width: 50%;
-    }
-  }
-}
-
