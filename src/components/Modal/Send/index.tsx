@@ -9,6 +9,7 @@ import {ledgerApi} from "../../../actors/ledger";
 import {message} from "antd";
 import {ckBTCApi} from "../../../actors/ckbtc";
 import {parseUnits} from "ethers";
+import {Button} from "./Button";
 
 export const Send = ({open, setOpen, balance, token, getBalance, setIcpLoading, setCkbtcLoading}: {
   open: boolean,
@@ -25,9 +26,12 @@ export const Send = ({open, setOpen, balance, token, getBalance, setIcpLoading, 
     setTo("")
   }, [open]);
 
-  const send = () => {
+  const send = async (): Promise<number | undefined> => {
     let newAmount: bigint = parseUnits(amount + "", 8)
-    if (amount > balance) return message.warning("insufficient balance")
+    if (amount > balance) {
+      message.warning("insufficient balance")
+      return 0
+    }
     if (token === "ICP" && amount === balance) {
       newAmount = newAmount - BigInt(0.0001 * 1e8) // -fee
     }
@@ -35,37 +39,36 @@ export const Send = ({open, setOpen, balance, token, getBalance, setIcpLoading, 
       newAmount = newAmount - BigInt(10) // -fee
     }
     if (newAmount <= 0) {
-      return message.error("invalid amount")
+      message.error("invalid amount")
+      return 0
     }
-    setOpen(false)
-    message.loading("transferring...")
     if (token === "ICP") {
       setIcpLoading(true)
       if (to.length === 64) { // account id
         try {
-          ledgerApi.transferUseAccount(to, newAmount).then(() => {
-            message.success("transfer success")
-            setIcpLoading(false)
-            getBalance()
-          })
+          await ledgerApi.transferUseAccount(to, newAmount)
+          setIcpLoading(false)
+          getBalance()
         } catch (e) {
           message.error("transfer error")
+
+          return 0
         }
       } else if (to.length === 63) {// principal
         let pri: Principal
         try {
           pri = Principal.fromText(to)
         } catch (e) {
-          return message.error("principal error")
+          message.error("principal error")
+          return 0
         }
-        ledgerApi.transferUsePrincipal(pri, newAmount).then(() => {
-          message.success("transfer success")
-          getBalance()
-          setIcpLoading(false)
-        })
+        await ledgerApi.transferUsePrincipal(pri, newAmount)
+        getBalance()
+        setIcpLoading(false)
       } else {
         message.error("invalid address")
         setIcpLoading(false)
+        return 0
       }
     } else if (token === "ckBTC") {
       setCkbtcLoading(true)
@@ -73,16 +76,16 @@ export const Send = ({open, setOpen, balance, token, getBalance, setIcpLoading, 
       try {
         pri = Principal.fromText(to)
       } catch (e) {
-        return message.error("principal error")
+        message.error("principal error")
+        return 0
       }
-      ckBTCApi.transferCkBTC(pri, newAmount).then(() => {
-        message.success("transfer success")
-        getBalance()
-        setCkbtcLoading(false)
-      })
-
+      await ckBTCApi.transferCkBTC(pri, newAmount)
+      getBalance()
+      setCkbtcLoading(false)
     }
-
+    setTimeout(() => {
+      setOpen(false)
+    }, 1000)
   }
 
   return <Modal setOpen={setOpen} open={open}>
@@ -115,9 +118,10 @@ export const Send = ({open, setOpen, balance, token, getBalance, setIcpLoading, 
         <p>Fee: {token === "ICP" ? "0.0001 ICP" : "0.0000001 ckBTC"}</p>
       </div>
 
-      <div className={"done_button"} onClick={send}>
-        Done
-      </div>
+      {/*<div className={"done_button"} onClick={send}>*/}
+      {/*  Done*/}
+      {/*</div>*/}
+      <Button api={send}/>
     </div>
   </Modal>
 }
