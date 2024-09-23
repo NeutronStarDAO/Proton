@@ -59,7 +59,7 @@
     max-height: calc(100vh - 100px);
     max-width: calc(100vw - 2rem);
     overflow: auto;
-    transform-origin: 100% 100%;
+    transform-origin: -100% -100%;
     color: #000;
     text-align: left;
   }
