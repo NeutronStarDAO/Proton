@@ -134,6 +134,7 @@ export const Post = ({post, updateFunction, selectedID, profile, setShowLikeList
   selectedID: string, profile?: Profile, setShowLikeList: Function, setLikeUsers: Function
 }) => {
   const principal = post.user
+  const navigate = useNavigate()
   const {principal: user_id, isDark} = useAuth()
   const [hoverOne, setHoverOne] = useState(-1)
   const [replyContent, setReplyContent] = useState("")
@@ -202,6 +203,10 @@ export const Post = ({post, updateFunction, selectedID, profile, setShowLikeList
       getLikeUsers()
       setShowLikeList(true)
       return
+    }
+    if (index === 4) {
+      const newStr = post.post_id.replace(/#/g, '_');
+      navigate("/post/" + newStr)
     }
     try {
       if (index === 0) { // like
@@ -479,11 +484,24 @@ const BottomButton = React.memo(({handleClick, hoverOne, setHoverOne, arg, post,
           style={{
             background: hoverOne === 3 ? "#D9D9D9" : "",
             borderRadius: "50%",
-            padding: "0.5rem"
+            padding: "0.5rem 0.7rem"
           }}
           onMouseEnter={() => handleHover(3)}
           onMouseLeave={e => setHoverOne(-1)}>
            <Icon name={"heartbeat"}/>
+      </span>
+    <span onClick={(e) => {
+      e.stopPropagation()
+      handleClick(4)
+    }}
+          style={{
+            background: hoverOne === 4 ? "#D9D9D9" : "",
+            borderRadius: "50%",
+            padding: "0.5rem 0.7rem"
+          }}
+          onMouseEnter={() => handleHover(4)}
+          onMouseLeave={e => setHoverOne(-1)}>
+           <Icon name={"share"}/>
       </span>
   </div>
 })

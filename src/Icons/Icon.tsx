@@ -1,8 +1,47 @@
-export type Name = "Home" | "Home_Click" | "Explore" | "Explore_Click" | "link" | "right" |
-  "Wallet" | "Wallet_Click" | "Settings" | "Settings_Click" | "edit" | "location" | "email" | "calendar"
-  | "search" | "like" | "comment" | "repost" | "user" | "tx" | "receive" | "theme" | "account"
-  | "picture" | "smile" | "like_click" | "more" | "trash" | "pin" | "dark_user" | "back" | "deletePhoto"
-  | "deletePhotoHover" | "info" | "red_info" | "green_info" | "join_time" | "copy" | "record" | "copied"|"heartbeat"
+export type Name =
+  "Home"
+  | "Home_Click"
+  | "Explore"
+  | "Explore_Click"
+  | "link"
+  | "right"
+  |
+  "Wallet"
+  | "Wallet_Click"
+  | "Settings"
+  | "Settings_Click"
+  | "edit"
+  | "location"
+  | "email"
+  | "calendar"
+  | "search"
+  | "like"
+  | "comment"
+  | "repost"
+  | "user"
+  | "tx"
+  | "receive"
+  | "theme"
+  | "account"
+  | "picture"
+  | "smile"
+  | "like_click"
+  | "more"
+  | "trash"
+  | "pin"
+  | "dark_user"
+  | "back"
+  | "deletePhoto"
+  | "deletePhotoHover"
+  | "info"
+  | "red_info"
+  | "green_info"
+  | "join_time"
+  | "copy"
+  | "record"
+  | "copied"
+  | "heartbeat"
+  | "share"
 
 
 interface Props {
@@ -17,6 +56,16 @@ interface Props {
 
 const Icon = ({name, bg, color, width, height, spin, className}: Props) => {
   switch (name) {
+    case "share":
+      return <svg width="2rem" height="2.1rem" viewBox="0 0 20 21" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path
+          d="M20 9.88957V17.9998C20 19.787 18.8169 20.4998 16.462 20.4998H3.53803C1.1831 20.4998 0 19.787 0 17.9998V9.88957C0 8.10226 1.1831 7.19995 3.53803 7.19995H6.92957V8.99976H3.53803C2.41127 8.99976 1.81408 9.06532 1.81408 9.9676V17.698C1.81408 18.6003 2.37325 18.9998 3.5 18.9998H16.4281C17.5437 18.9998 18.1859 18.6003 18.1859 17.698V9.9676C18.1859 9.06532 17.5437 8.99976 16.4281 8.99976H13.0704V7.19995H16.462C18.8169 7.19995 20 8.10226 20 9.88957Z"
+          fill="black"/>
+        <path
+          d="M9.99428 15.7295C10.4788 15.7295 10.8281 15.3819 10.8281 14.9086L10.8957 4.15774L10.8281 2.46761L11.5831 3.26761L13.2957 5.09295C13.4535 5.27323 13.6789 5.36337 13.9041 5.36337C14.3661 5.36337 14.7267 5.02535 14.7267 4.56337C14.7267 4.32676 14.6253 4.14647 14.4563 3.97746L10.6478 0.304229C10.4224 0.078872 10.2309 0 9.99428 0C9.769 0 9.57741 0.078872 9.34079 0.304229L5.53235 3.97746C5.36332 4.14647 5.27319 4.32676 5.27319 4.56337C5.27319 5.02535 5.61122 5.36337 6.08445 5.36337C6.29854 5.36337 6.54642 5.27323 6.70418 5.09295L8.40558 3.26761L9.17177 2.46761L9.10417 4.15774L9.13422 15.1023C9.13422 15.5756 9.5098 15.7295 9.99428 15.7295Z"
+          fill="black"/>
+      </svg>
+
     case "heartbeat":
       return <svg width="2.5rem" height="2.6rem" viewBox="0 0 25 26" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path
@@ -39,7 +88,8 @@ const Icon = ({name, bg, color, width, height, spin, className}: Props) => {
       </svg>
 
     case "copy":
-      return <svg className="copy" width="2.3rem" height="3rem" viewBox="0 0 26 31" fill="none" xmlns="http://www.w3.org/2000/svg">
+      return <svg className="copy" width="2.3rem" height="3rem" viewBox="0 0 26 31" fill="none"
+                  xmlns="http://www.w3.org/2000/svg">
         <path
           d="M0.588867 26.5955C0.588867 29.1987 1.93244 30.5422 4.49962 30.5422H15.728C18.2952 30.5422 19.6388 29.1867 19.6388 26.5955V24.3762H21.6781C24.2453 24.3762 25.5889 23.0206 25.5889 20.4295V10.9405C25.5889 9.35701 25.253 8.34933 24.3053 7.37764L18.3312 1.28359C17.4195 0.359885 16.3398 0 14.9603 0H10.4497C7.88253 0 6.53896 1.35557 6.53896 3.95873V6.16603H4.49962C1.93244 6.16603 0.588867 7.53359 0.588867 10.1248V26.5955ZM18.4272 13.9755L11.9252 7.37764C11.0135 6.45393 10.2338 6.20202 8.9262 6.17802V4.10269C8.9262 3.01104 9.50202 2.39923 10.6536 2.39923H15.656V8.09741C15.656 9.58493 16.4478 10.3647 17.9233 10.3647H23.1896V20.2735C23.1896 21.3772 22.6138 21.989 21.4622 21.989H19.6388V17.3824C19.6388 15.763 19.4348 15.0072 18.4272 13.9755ZM17.6354 7.7975V3.37092L22.5658 8.38532H18.2232C17.8034 8.38532 17.6354 8.21737 17.6354 7.7975ZM2.9761 26.4395V10.2807C2.9761 9.17706 3.55192 8.56526 4.71555 8.56526H8.37438V15.0912C8.37438 16.8306 9.2261 17.6703 10.9536 17.6703H17.2515V26.4395C17.2515 27.5432 16.6757 28.155 15.5121 28.155H4.70355C3.55192 28.155 2.9761 27.5432 2.9761 26.4395ZM11.1815 15.571C10.6896 15.571 10.4737 15.3671 10.4737 14.8632V9.02111L16.9276 15.571H11.1815Z"
           fill="#1C1C1E"/>

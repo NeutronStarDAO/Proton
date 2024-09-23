@@ -17,6 +17,7 @@ import {Wallet} from "./components/Wallet";
 import Feed from "./actors/feed";
 import {CommentTreeNode} from "./declarations/feed/feed";
 import {Principal} from "@dfinity/principal";
+import {SinglePost} from "./components/Main/SinglePost";
 
 const userFeedCai = Principal.from("mai5z-6yaaa-aaaan-qmtmq-cai")
 
@@ -95,6 +96,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Navigate to={"home"}/>}/>
         <Route path="home" element={<Main scrollContainerRef={scrollContainerRef}/>}/>
+        <Route path="/post/:postId" element={<SinglePost/>}/>
         <Route path="explore" element={<Main scrollContainerRef={scrollContainerRef}/>}/>
         <Route path="wallet" element={<Wallet/>}/>
         <Route path="settings" element={<Settings/>}/>

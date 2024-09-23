@@ -92,7 +92,6 @@ export const useProvideAuth = (authClient: IIForIdentity): Props => {
 
   const getFeedCai = async (principal: Principal) => {
     const e = await rootFeedApi.getUserFeedCanister(principal)
-    console.log("feed cid", e?.toText())
     let cai = e
     if (!e) {
       try {
