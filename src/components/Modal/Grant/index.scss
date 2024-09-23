@@ -1,0 +1,97 @@
+.grant_modal {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  font-family: "Fredoka", sans-serif;
+
+  .receive_title {
+    font-size: 3.7rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .dark_receive_title svg path {
+    stroke: var(--text-color);
+  }
+
+  .token {
+    width: 31.9rem;
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #E0E6F9;
+    font-weight: 500;
+    font-size: 2.9rem;
+    border-radius: 2rem;
+  }
+
+  .dark_token {
+    background: #434e6e;
+  }
+
+  .amount_select {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    font-size: 2rem;
+    gap: 1rem;
+
+    & > .amount_wrap {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+
+      .amount {
+        cursor: pointer;
+        width: 17rem;
+        background: #E0E6F9;
+        border-radius: 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+
+        & > :hover {
+
+        }
+      }
+    }
+
+    & > input {
+      width: 100%;
+      padding: 1rem;
+      background: #E0E6F9;
+      border-radius: 1.5rem;
+      font-size: 2rem;
+      outline: none;
+        border: none;
+    }
+
+  }
+
+  .done_button {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #712BE4;
+    cursor: pointer;
+    border-radius: 2rem;
+    color: white;
+    font-size: 3rem;
+    font-weight: 500;
+    margin-bottom: 2rem;
+  }
+}
+
+@media screen and (max-width: 500px) {
+  .receive_modal .amount_select .address {
+    font-size: 2.3rem;
+  }
+}

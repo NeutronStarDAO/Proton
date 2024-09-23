@@ -17,6 +17,7 @@ import {getTime, isIn} from "../../utils/util";
 import {CommentInput, ShowMoreTest} from "../Common";
 import {Loading} from "../Loading";
 import {LikeList} from "../LikeList";
+import {Grant} from "../Modal/Grant";
 
 const pageCount = 30
 
@@ -146,6 +147,7 @@ export const Post = ({post, updateFunction, selectedID, profile, setShowLikeList
   const [like, setLike] = useState(false)
   const [isLoad, setIsLoad] = useState(false)
   const [avatar, setAvatar] = useState("")
+  const [openGrant, setOpenGrant] = useState(false)
   const [showSending, setShowSending] = useState(false)
 
   const arg = useMemo(() => {
@@ -207,6 +209,10 @@ export const Post = ({post, updateFunction, selectedID, profile, setShowLikeList
     if (index === 4) {
       const newStr = post.post_id.replace(/#/g, '_');
       navigate("/post/" + newStr)
+    }
+    if (index === 5) {
+      setOpenGrant(true)
+      return
     }
     try {
       if (index === 0) { // like
@@ -289,83 +295,84 @@ export const Post = ({post, updateFunction, selectedID, profile, setShowLikeList
     setIsLoad(true)
   }
 
-  return <div ref={postRef}
-              className={`post_main ${isDark ? "dark_post_main" : ""} ${(selectedID === post.post_id) ? isDark ? "dark_selected_post" : "selected_post" : ""}`}
-              onClick={(e) => {
-                if ("className" in e.target && e.target.className === "show-more-less-clickable") {
-                  return 0
-                }
-                updateSelectPost({}).then(() => updateSelectPost({post}))
-              }}
-  >
-    <div style={{display: "flex", justifyContent: "space-between", alignItems: "center"}}>
-      <div className={"author"}>
-        <div style={{position: "relative"}}>
-          <Tooltip title={profile?.name}>
-            <img className={"avatar"}
-                 onClick={(e) => {
-                   e.stopPropagation()
-                   window.open(`/profile/${principal.toString()}`)
-                 }}
-                 src={avatar} alt="" onLoad={load}/>
-          </Tooltip>
-          <div className="skeleton skeleton-avatar" style={{display: !isLoad ? "block" : "none"}}/>
-        </div>
-        <div style={{display: "flex", flexDirection: "column", alignItems: "start", justifyContent: "center"}}>
-          {profile ? <div
-              style={{fontSize: "2.1rem", fontWeight: "500", fontFamily: "Fredoka, sans-serif"}}>{profile.name}</div> :
-            <div className="skeleton skeleton-title"/>
-          }
-          <div style={{display: "flex", alignItems: "center", fontSize: "2rem", gap: "1rem"}}>
-            {profile ?
-              <div style={{color: "rgb(132 137 168)"}}>{profile ? shortenString(profile.handle, 25) : ""}</div> :
-              <div className="skeleton skeleton-text"/>
+  return <>
+    <Grant open={openGrant} setOpen={setOpenGrant}/>
+    <div ref={postRef}
+         className={`post_main ${isDark ? "dark_post_main" : ""} ${(selectedID === post.post_id) ? isDark ? "dark_selected_post" : "selected_post" : ""}`}
+         onClick={(e) => {
+           if ("className" in e.target && e.target.className === "show-more-less-clickable") {
+             return 0
+           }
+           updateSelectPost({}).then(() => updateSelectPost({post}))
+         }}
+    >
+      <div style={{display: "flex", justifyContent: "space-between", alignItems: "center"}}>
+        <div className={"author"}>
+          <div style={{position: "relative"}}>
+            <Tooltip title={profile?.name}>
+              <img className={"avatar"}
+                   onClick={(e) => {
+                     e.stopPropagation()
+                     window.open(`/profile/${principal.toString()}`)
+                   }}
+                   src={avatar} alt="" onLoad={load}/>
+            </Tooltip>
+            <div className="skeleton skeleton-avatar" style={{display: !isLoad ? "block" : "none"}}/>
+          </div>
+          <div style={{display: "flex", flexDirection: "column", alignItems: "start", justifyContent: "center"}}>
+            {profile ? <div
+                style={{fontSize: "2.1rem", fontWeight: "500", fontFamily: "Fredoka, sans-serif"}}>{profile.name}</div> :
+              <div className="skeleton skeleton-title"/>
             }
-            <span className="post_dot"/>
-            <div style={{color: "rgb(132 137 168)"}}>
-              {arg.time}
+            <div style={{display: "flex", alignItems: "center", fontSize: "2rem", gap: "1rem"}}>
+              {profile ?
+                <div style={{color: "rgb(132 137 168)"}}>{profile ? shortenString(profile.handle, 25) : ""}</div> :
+                <div className="skeleton skeleton-text"/>
+              }
+              <span className="post_dot"/>
+              <div style={{color: "rgb(132 137 168)"}}>
+                {arg.time}
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style={{position: "relative"}}>
+          <div ref={moreButton} className={"more_wrap"} onClick={e => {
+            e.stopPropagation()
+            setShowMore(true)
+          }}>
+            <div>
+              <Icon name={"more"}/>
+            </div>
+          </div>
+          <div className={"dropdown_wrap"} style={{display: showMore ? "flex" : "none", zIndex: '100'}}>
+            <div style={{cursor: "no-drop"}}>
+              <Icon name={"pin"}/> Pin
+            </div>
+            <div onClick={deletePost} style={{display: isMy ? "flex" : "none"}}>
+              <Icon name={"trash"}/>Delete
             </div>
           </div>
         </div>
       </div>
-      <div style={{position: "relative"}}>
-        <div ref={moreButton} className={"more_wrap"} onClick={e => {
-          e.stopPropagation()
-          setShowMore(true)
+      <div className={"tweet"}>
+        <ShowMoreTest content={post.content}/>
+        <div className={"img_list"} style={{
+          gridTemplateColumns: post.photo_url.length === 1 ? "1fr" : "repeat(2, 1fr)",
+          height: post.photo_url.length === 0 ? "0" : "50rem",
+          minHeight: post.photo_url.length === 0 ? "0" : "50rem",
         }}>
-          <div>
-            <Icon name={"more"}/>
-          </div>
-        </div>
-        <div className={"dropdown_wrap"} style={{display: showMore ? "flex" : "none", zIndex: '100'}}>
-          <div style={{cursor: "no-drop"}}>
-            <Icon name={"pin"}/> Pin
-          </div>
-          <div onClick={deletePost} style={{display: isMy ? "flex" : "none"}}>
-            <Icon name={"trash"}/>Delete
-          </div>
+          {post.photo_url.map((v, k) => {
+            return <ImagePreview key={k} src={v} imageCount={post.photo_url.length}/>
+          })}
         </div>
       </div>
+      <BottomButton post={post} like={like} arg={arg} handleClick={handleClick} hoverOne={hoverOne}
+                    setHoverOne={setHoverOne} showSending={showSending}/>
+      <CommentInput setOpen={setOpen} open={open} replyContent={replyContent} setReplyContent={setReplyContent}
+                    callBack={sendReply}/>
     </div>
-    <div className={"tweet"}>
-      <ShowMoreTest content={post.content}/>
-      <div className={"img_list"} style={{
-        gridTemplateColumns: post.photo_url.length === 1 ? "1fr" : "repeat(2, 1fr)",
-        height: post.photo_url.length === 0 ? "0" : "50rem",
-        minHeight: post.photo_url.length === 0 ? "0" : "50rem",
-      }}>
-        {post.photo_url.map((v, k) => {
-          return <ImagePreview key={k} src={v} imageCount={post.photo_url.length}/>
-        })}
-      </div>
-    </div>
-
-    <BottomButton post={post} like={like} arg={arg} handleClick={handleClick} hoverOne={hoverOne}
-                  setHoverOne={setHoverOne} showSending={showSending}/>
-    <CommentInput setOpen={setOpen} open={open} replyContent={replyContent} setReplyContent={setReplyContent}
-                  callBack={sendReply}/>
-
-  </div>
+  </>
 }
 
 const ImagePreview = ({src, imageCount}: { src: string, imageCount: number }) => {
@@ -502,6 +509,19 @@ const BottomButton = React.memo(({handleClick, hoverOne, setHoverOne, arg, post,
           onMouseEnter={() => handleHover(4)}
           onMouseLeave={e => setHoverOne(-1)}>
            <Icon name={"share"}/>
+      </span>
+    <span onClick={(e) => {
+      e.stopPropagation()
+      handleClick(5)
+    }}
+          style={{
+            background: hoverOne === 5 ? "#D9D9D9" : "",
+            borderRadius: "50%",
+            padding: "0.5rem 0.7rem"
+          }}
+          onMouseEnter={() => handleHover(5)}
+          onMouseLeave={e => setHoverOne(-1)}>
+           <Icon name={"grant"}/>
       </span>
   </div>
 })
