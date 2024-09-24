@@ -462,8 +462,9 @@ const BottomButton = React.memo(({handleClick, hoverOne, setHoverOne, arg, post,
           <span style={{
             display: showSending ? "block" : "none",
             background: "#D7E4FF",
-            borderRadius: "2rem",
-            padding: "1rem"
+            borderRadius: "2.1rem",
+            fontFamily: "Fredoka , sans-serif",
+            padding: "1rem 1.3rem"
           }}>Sending</span>
       </span>
     </Tooltip>
@@ -489,7 +490,7 @@ const BottomButton = React.memo(({handleClick, hoverOne, setHoverOne, arg, post,
       handleClick(3)
     }}
           style={{
-            background: hoverOne === 3 ? "#D9D9D9" : "",
+            background: hoverOne === 3 ? "#F0F4FF" : "",
             borderRadius: "50%",
             padding: "0.5rem 0.7rem"
           }}
@@ -502,7 +503,7 @@ const BottomButton = React.memo(({handleClick, hoverOne, setHoverOne, arg, post,
       handleClick(4)
     }}
           style={{
-            background: hoverOne === 4 ? "#D9D9D9" : "",
+            background: hoverOne === 4 ? "#F0F4FF" : "",
             borderRadius: "50%",
             padding: "0.5rem 0.7rem"
           }}
@@ -515,7 +516,7 @@ const BottomButton = React.memo(({handleClick, hoverOne, setHoverOne, arg, post,
       handleClick(5)
     }}
           style={{
-            background: hoverOne === 5 ? "#D9D9D9" : "",
+            background: hoverOne === 5 ? "#F0F4FF" : "",
             borderRadius: "50%",
             padding: "0.5rem 0.7rem"
           }}
