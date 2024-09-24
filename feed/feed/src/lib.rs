@@ -944,6 +944,26 @@ fn get_post(post_id: String) -> Option<Post> {
 }
 
 #[ic_cdk::query]
+fn batch_get_post(post_id_vec: Vec<String>) -> Vec<Post> {
+    let mut posts = Vec::new();
+
+    ARCHIEVE_POST_MAP.with(|map| {
+        for post_id in post_id_vec.iter() {
+            match map.borrow().get(post_id) {
+                None => {
+
+                },
+                Some(post) => {
+                    posts.push(post.clone());
+                }
+            }
+        }
+    });
+    
+    posts
+}
+
+#[ic_cdk::query]
 fn get_post_number(user: Principal) -> u64 {
     let user_map = POST_MAP.with(|map| {
         map.borrow().get(&user)

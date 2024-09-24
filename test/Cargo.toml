@@ -6,13 +6,12 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-ic-agent = "0.37.1"
+ic-agent = "0.38.1"
 candid = "0.10.10"
-tokio = { version = "1.39.2", features = ["full"] }
-ic-cdk = "0.15.0"
-serde = "1.0.204"
+tokio = { version = "1.40.0", features = ["full"] }
+ic-cdk = "0.16.0"
+serde = "1.0.210"
 serde_bytes = "0.11.15"
 hex = "0.4.3"
-lazy_static = "1.5.0"
-dotenv = "0.15.0"
+pocket-ic = "5.0.0"
 types = {path = "../libraries/types"}

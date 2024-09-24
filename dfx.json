@@ -40,6 +40,11 @@
       "package": "photo_storage",
       "type": "rust"
     },
+    "data_analysis": {
+      "candid": "data_analysis/data_analysis.did",
+      "package": "data_analysis",
+      "type": "rust"
+    },
     "internet_identity": {
       "candid": "https://github.com/dfinity/internet-identity/releases/latest/download/internet_identity.did",
       "frontend": {},

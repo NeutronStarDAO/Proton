@@ -71,6 +71,11 @@ export const idlFactory = ({ IDL }) => {
   });
   return IDL.Service({
     'batch_delete_feed' : IDL.Func([IDL.Principal, IDL.Vec(IDL.Text)], [], []),
+    'batch_get_post' : IDL.Func(
+        [IDL.Vec(IDL.Text)],
+        [IDL.Vec(Post)],
+        ['query'],
+      ),
     'batch_receive_feed' : IDL.Func([IDL.Principal, IDL.Vec(IDL.Text)], [], []),
     'check_available_bucket' : IDL.Func([], [IDL.Bool], []),
     'comment_comment' : IDL.Func(

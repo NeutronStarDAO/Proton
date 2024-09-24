@@ -70,6 +70,7 @@ export interface QueryStats {
 }
 export interface _SERVICE {
   'batch_delete_feed' : ActorMethod<[Principal, Array<string>], undefined>,
+  'batch_get_post' : ActorMethod<[Array<string>], Array<Post>>,
   'batch_receive_feed' : ActorMethod<[Principal, Array<string>], undefined>,
   'check_available_bucket' : ActorMethod<[], boolean>,
   'comment_comment' : ActorMethod<[string, bigint, string], boolean>,

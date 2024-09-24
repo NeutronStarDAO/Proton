@@ -63,6 +63,7 @@ type QueryStats = record {
 };
 service : (principal, principal, principal) -> {
   batch_delete_feed : (principal, vec text) -> ();
+  batch_get_post : (vec text) -> (vec Post) query;
   batch_receive_feed : (principal, vec text) -> ();
   check_available_bucket : () -> (bool);
   comment_comment : (text, nat64, text) -> (bool);

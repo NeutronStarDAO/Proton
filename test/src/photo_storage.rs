@@ -1,20 +1,26 @@
 use ic_agent::Agent;
-use crate::PHOTO_STORAGE_CANISTER;
-use candid::{Encode, Decode};
+use candid::{Encode, Decode,Principal, encode_one};
+use pocket_ic::{PocketIc, PocketIcBuilder};
 
-// http://avqkn-guaaa-aaaaa-qaaea-cai.localhost:4943/0
-pub async fn upload_photo(
-    agent: Agent,
-    photo: Vec<u8>
-) -> u64 {
-    let response_blob = agent
-        .update(
-            &PHOTO_STORAGE_CANISTER, 
-            "upload_photo"
-        )
-        .with_arg(Encode!(&photo).unwrap())
-        .call_and_wait()
-        .await.unwrap();
+#[test]
+fn test_upload_photo() {
+    let pic = PocketIc::new();
 
-    Decode!(&response_blob, u64).unwrap()
+    let storage_canister = pic.create_canister();
+    pic.add_cycles(storage_canister, (4_u64 * 10_u64.pow(12)) as u128);
+    
+    let wasm_bytes = include_bytes!("../../target/wasm32-unknown-unknown/release/photo_storage.wasm").to_vec();
+    pic.install_canister(storage_canister, wasm_bytes, vec![], None);
+
+    let photo = 
+        include_bytes!("../img/img_1.png").to_vec();
+
+    let upload_index = pocket_ic::update_candid::<(Vec<u8>, ), (u64, )>(
+        &pic,
+        storage_canister, 
+        "upload_photo", 
+        (photo, )
+    ).unwrap().0;
+
+    assert!(upload_index == 0);
 }
