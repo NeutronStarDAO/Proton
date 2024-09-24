@@ -346,9 +346,9 @@ export const Post = ({post, updateFunction, selectedID, profile, setShowLikeList
             </div>
           </div>
           <div className={"dropdown_wrap"} style={{display: showMore ? "flex" : "none", zIndex: '100'}}>
-            <div style={{cursor: "no-drop"}}>
+            {/* <div style={{cursor: "no-drop"}}>
               <Icon name={"pin"}/> Pin
-            </div>
+            </div> */}
             <div onClick={deletePost} style={{display: isMy ? "flex" : "none"}}>
               <Icon name={"trash"}/>Delete
             </div>
