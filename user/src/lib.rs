@@ -55,13 +55,71 @@ thread_local! {
             MEMORY_MANAGER.with(|m| m.borrow().get(MemoryId::new(2))),
         )
     );
+
+    static BLACK_FOLLOW_LIST: RefCell<StableVec<(Principal, Principal), Memory>> = RefCell::new(
+        StableVec::init(
+            MEMORY_MANAGER.with(|m| m.borrow().get(MemoryId::new(3)))
+        ).unwrap()
+    );
+}
+
+#[ic_cdk::update]
+fn add_black_list(user: Principal) -> bool {
+    let caller = ic_cdk::caller();
+    assert!(caller != Principal::anonymous());
+
+    assert!(_cancle_follow(caller, user));
+    assert!(_cancle_follow(user, caller));
+
+    _add_black_list(caller, user)
+}
+
+fn _add_black_list(from: Principal, to: Principal) -> bool {
+    let is_already_add = BLACK_FOLLOW_LIST.with(|list| {
+        for (_from, _to) in list.borrow().iter() {
+            if _from == from && _to == to {
+                return true;
+            }
+        };
+        false
+    });
+
+    if is_already_add {
+        return true;
+    };
+
+    BLACK_FOLLOW_LIST.with(|list| {
+        list.borrow_mut().push(&(from, to)).unwrap();
+    });
+
+    true
+}
+
+#[ic_cdk::query]
+fn is_black_follow_list(from: Principal, to: Principal) -> bool {
+    _is_black_follow_list(from, to)
+}
+
+fn _is_black_follow_list(from: Principal, to: Principal) -> bool {
+    BLACK_FOLLOW_LIST.with(|list| {
+        for (_from, _to) in list.borrow().iter() {
+            if _from == from && _to == to {
+                return true;
+            }
+        };
+        false
+    })
 }
 
 #[ic_cdk::update]
 fn follow(to: Principal) {
-    assert!(ic_cdk::caller() != Principal::anonymous());
-
     let from = ic_cdk::caller();
+    assert!(from != Principal::anonymous());
+
+    if _is_black_follow_list(from, to) || _is_black_follow_list(to, from) {
+        return;
+    };
+
     let is_followed = FOLLOW_LIST.with(|list| {
         for (_from, _to) in list.borrow().iter() {
             if _from == from && _to == to {
@@ -70,6 +128,7 @@ fn follow(to: Principal) {
         }
         false
     });
+    
     if !is_followed {
         FOLLOW_LIST.with(|list| {
             list.borrow_mut().push(&(from, to)).unwrap()
@@ -79,10 +138,13 @@ fn follow(to: Principal) {
 
 #[ic_cdk::update]
 fn cancle_follow(to: Principal) {
-    assert!(ic_cdk::caller() != Principal::anonymous());
+    let caller = ic_cdk::caller();
+    assert!(caller != Principal::anonymous());
 
-    let from = ic_cdk::caller();
+    assert!(_cancle_follow(caller, to));
+}
 
+fn _cancle_follow(from: Principal, to: Principal) -> bool {
     let mut follow_list = Vec::new();
     FOLLOW_LIST.with(|list| {
         for (_from, _to) in list.borrow().iter() {
@@ -105,6 +167,7 @@ fn cancle_follow(to: Principal) {
         }
     });
 
+    true
 }
 
 // is user_a follow user_b

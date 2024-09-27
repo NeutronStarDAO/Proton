@@ -42,6 +42,7 @@ export interface QueryStats {
   'request_payload_bytes_total' : bigint,
 }
 export interface _SERVICE {
+  'add_black_list' : ActorMethod<[Principal], boolean>,
   'batch_get_profile' : ActorMethod<[Array<Principal>], Array<Profile>>,
   'cancle_follow' : ActorMethod<[Principal], undefined>,
   'create_profile' : ActorMethod<[Profile], boolean>,
@@ -51,6 +52,7 @@ export interface _SERVICE {
   'get_following_list' : ActorMethod<[Principal], Array<Principal>>,
   'get_following_number' : ActorMethod<[Principal], bigint>,
   'get_profile' : ActorMethod<[Principal], [] | [Profile]>,
+  'is_black_follow_list' : ActorMethod<[Principal, Principal], boolean>,
   'is_followed' : ActorMethod<[Principal, Principal], boolean>,
   'is_handle_available' : ActorMethod<[string], boolean>,
   'status' : ActorMethod<[], CanisterStatusResponse>,

@@ -69,12 +69,12 @@ export interface QueryStats {
   'request_payload_bytes_total' : bigint,
 }
 export interface _SERVICE {
+  'add_feed_to_black_list' : ActorMethod<[string], boolean>,
   'batch_delete_feed' : ActorMethod<[Principal, Array<string>], undefined>,
   'batch_get_post' : ActorMethod<[Array<string>], Array<Post>>,
   'batch_receive_feed' : ActorMethod<[Principal, Array<string>], undefined>,
   'check_available_bucket' : ActorMethod<[], boolean>,
   'comment_comment' : ActorMethod<[string, bigint, string], boolean>,
-  'complete_upgrade' : ActorMethod<[], boolean>,
   'create_comment' : ActorMethod<[string, string], boolean>,
   'create_like' : ActorMethod<[string], boolean>,
   'create_post' : ActorMethod<[string, Array<string>], string>,
@@ -98,6 +98,7 @@ export interface _SERVICE {
   'get_post_number' : ActorMethod<[Principal], bigint>,
   'get_root_bucket' : ActorMethod<[], Principal>,
   'get_user_actor' : ActorMethod<[], Principal>,
+  'is_feed_in_user_blacklist' : ActorMethod<[string, Principal], boolean>,
   'like_comment' : ActorMethod<[string, bigint], boolean>,
   'like_comment_comment' : ActorMethod<[string, bigint], boolean>,
   'status' : ActorMethod<[], CanisterStatusResponse>,

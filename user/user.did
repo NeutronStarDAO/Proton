@@ -36,6 +36,7 @@ type QueryStats = record {
   request_payload_bytes_total : nat;
 };
 service : {
+  add_black_list : (principal) -> (bool);
   batch_get_profile : (vec principal) -> (vec Profile) query;
   cancle_follow : (principal) -> ();
   create_profile : (Profile) -> (bool);
@@ -45,6 +46,7 @@ service : {
   get_following_list : (principal) -> (vec principal) query;
   get_following_number : (principal) -> (nat64) query;
   get_profile : (principal) -> (opt Profile) query;
+  is_black_follow_list : (principal, principal) -> (bool) query;
   is_followed : (principal, principal) -> (bool) query;
   is_handle_available : (text) -> (bool) query;
   status : () -> (CanisterStatusResponse);

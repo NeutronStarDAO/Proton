@@ -1,77 +1,337 @@
-use candid::{CandidType, Deserialize, Principal, Encode, Decode};
+use std::time::Duration;
+
+use candid::{CandidType, Deserialize, Principal, Encode, Decode, encode_args, encode_one};
 use ic_agent::Agent;
 use serde_bytes;
 use crate::utils::build_local_agent;
-// use crate::USERA_PEM;
+use crate::{USERA, USERB};
+use pocket_ic::PocketIc;
 use types::Post;
 
-pub async fn create_post(
-    agent: ic_agent::Agent,
-    feed_canister: Principal,
-    content: String,
-    photo_url: Vec<String>
-) -> String {
-    let response_blob = agent
-        .update(
-            &feed_canister, 
-            "create_post"
-        )
-        .with_arg(Encode!(&content, &photo_url).unwrap())
-        .call_and_wait()
-        .await.unwrap();
-    
-    Decode!(&response_blob, String).unwrap()
+const T_CYCLES: u64 = 10_u64.pow(12);
+
+#[derive(CandidType, Deserialize, Debug, Clone)]
+pub struct PostFetchInitArg {
+    root_feed: Principal
 }
 
-// pub async fn test_create_post(agent: Agent) {
-//     let caller = agent.get_principal().unwrap();
-//     let user_feed_canister = root_feed::get_user_feed_canister(
-//         agent.clone(), 
-//         caller
-//     ).await.unwrap();
-//     let post_id = feed::create_post(
-//         agent.clone(), 
-//         user_feed_canister, 
-//         "This is test create post content !".to_string(), 
-//         vec![]
-//     ).await;
-//     println!("user_A test_create_post id :{:?}\n", post_id);
+#[derive(CandidType, Deserialize, Debug)]
+pub struct RootFetchInitArg {
+    pub user_actor: Principal,
+    pub root_feed: Principal
+}
+
+#[derive(CandidType, Deserialize, Debug)]
+pub struct ProtonInfo {
+    pub root_feed_canister: Principal,
+    pub feed_canister: Principal,
+    pub root_bucket_canister: Principal,
+    pub user_canister: Principal,
+    pub root_fetch_canister: Principal,
+    pub post_fetch_canister: Principal,
+}
+
+fn create_and_init_root_bucket_canister(pic: &PocketIc) -> Principal {
+    let root_bucket_canister = pic.create_canister();
+    pic.add_cycles(root_bucket_canister, (50 * T_CYCLES) as u128);
+    
+    let root_bucket_wasm = include_bytes!("../../target/wasm32-unknown-unknown/release/root_bucket.wasm").to_vec();
+    pic.install_canister(root_bucket_canister, root_bucket_wasm, vec![], None);
+
+    // upload bucket wasm
+    let bucket_wasm = include_bytes!("../../target/wasm32-unknown-unknown/release/bucket.wasm").to_vec();
+    let len = bucket_wasm.len();
+    let middle_len = len / 2;
+    let first_wasm_chunk = bucket_wasm[0..middle_len].to_vec();
+    let seconde_wasm_chunk = bucket_wasm[middle_len..len].to_vec();
+
+    // upload first_chunk
+    let first_chunk_result = pocket_ic::update_candid::<(Vec<u8>, u64, ), (bool, )>(
+        &pic, 
+        root_bucket_canister,
+        "update_bucket_wasm",
+        (first_wasm_chunk, 0u64, )
+    ).unwrap().0;
+    assert!(first_chunk_result);
+
+    // upload second_chunk
+    let second_chunk_result = pocket_ic::update_candid::<(Vec<u8>, u64, ), (bool, )>(
+        &pic, 
+        root_bucket_canister,
+        "update_bucket_wasm",
+        (seconde_wasm_chunk, 1u64, )
+    ).unwrap().0;
+    assert!(second_chunk_result);
+
+    // call init func
+    let init_result = pocket_ic::update_candid::<((), ), ((), )>(
+        &pic, 
+        root_bucket_canister,
+        "init",
+        ((),)
+    ).unwrap().0;
+
+    root_bucket_canister
+}
+
+fn create_and_init_root_feed_canister(
+    pic: &PocketIc, 
+    root_bucket_canister: Principal, 
+    user_canister: Principal,
+) -> Principal {
+    let root_feed_canister = pic.create_canister();
+    pic.add_cycles(root_feed_canister, (50 * T_CYCLES) as u128);
+    
+    let root_feed_wasm = include_bytes!("../../target/wasm32-unknown-unknown/release/root_feed.wasm").to_vec();
+    pic.install_canister(
+        root_feed_canister, 
+        root_feed_wasm, 
+        encode_args((root_bucket_canister, user_canister)).unwrap(), 
+        None
+    );
+
+    // upload feed wasm
+    let feed_wasm = include_bytes!("../../target/wasm32-unknown-unknown/release/feed.wasm").to_vec();
+    let len = feed_wasm.len();
+    let middle_len = len / 2;
+    let first_wasm_chunk = feed_wasm[0..middle_len].to_vec();
+    let seconde_wasm_chunk = feed_wasm[middle_len..len].to_vec();
+
+    // upload first_chunk
+    let first_chunk_result = pocket_ic::update_candid::<(Vec<u8>, u64, ), (bool, )>(
+        &pic, 
+        root_feed_canister,
+        "update_feed_wasm",
+        (first_wasm_chunk, 0u64, )
+    ).unwrap().0;
+    assert!(first_chunk_result);
+
+    // upload second_chunk
+    let second_chunk_result = pocket_ic::update_candid::<(Vec<u8>, u64, ), (bool, )>(
+        &pic, 
+        root_feed_canister,
+        "update_feed_wasm",
+        (seconde_wasm_chunk, 1u64, )
+    ).unwrap().0;
+    assert!(second_chunk_result);
+
+    root_feed_canister
+}
+
+fn create_and_init_user_canister(pic: &PocketIc) -> Principal {
+    let user_canister = pic.create_canister();
+    pic.add_cycles(user_canister, (4 * T_CYCLES) as u128);
+    
+    let user_wasm = include_bytes!("../../target/wasm32-unknown-unknown/release/user.wasm").to_vec();
+    pic.install_canister(user_canister, user_wasm, vec![], None);
+
+    user_canister
+}
+
+fn create_and_init_root_fetch_canister(
+    pic: &PocketIc,
+    user_canister: Principal,
+    root_feed_canister: Principal,
+    post_fetch_canister: Principal
+) -> Principal {
+    let root_fetch_canister = pic.create_canister();
+    pic.add_cycles(root_fetch_canister, (50 * T_CYCLES) as u128);
+    
+    let root_fetch_wasm = include_bytes!("../../target/wasm32-unknown-unknown/release/root_fetch.wasm").to_vec();
+    pic.install_canister(
+        root_fetch_canister, 
+        root_fetch_wasm, 
+        encode_one(RootFetchInitArg {
+            user_actor: user_canister,
+            root_feed: root_feed_canister
+        }).unwrap(),
+        None
+    );
+
+    // init root_fetch fetch_actor
+    let init_fetch_result = pocket_ic::update_candid::<(Principal, ), ((), )>(
+        &pic, 
+        root_fetch_canister,
+        "init_fetch_actor",
+        (post_fetch_canister, )
+    ).unwrap().0;
+
+    // upload post_fetch wasm
+
+    root_fetch_canister
+}
+
+fn create_and_init_post_fetch_canister(pic: &PocketIc, root_feed_canister: Principal) -> Principal {
+    let post_fetch_canister = pic.create_canister();
+    pic.add_cycles(post_fetch_canister, (4 * T_CYCLES) as u128);
+
+    let wasm_bytes = include_bytes!("../../target/wasm32-unknown-unknown/release/post_fetch.wasm").to_vec();
+    pic.install_canister(
+        post_fetch_canister, 
+        wasm_bytes, 
+        encode_one(PostFetchInitArg {
+            root_feed: root_feed_canister
+        }).unwrap(), 
+        None
+    );
+
+    post_fetch_canister
+}
+
+fn deploy_proton(pic: &PocketIc) -> ProtonInfo {
+    let user_canister = create_and_init_user_canister(pic);
+
+    let root_bucket_canister = create_and_init_root_bucket_canister(pic);
+
+    let root_feed_canister = create_and_init_root_feed_canister(
+        pic, 
+        root_bucket_canister, 
+        user_canister
+    );
+
+    let post_fetch_canister = create_and_init_post_fetch_canister(pic, root_feed_canister);
+
+    // root_feed : init fetch actor
+    let init_fetch_actor_result = pocket_ic::update_candid::<(Principal, ), ((), )>(
+        &pic, 
+        root_feed_canister,
+        "init_fetch_actor",
+        (post_fetch_canister, )
+    ).unwrap().0;
+
+    // create feed canister
+    let feed_canister = pocket_ic::update_candid::<((), ), (Principal, )>(
+        &pic, 
+        root_feed_canister,
+        "create_feed_canister",
+        ((), )
+    ).unwrap().0;
+
+    let root_fetch_canister = create_and_init_root_fetch_canister(
+        pic, 
+        user_canister, 
+        root_feed_canister, 
+        post_fetch_canister
+    );
+
+    ProtonInfo {
+        root_feed_canister: root_feed_canister,
+        feed_canister: feed_canister,
+        root_bucket_canister: root_bucket_canister,
+        user_canister: user_canister,
+        root_fetch_canister: root_fetch_canister,
+        post_fetch_canister: post_fetch_canister,
+    }
+}
+
+#[test]
+fn test_create_post() {
+    let pic = PocketIc::new();
+
+    let proton_info = deploy_proton(&pic);
+    
+    let user_a = Principal::from_text(USERA).unwrap();
+
+    let post_id = pocket_ic::update_candid_as::<(String, Vec<String>, ), (String, )>(
+        &pic, 
+        proton_info.feed_canister,
+        user_a,
+        "create_post",
+        ("user_a test create_post".to_string(), vec![], )
+    ).unwrap().0;
+
+    let get_post_result = pocket_ic::query_candid::<(String, ), (Option<Post>, )>(
+        &pic, 
+        proton_info.feed_canister, 
+        "get_post", 
+        (post_id.clone(), )
+    ).unwrap().0.unwrap();
+    assert!(get_post_result.post_id == post_id);
+}
+
+#[test]
+fn test_add_feed_to_black_list() {
+    let pic = PocketIc::new();
+
+    let proton_info = deploy_proton(&pic);
+    
+    let user_a = Principal::from_text(USERA).unwrap();
+    let user_b = Principal::from_text(USERB).unwrap();
+
+    let follow_result = pocket_ic::update_candid_as::<(Principal, ), ((), )>(
+        &pic, 
+        proton_info.user_canister, 
+        user_b, 
+        "follow", 
+        (user_a, )
+    ).unwrap().0;
+
+    let post_id = pocket_ic::update_candid_as::<(String, Vec<String>, ), (String, )>(
+        &pic, 
+        proton_info.feed_canister,
+        user_a,
+        "create_post",
+        ("user_a test create_post".to_string(), vec![], )
+    ).unwrap().0;
+
+    // pic.advance_time(Duration::from_secs(60));
+    for i in 0..20 {
+        pic.tick();
+    }
+
+    let feed_number = pocket_ic::query_candid::<(Principal, ), (u64, )>(
+        &pic, 
+        proton_info.feed_canister, 
+        "get_feed_number", 
+        (user_b, )
+    ).unwrap().0;
+    assert!(feed_number > 0);
+
+    let get_home_feed_result = pocket_ic::query_candid::<(Principal, u64, ), (Vec<Post>, )>(
+        &pic, 
+        proton_info.feed_canister, 
+        "get_home_feed", 
+        (user_b, 10_u64, )
+    ).unwrap().0;
+    assert!(get_home_feed_result.len() == 1usize);
+
+
+}
+
+// pub async fn delete_post(
+//     agent: ic_agent::Agent,
+//     feed_canister: Principal,
+//     post_id: String
+// ) -> bool {
+//     let response_blob = agent
+//         .update(
+//             &feed_canister, 
+//             "delete_post"
+//         )
+//         .with_arg(Encode!(&post_id).unwrap())
+//         .call_and_wait()
+//         .await.unwrap();
+    
+//     Decode!(&response_blob, bool).unwrap()
 // }
 
-pub async fn delete_post(
-    agent: ic_agent::Agent,
-    feed_canister: Principal,
-    post_id: String
-) -> bool {
-    let response_blob = agent
-        .update(
-            &feed_canister, 
-            "delete_post"
-        )
-        .with_arg(Encode!(&post_id).unwrap())
-        .call_and_wait()
-        .await.unwrap();
+// pub async fn create_comment(
+//     agent: ic_agent::Agent,
+//     feed_canister: Principal,
+//     post_id: String,
+//     content: String
+// ) -> bool {
+//     let response_blob = agent
+//         .update(
+//             &feed_canister, 
+//             "create_comment"
+//         )
+//         .with_arg(Encode!(&post_id, &content).unwrap())
+//         .call_and_wait()
+//         .await.unwrap();
     
-    Decode!(&response_blob, bool).unwrap()
-}
-
-pub async fn create_comment(
-    agent: ic_agent::Agent,
-    feed_canister: Principal,
-    post_id: String,
-    content: String
-) -> bool {
-    let response_blob = agent
-        .update(
-            &feed_canister, 
-            "create_comment"
-        )
-        .with_arg(Encode!(&post_id, &content).unwrap())
-        .call_and_wait()
-        .await.unwrap();
-    
-    Decode!(&response_blob, bool).unwrap()
-}
+//     Decode!(&response_blob, bool).unwrap()
+// }
 
 // pub async fn test_comment(
 //     agent_a: Agent,
@@ -223,24 +483,24 @@ pub async fn create_comment(
 //     (post_id, c_feed)
 // }
 
-pub async fn comment_comment(
-    agent: ic_agent::Agent,
-    feed_canister: Principal,
-    post_id: String,
-    to: u64,
-    content: String
-) -> bool {
-    let response_blob = agent
-        .update(
-            &feed_canister, 
-            "comment_comment"
-        )
-        .with_arg(Encode!(&post_id, &to, &content).unwrap())
-        .call_and_wait()
-        .await.unwrap();
+// pub async fn comment_comment(
+//     agent: ic_agent::Agent,
+//     feed_canister: Principal,
+//     post_id: String,
+//     to: u64,
+//     content: String
+// ) -> bool {
+//     let response_blob = agent
+//         .update(
+//             &feed_canister, 
+//             "comment_comment"
+//         )
+//         .with_arg(Encode!(&post_id, &to, &content).unwrap())
+//         .call_and_wait()
+//         .await.unwrap();
     
-    Decode!(&response_blob, bool).unwrap()
-}
+//     Decode!(&response_blob, bool).unwrap()
+// }
 
 // Comment Fetch 
 
@@ -281,23 +541,23 @@ pub async fn comment_comment(
 //     // 检查Bukcet, D, E, F 的帖子是否更新
 // }
 
-pub async fn like_comment(
-    agent: Agent,
-    feed_canister: Principal,
-    post_id: String,
-    comment_index: u64
-) -> bool {
-    let response_blob = agent
-        .update(
-            &feed_canister, 
-            "like_comment"
-        )
-        .with_arg(Encode!(&post_id, &comment_index).unwrap())
-        .call_and_wait()
-        .await.unwrap();
+// pub async fn like_comment(
+//     agent: Agent,
+//     feed_canister: Principal,
+//     post_id: String,
+//     comment_index: u64
+// ) -> bool {
+//     let response_blob = agent
+//         .update(
+//             &feed_canister, 
+//             "like_comment"
+//         )
+//         .with_arg(Encode!(&post_id, &comment_index).unwrap())
+//         .call_and_wait()
+//         .await.unwrap();
     
-    Decode!(&response_blob, bool).unwrap()
-}
+//     Decode!(&response_blob, bool).unwrap()
+// }
 
 
 // pub async fn test_delete_post(agent_c: Agent) {
@@ -323,124 +583,124 @@ pub async fn like_comment(
 //     // 转帖者E，E的粉丝F
 // }
 
-pub async fn like_comment_comment(
-    agent: Agent,
-    feed_canister: Principal,
-    post_id: String,
-    comment_index: u64
-) -> bool {
-    let response_blob = agent
-        .update(
-            &feed_canister, 
-            "like_comment_comment"
-        )
-        .with_arg(Encode!(&post_id, &comment_index).unwrap())
-        .call_and_wait()
-        .await.unwrap();
+// pub async fn like_comment_comment(
+//     agent: Agent,
+//     feed_canister: Principal,
+//     post_id: String,
+//     comment_index: u64
+// ) -> bool {
+//     let response_blob = agent
+//         .update(
+//             &feed_canister, 
+//             "like_comment_comment"
+//         )
+//         .with_arg(Encode!(&post_id, &comment_index).unwrap())
+//         .call_and_wait()
+//         .await.unwrap();
     
-    Decode!(&response_blob, bool).unwrap()
-}
+//     Decode!(&response_blob, bool).unwrap()
+// }
 
-pub async fn create_like(
-    agent: Agent,
-    feed_canister: Principal,
-    post_id: String,
-) -> bool {
-    let response_blob = agent
-        .update(
-            &feed_canister, 
-            "create_like"
-        )
-        .with_arg(Encode!(&post_id).unwrap())
-        .call_and_wait()
-        .await.unwrap();
+// pub async fn create_like(
+//     agent: Agent,
+//     feed_canister: Principal,
+//     post_id: String,
+// ) -> bool {
+//     let response_blob = agent
+//         .update(
+//             &feed_canister, 
+//             "create_like"
+//         )
+//         .with_arg(Encode!(&post_id).unwrap())
+//         .call_and_wait()
+//         .await.unwrap();
     
-    Decode!(&response_blob, bool).unwrap()
-}
+//     Decode!(&response_blob, bool).unwrap()
+// }
 
-pub async fn create_repost(
-    agent: Agent,
-    feed_canister: Principal,
-    post_id: String
-) -> bool {
-    let reponse_blob = agent
-        .update(
-            &feed_canister, 
-            "create_repost"
-        )
-        .with_arg(Encode!(&post_id).unwrap())
-        .call_and_wait()
-        .await.unwrap();
+// pub async fn create_repost(
+//     agent: Agent,
+//     feed_canister: Principal,
+//     post_id: String
+// ) -> bool {
+//     let reponse_blob = agent
+//         .update(
+//             &feed_canister, 
+//             "create_repost"
+//         )
+//         .with_arg(Encode!(&post_id).unwrap())
+//         .call_and_wait()
+//         .await.unwrap();
 
-    Decode!(&reponse_blob, bool).unwrap()
-}
+//     Decode!(&reponse_blob, bool).unwrap()
+// }
 
-pub async fn get_all_post(
-    agent: ic_agent::Agent,
-    feed_canister: Principal,
-    user: Principal
-) -> Vec<Post> {
-    let response_blob = agent
-        .query(
-            &feed_canister, 
-            "get_all_post"
-        )
-        .with_arg(Encode!(&user).unwrap())
-        .call()
-        .await.unwrap();
+// pub async fn get_all_post(
+//     agent: ic_agent::Agent,
+//     feed_canister: Principal,
+//     user: Principal
+// ) -> Vec<Post> {
+//     let response_blob = agent
+//         .query(
+//             &feed_canister, 
+//             "get_all_post"
+//         )
+//         .with_arg(Encode!(&user).unwrap())
+//         .call()
+//         .await.unwrap();
     
-    Decode!(&response_blob, Vec<Post>).unwrap()
-}
+//     Decode!(&response_blob, Vec<Post>).unwrap()
+// }
 
-pub async fn get_post(
-    agent: ic_agent::Agent,
-    feed_canister: Principal,
-    post_id: String
-) -> Option<Post> {
-    let response_blob = agent
-        .query(
-            &feed_canister, 
-            "get_post"
-        )
-        .with_arg(Encode!(&post_id).unwrap())
-        .call()
-        .await.unwrap();
+// pub async fn get_post(
+//     agent: ic_agent::Agent,
+//     feed_canister: Principal,
+//     post_id: String
+// ) -> Option<Post> {
+//     let response_blob = agent
+//         .query(
+//             &feed_canister, 
+//             "get_post"
+//         )
+//         .with_arg(Encode!(&post_id).unwrap())
+//         .call()
+//         .await.unwrap();
     
-    Decode!(&response_blob,Option<Post>).unwrap()
-}
+//     Decode!(&response_blob,Option<Post>).unwrap()
+// }
 
-pub async fn get_feed_number(
-    agent: Agent,
-    feed_canister: Principal,
-    user: Principal
-) -> u64 {
-    let response_blob = agent
-        .query(
-            &feed_canister, 
-            "get_feed_number"
-        )
-        .with_arg(Encode!(&user).unwrap())
-        .call().await.unwrap();
+// pub async fn get_feed_number(
+//     agent: Agent,
+//     feed_canister: Principal,
+//     user: Principal
+// ) -> u64 {
+//     let response_blob = agent
+//         .query(
+//             &feed_canister, 
+//             "get_feed_number"
+//         )
+//         .with_arg(Encode!(&user).unwrap())
+//         .call().await.unwrap();
     
-    Decode!(&response_blob, u64).unwrap()
-}
+//     Decode!(&response_blob, u64).unwrap()
+// }
 
-pub async fn get_latest_feed(
-    agent: Agent,
-    feed_canister: Principal,
-    user: Principal,
-    n: u64
-) -> Vec<Post> {
-    let response_blob = agent
-        .query(
-            &feed_canister, 
-            "get_latest_feed"
-        )
-        .with_arg(Encode!(&user, &n).unwrap())
-        .call().await.unwrap();
+// pub async fn get_latest_feed(
+//     agent: Agent,
+//     feed_canister: Principal,
+//     user: Principal,
+//     n: u64
+// ) -> Vec<Post> {
+//     let response_blob = agent
+//         .query(
+//             &feed_canister, 
+//             "get_latest_feed"
+//         )
+//         .with_arg(Encode!(&user, &n).unwrap())
+//         .call().await.unwrap();
     
-    Decode!(&response_blob, Vec<Post>).unwrap()
-}
+//     Decode!(&response_blob, Vec<Post>).unwrap()
+// }
 
 // async fn test_comment_comment(
 //     agent_a: Agent,

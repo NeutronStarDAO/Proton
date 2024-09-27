@@ -1,0 +1,36 @@
+type Comment = record {
+  content : text;
+  like : opt vec Like;
+  user : principal;
+  created_at : nat64;
+  index : opt nat64;
+};
+type CommentToComment = record {
+  content : text;
+  from_user : principal;
+  like : vec Like;
+  created_at : nat64;
+  to_index : nat64;
+  index : nat64;
+};
+type Like = record { user : principal; created_at : nat64 };
+type Post = record {
+  repost : vec Like;
+  post_id : text;
+  photo_url : vec text;
+  content : text;
+  like : vec Like;
+  user : principal;
+  created_at : nat64;
+  comment : vec Comment;
+  feed_canister : principal;
+  comment_index : opt nat64;
+  index : nat64;
+  comment_to_comment : opt vec CommentToComment;
+};
+service : (principal) -> {
+  get_hot_topic : (nat64) -> (vec record { text; nat64 }) query;
+  get_topic_number : (text) -> (nat64) query;
+  get_topic_post : (text, nat64, nat64) -> (vec Post) composite_query;
+  receive_post : (vec text, text) -> (bool);
+}

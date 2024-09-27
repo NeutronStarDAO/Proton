@@ -1,7 +1,6 @@
 mod utils;
 mod root_bucket;
 mod root_feed;
-mod deploy;
 mod feed;
 mod photo_storage;
 mod user;

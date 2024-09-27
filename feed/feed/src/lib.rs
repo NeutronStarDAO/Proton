@@ -1,3 +1,4 @@
+use serde::de::value;
 use types::{Comment, CommentToComment, Like, Post, Repost, CommentTreeNode};
 
 use candid::{CandidType, Decode, Encode, Principal};
@@ -32,6 +33,21 @@ impl Storable for PostHashMap {
 pub struct FeedHashMap(HashMap<String, Post>);
 
 impl Storable for FeedHashMap {
+    const BOUND: Bound = Bound::Unbounded;
+
+    fn to_bytes(&self) -> std::borrow::Cow<[u8]> {
+        Cow::Owned(Encode!(self).unwrap())
+    }
+
+    fn from_bytes(bytes: std::borrow::Cow<[u8]>) -> Self {
+        Decode!(bytes.as_ref(), Self).unwrap()
+    }
+}
+
+#[derive(CandidType, Deserialize, Debug, Clone)]
+pub struct BlackListFeed(HashMap<String, bool>);
+
+impl Storable for BlackListFeed {
     const BOUND: Bound = Bound::Unbounded;
 
     fn to_bytes(&self) -> std::borrow::Cow<[u8]> {
@@ -100,6 +116,12 @@ thread_local! {
         ).unwrap()   
     );
 
+    static BLACKLIST_FEED_MAP: RefCell<StableBTreeMap<Principal, BlackListFeed, Memory>> = RefCell::new(
+        StableBTreeMap::init(
+            MEMORY_MANAGER.with(|m| m.borrow().get(MemoryId::new(8))),
+        )
+    );
+
 }
 
 #[ic_cdk::init]
@@ -113,138 +135,6 @@ fn init(
     USER_ACTOR.with(|actor| actor.borrow_mut().set(user_actor).unwrap());
     
     POST_FETCH_ACTOR.with(|actor| actor.borrow_mut().set(post_fetch).unwrap());
-}
-
-#[ic_cdk::update]
-async fn complete_upgrade() -> bool {
-    if !is_controller(&ic_cdk::caller()).await {
-        return false;
-    }
-
-// POST_MAP
-    let post_map_entries: Vec<(Principal, PostHashMap)> = POST_MAP.with(|map| {
-        map.borrow().iter().collect()
-    });
-
-    for (user, map_struct) in post_map_entries {
-        let mut map = map_struct.0;
-
-        for (k, v) in map.clone() {
-            let mut i = 0;
-            let mut new_comment: Vec<Comment> = Vec::new();
-            for comment in v.comment {
-                new_comment.push(Comment {
-                    index: Some(i),
-                    user: comment.user,
-                    content: comment.content,
-                    created_at: comment.created_at,
-                    like: Some(Vec::new())
-                });
-                i += 1;
-            }
-
-            map.insert(k, Post {
-                post_id: v.post_id,
-                feed_canister: v.feed_canister,
-                index: v.index,
-                user: v.user,
-                content: v.content,
-                photo_url: v.photo_url,
-                repost: v.repost,
-                like: v.like,
-                comment_index: Some(i),
-                comment: new_comment,
-                comment_to_comment: Some(Vec::new()),
-                created_at: v.created_at
-            });
-        }
-
-        POST_MAP.with(|post_map| {
-            post_map.borrow_mut().insert(user, PostHashMap(map))
-        });
-    }
-
-// FEED_MAP 
-    let feed_map_entries: Vec<(Principal, FeedHashMap)> = FEED_MAP.with(|map| {
-        map.borrow().iter().collect()
-    });
-
-    for (user, map_struct) in feed_map_entries {
-        let mut map = map_struct.0;
-
-        for (k, v) in map.clone() {
-            let mut i = 0;
-            let mut new_comment: Vec<Comment> = Vec::new();
-            for comment in v.comment {
-                new_comment.push(Comment {
-                    index: Some(i),
-                    user: comment.user,
-                    content: comment.content,
-                    created_at: comment.created_at,
-                    like: Some(Vec::new())
-                });
-                i += 1;
-            }
-
-            map.insert(k, Post {
-                post_id: v.post_id,
-                feed_canister: v.feed_canister,
-                index: v.index,
-                user: v.user,
-                content: v.content,
-                photo_url: v.photo_url,
-                repost: v.repost,
-                like: v.like,
-                comment_index: Some(i),
-                comment: new_comment,
-                comment_to_comment: Some(Vec::new()),
-                created_at: v.created_at
-            });
-        }
-
-        FEED_MAP.with(|feed_map| {
-            feed_map.borrow_mut().insert(user, FeedHashMap(map))
-        });
-    }
-
-// ARCHIEVE_POST_MAP 
-    let archieve_post_map_entries: Vec<(String, Post)> = ARCHIEVE_POST_MAP.with(|map| {
-        map.borrow().iter().collect()
-    });
-
-    for (k, v) in archieve_post_map_entries {
-        let mut i = 0;
-        let mut new_comment: Vec<Comment> = Vec::new();
-        for comment in v.comment {
-            new_comment.push(Comment {
-                index: Some(i),
-                user: comment.user,
-                content: comment.content,
-                created_at: comment.created_at,
-                like: Some(Vec::new())
-            });
-            i += 1;
-        }
-        
-        ARCHIEVE_POST_MAP.with(|archieve_post_map| {
-            archieve_post_map.borrow_mut().insert(k, Post {
-                post_id: v.post_id,
-                feed_canister: v.feed_canister,
-                index: v.index,
-                user: v.user,
-                content: v.content,
-                photo_url: v.photo_url,
-                repost: v.repost,
-                like: v.like,
-                comment_index: Some(i),
-                comment: new_comment,
-                comment_to_comment: Some(Vec::new()),
-                created_at: v.created_at
-            })
-        });
-    }
-
-    true
 }
 
 async fn is_controller(user: &Principal) -> bool {
@@ -786,6 +676,61 @@ async fn delete_post(post_id: String) -> bool {
 }
 
 #[ic_cdk::update]
+fn add_feed_to_black_list(post_id: String) -> bool {
+    let caller = ic_cdk::caller();
+
+    let user_blacklist_map = BLACKLIST_FEED_MAP.with(|map| {
+        map.borrow().get(&caller)
+    });
+
+    match user_blacklist_map {
+        None => {
+            let mut blacklist_map = BlackListFeed(HashMap::new());
+            blacklist_map.0.insert(post_id, true);
+            BLACKLIST_FEED_MAP.with(|map| {
+                map.borrow_mut().insert(caller, blacklist_map);
+            });                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+        },
+        Some(mut user_blacklist_map) => {
+            user_blacklist_map.0.insert(post_id, true);
+            BLACKLIST_FEED_MAP.with(|map| {
+                map.borrow_mut().insert(caller, user_blacklist_map);
+            });  
+        }
+    };
+
+    true
+}
+
+#[ic_cdk::query]
+fn is_feed_in_user_blacklist(post_id: String, user: Principal) -> bool {
+    _is_feed_in_user_blacklist(post_id, user)
+}
+
+fn _is_feed_in_user_blacklist(post_id: String, user: Principal) -> bool {
+    let user_blacklist_map = BLACKLIST_FEED_MAP.with(|map| {
+        map.borrow().get(&user)
+    });
+
+    match user_blacklist_map {
+        None => {
+            false
+        },
+        Some(user_blacklist_map) => {
+            let value = user_blacklist_map.0.get(&post_id);
+            match value {
+                None => {
+                    false
+                },
+                Some(value) => {
+                    value.clone()
+                }
+            }
+        }
+    }
+}
+
+#[ic_cdk::update]
 async fn batch_receive_feed(
     user: Principal,
     post_id_array: Vec<String>
@@ -1053,7 +998,35 @@ fn get_latest_feed(
                 i += 1;
             }
         
-            result
+            get_feed_vec_without_blacklist(result, user)
+        }
+    }
+
+}
+
+fn get_feed_vec_without_blacklist(feed_vec: Vec<Post>, user: Principal) -> Vec<Post> {
+    let mut new_feed_vec = Vec::new();
+    let user_blacklist_map = BLACKLIST_FEED_MAP.with(|map| {
+        map.borrow().get(&user)
+    });
+
+    match user_blacklist_map {
+        None => {
+            feed_vec
+        },
+        Some(user_blacklist_map) => {
+            for feed in feed_vec.iter() {
+                let value = user_blacklist_map.0.get(&feed.post_id);
+                if let Some(value) = value {
+                    if *value == true {
+                        continue;
+                    }
+                }
+
+                new_feed_vec.push(feed.clone());
+            }
+
+            new_feed_vec
         }
     }
 }
@@ -1139,7 +1112,7 @@ fn get_home_feed(
         i += 1;
     }
 
-    result
+    get_feed_vec_without_blacklist(result, user)
 }
 
 #[ic_cdk::query]
@@ -1223,7 +1196,7 @@ fn get_home_feed_by_length(
         i += 1;
     }
 
-    result
+    get_feed_vec_without_blacklist(result, user)
 }
 
 #[ic_cdk::query]

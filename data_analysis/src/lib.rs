@@ -103,7 +103,7 @@ fn get_hot_topic(n: u64) -> Vec<(String, u64)> {
     let mut i = 0;
     for topic in topic_vec.iter().rev() {
         i += 1;
-        if(i > n) {
+        if i > n {
             break;
         }
 
@@ -140,3 +140,5 @@ async fn get_topic_post(topic: String, start: u64, len: u64) -> Vec<Post> {
 
     posts
 }
+
+ic_cdk::export_candid!();

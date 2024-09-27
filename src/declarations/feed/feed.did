@@ -62,12 +62,12 @@ type QueryStats = record {
   request_payload_bytes_total : nat;
 };
 service : (principal, principal, principal) -> {
+  add_feed_to_black_list : (text) -> (bool);
   batch_delete_feed : (principal, vec text) -> ();
   batch_get_post : (vec text) -> (vec Post) query;
   batch_receive_feed : (principal, vec text) -> ();
   check_available_bucket : () -> (bool);
   comment_comment : (text, nat64, text) -> (bool);
-  complete_upgrade : () -> (bool);
   create_comment : (text, text) -> (bool);
   create_like : (text) -> (bool);
   create_post : (text, vec text) -> (text);
@@ -88,6 +88,7 @@ service : (principal, principal, principal) -> {
   get_post_number : (principal) -> (nat64) query;
   get_root_bucket : () -> (principal) query;
   get_user_actor : () -> (principal) query;
+  is_feed_in_user_blacklist : (text, principal) -> (bool) query;
   like_comment : (text, nat64) -> (bool);
   like_comment_comment : (text, nat64) -> (bool);
   status : () -> (CanisterStatusResponse);

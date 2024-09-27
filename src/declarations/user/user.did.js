@@ -41,6 +41,7 @@ export const idlFactory = ({ IDL }) => {
     'reserved_cycles' : IDL.Nat,
   });
   return IDL.Service({
+    'add_black_list' : IDL.Func([IDL.Principal], [IDL.Bool], []),
     'batch_get_profile' : IDL.Func(
         [IDL.Vec(IDL.Principal)],
         [IDL.Vec(Profile)],
@@ -62,6 +63,11 @@ export const idlFactory = ({ IDL }) => {
       ),
     'get_following_number' : IDL.Func([IDL.Principal], [IDL.Nat64], ['query']),
     'get_profile' : IDL.Func([IDL.Principal], [IDL.Opt(Profile)], ['query']),
+    'is_black_follow_list' : IDL.Func(
+        [IDL.Principal, IDL.Principal],
+        [IDL.Bool],
+        ['query'],
+      ),
     'is_followed' : IDL.Func(
         [IDL.Principal, IDL.Principal],
         [IDL.Bool],

@@ -33,30 +33,142 @@ fn test_follow() {
     assert!(is_followed);
 }
 
-// async fn test_cancle_follow(
-//     agent_e: Agent,
-//     agent_f: Agent
-// ) {
-//     // F 取消关注 E
-//     let pr_e = agent_e.get_principal().unwrap();
-//     let pr_f = agent_f.get_principal().unwrap();
+#[test]
+fn test_cancle_follow() {
+    let pic = PocketIc::new();
 
-//     assert!(user::is_followed(agent_f.clone(), pr_f, pr_e).await == true);
+    let user_canister = pic.create_canister();
+    pic.add_cycles(user_canister, (4 * T_CYCLES) as u128);
+    
+    let wasm_bytes = include_bytes!("../../target/wasm32-unknown-unknown/release/user.wasm").to_vec();
+    pic.install_canister(user_canister, wasm_bytes, vec![], None);
 
-//     user::cancle_follow(agent_f.clone(), pr_e).await;
+    let user_a = Principal::from_text(USERA).unwrap();
+    let user_b = Principal::from_text(USERB).unwrap();
+    let result = pocket_ic::update_candid_as::<(Principal, ), ((), )>(
+        &pic, 
+        user_canister,
+        user_a,
+        "follow",
+        (user_b, )
+    ).unwrap();
 
-//     assert!(user::is_followed(agent_f.clone(), pr_f, pr_e).await == false);
-// }
+    let is_followed = pocket_ic::query_candid::<(Principal, Principal, ), (bool, )>(
+        &pic, 
+        user_canister, 
+        "is_followed", 
+        (user_a, user_b, )
+    ).unwrap().0;
+    assert!(is_followed);
 
-// pub async fn cancle_follow(
-//     agent: Agent,
-//     user: Principal
-// ) {
-//     agent.update(
-//         &USER_CANISTER, 
-//         "cancle_follow"
-//     )
-//     .with_arg(Encode!(&user).unwrap())
-//     .call_and_wait()
-//     .await.unwrap();
-// }
+    let cancle_follow_result = pocket_ic::update_candid_as::<(Principal, ), ((), )>(
+        &pic, 
+        user_canister,
+        user_a,
+        "cancle_follow",
+        (user_b, )
+    ).unwrap().0;
+
+    let is_followed = pocket_ic::query_candid::<(Principal, Principal, ), (bool, )>(
+        &pic, 
+        user_canister, 
+        "is_followed", 
+        (user_a, user_b, )
+    ).unwrap().0;
+    assert!(is_followed == false);
+}
+
+#[test]
+fn test_add_black_list() {
+    let pic = PocketIc::new();
+
+    let user_canister = pic.create_canister();
+    pic.add_cycles(user_canister, (4 * T_CYCLES) as u128);
+    
+    let wasm_bytes = include_bytes!("../../target/wasm32-unknown-unknown/release/user.wasm").to_vec();
+    pic.install_canister(user_canister, wasm_bytes, vec![], None);
+
+    let user_a = Principal::from_text(USERA).unwrap();
+    let user_b = Principal::from_text(USERB).unwrap();
+
+    let follow_result = pocket_ic::update_candid_as::<(Principal, ), ((), )>(
+        &pic, 
+        user_canister,
+        user_a,
+        "follow",
+        (user_b, )
+    ).unwrap();
+
+    let follow_result = pocket_ic::update_candid_as::<(Principal, ), ((), )>(
+        &pic, 
+        user_canister,
+        user_b,
+        "follow",
+        (user_a, )
+    ).unwrap();
+
+    let is_followed = pocket_ic::query_candid::<(Principal, Principal, ), (bool, )>(
+        &pic, 
+        user_canister, 
+        "is_followed", 
+        (user_a, user_b, )
+    ).unwrap().0;
+    assert!(is_followed);
+
+    let is_followed = pocket_ic::query_candid::<(Principal, Principal, ), (bool, )>(
+        &pic, 
+        user_canister, 
+        "is_followed", 
+        (user_b, user_a)
+    ).unwrap().0;
+    assert!(is_followed);
+
+    let add_black_list_result = pocket_ic::update_candid_as::<(Principal, ), (bool, )>(
+        &pic, 
+        user_canister,
+        user_a,
+        "add_black_list",
+        (user_b, )
+    ).unwrap().0;
+    assert!(add_black_list_result);
+
+    let is_followed = pocket_ic::query_candid::<(Principal, Principal, ), (bool, )>(
+        &pic, 
+        user_canister, 
+        "is_followed", 
+        (user_a, user_b, )
+    ).unwrap().0;
+    assert!(is_followed == false);
+
+    let is_followed = pocket_ic::query_candid::<(Principal, Principal, ), (bool, )>(
+        &pic, 
+        user_canister, 
+        "is_followed", 
+        (user_b, user_a)
+    ).unwrap().0;
+    assert!(is_followed == false);
+
+    let is_black_list = pocket_ic::query_candid::<(Principal, Principal, ), (bool, )>(
+        &pic, 
+        user_canister, 
+        "is_black_follow_list", 
+        (user_a, user_b)
+    ).unwrap().0;
+    assert!(is_black_list);
+
+    let follow_result = pocket_ic::update_candid_as::<(Principal, ), ((), )>(
+        &pic, 
+        user_canister,
+        user_b,
+        "follow",
+        (user_a, )
+    ).unwrap();
+
+    let is_followed = pocket_ic::query_candid::<(Principal, Principal, ), (bool, )>(
+        &pic, 
+        user_canister, 
+        "is_followed", 
+        (user_b, user_a)
+    ).unwrap().0;
+    assert!(is_followed == false);
+}
