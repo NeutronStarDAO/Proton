@@ -118,8 +118,10 @@ const UserPanel = ({profile}: { profile?: profile_type }) => {
   const ref = useRef(null)
   const tl = useRef<any>()
   const nav = useNavigate()
+  const [showMore, setShowMore] = useState(false)
   const [load, setLoad] = useState(false)
   const [avatar, setAvatar] = useState<string>("")
+  const [isBlack, setIsBlack] = useState(false)
   const isOwner = React.useMemo(() => {
     return id === principal?.toText()
   }, [id, principal])
@@ -132,8 +134,17 @@ const UserPanel = ({profile}: { profile?: profile_type }) => {
     }
   }
 
+  const IsBlack = () => {
+    if (id && principal) {
+      userApi.is_black_follow_list(principal, Principal.from(id)).then(e => {
+        setIsBlack(e)
+      })
+    }
+  }
+
   useEffect(() => {
     isFollow()
+    IsBlack()
   }, [id, principal]);
 
   useEffect(() => {
@@ -179,6 +190,23 @@ const UserPanel = ({profile}: { profile?: profile_type }) => {
     tl.current.reverse()
   })
 
+  const block = async () => {
+    if (!id) return
+    try {
+      message.loading("pending...")
+      const res = await userApi.add_black_list(Principal.from(id))
+      console.log(res)
+      if (res) {
+        message.success("Blocked successfully.")
+        setIsBlack(true)
+      } else {
+        message.error("Failed to block")
+      }
+    } catch (e: any) {
+      message.warning(e?.message)
+    }
+  }
+
   useEffect(() => {
     if (profile) {
       if (profile.avatar_url) setAvatar(profile.avatar_url)
@@ -203,12 +231,38 @@ const UserPanel = ({profile}: { profile?: profile_type }) => {
         </div>
       </div>
       <ProfileModal setOpen={setOpen} open={open} canClose={true}/>
-      {isOwner ? <span className={"edit"} onClick={() => setOpen(true)}>
+      <div style={{display: 'flex', alignItems: 'center'}}>
+
+
+        {!isBlack ?
+          <div className={"dropdown_select_modal"} style={{position: "relative", display: isOwner ? "none" : "flex"}}>
+            <div className={"more_wrap"} onClick={e => {
+              e.stopPropagation()
+              setShowMore(!showMore)
+            }}>
+              <div>
+                <Icon name={"more"}/>
+              </div>
+            </div>
+            <div className={"dropdown_wrap"} style={{display: showMore ? "flex" : "none", zIndex: '100'}}>
+              <div onClick={block}>
+                <Icon name={"block"}/> Block
+              </div>
+            </div>
+          </div> : <span className={"edit"}>
+        Remove
+      </span>}
+
+
+        {isOwner ? <span className={"edit"} onClick={() => setOpen(true)}>
         <Icon name={"edit"}/>
         Edit
       </span> : <span style={{display: isAuth ? "flex" : "none"}} className={"edit"} onClick={handleFollow}>
         {isFollowed ? "Following" : "Follow"}
       </span>}
+      </div>
+
+
     </div>
     {profile ? <div className={"des"} style={{padding: "0 2rem"}}>
       {profile?.biography}

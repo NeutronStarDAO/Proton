@@ -145,6 +145,31 @@ class User {
       throw e
     }
   }
+
+  add_black_list(who: Principal) {
+    return new Promise(async (resolve, reject) => {
+      const actor = await User.getActor()
+      try {
+        const res = await actor.add_black_list(who) as boolean
+        resolve(res)
+      } catch (e) {
+        console.log("add_black_list", e)
+        reject(e)
+      }
+    })
+  }
+  is_black_follow_list(A: Principal, B: Principal) {//B 是否在A的黑名单中
+    return new Promise<boolean>(async (resolve, reject) => {
+      const actor = await User.getActor()
+      try {
+        const res = await actor.is_black_follow_list(A, B) as boolean
+        resolve(res)
+      } catch (e) {
+        console.log("is_black_follow_list", e)
+        reject(e)
+      }
+    })
+  }
 }
 
 

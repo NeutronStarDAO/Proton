@@ -149,6 +149,7 @@ export const Post = ({post, updateFunction, selectedID, profile, setShowLikeList
   const [avatar, setAvatar] = useState("")
   const [openGrant, setOpenGrant] = useState(false)
   const [showSending, setShowSending] = useState(false)
+  const [playOne,setPlayOne] = useState("")
 
   const arg = useMemo(() => {
     const res = {
@@ -290,10 +291,14 @@ export const Post = ({post, updateFunction, selectedID, profile, setShowLikeList
       message.error('failed !')
     }
   }
+  const hide = async ()=>{
+
+  }
 
   const load = () => {
     setIsLoad(true)
   }
+
 
   return <>
     <Grant open={openGrant} setOpen={setOpenGrant}/>
@@ -336,7 +341,7 @@ export const Post = ({post, updateFunction, selectedID, profile, setShowLikeList
             </div>
           </div>
         </div>
-        <div style={{position: "relative"}}>
+        <div className={"dropdown_select_modal"} style={{position: "relative"}}>
           <div ref={moreButton} className={"more_wrap"} onClick={e => {
             e.stopPropagation()
             setShowMore(true)
@@ -346,8 +351,8 @@ export const Post = ({post, updateFunction, selectedID, profile, setShowLikeList
             </div>
           </div>
           <div className={"dropdown_wrap"} style={{display: showMore ? "flex" : "none", zIndex: '100'}}>
-            <div style={{cursor: "no-drop"}}>
-              <Icon name={"pin"}/> Pin
+            <div style={{display:isMy?"none":"flex"}} onClick={hide}>
+              <Icon name={"hide"}/> Hide
             </div>
             <div onClick={deletePost} style={{display: isMy ? "flex" : "none"}}>
               <Icon name={"trash"}/>Delete
@@ -356,7 +361,7 @@ export const Post = ({post, updateFunction, selectedID, profile, setShowLikeList
         </div>
       </div>
       <div className={"tweet"}>
-        <ShowMoreTest content={post.content}/>
+        <ShowMoreTest playOne={playOne} setPlayOne={setPlayOne} postId={post.post_id} content={post.content}/>
         <div className={"img_list"} style={{
           gridTemplateColumns: post.photo_url.length === 1 ? "1fr" : "repeat(2, 1fr)",
           height: post.photo_url.length === 0 ? "0" : "50rem",
