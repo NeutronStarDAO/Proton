@@ -56,10 +56,10 @@
     padding: 2.25rem;
     margin-top: 2rem;
     border-radius: 8px;
-    max-height: calc(100vh - 100px);
+    // max-height: calc(100vh - 100px);
     max-width: calc(100vw - 2rem);
     overflow: auto;
-    transform-origin: -100% -100%;
+    transform-origin: -9% -6%;
     color: #000;
     text-align: left;
   }
@@ -138,5 +138,9 @@
 }
 
 
-
-
+@media screen and (max-width: 500px) {
+  .setting_main {
+    border-right: 0;
+    border-left: 0;
+  }
+}
