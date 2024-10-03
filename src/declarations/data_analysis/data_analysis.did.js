@@ -35,12 +35,18 @@ export const idlFactory = ({ IDL }) => {
         [IDL.Vec(IDL.Tuple(IDL.Text, IDL.Nat64))],
         ['query'],
       ),
+    'get_hot_topic_in_week' : IDL.Func(
+        [],
+        [IDL.Vec(IDL.Tuple(IDL.Text, IDL.Nat64))],
+        ['query'],
+      ),
     'get_topic_number' : IDL.Func([IDL.Text], [IDL.Nat64], ['query']),
     'get_topic_post' : IDL.Func(
         [IDL.Text, IDL.Nat64, IDL.Nat64],
         [IDL.Vec(Post)],
         ['composite_query'],
       ),
+    'get_week_topic_number' : IDL.Func([IDL.Text], [IDL.Nat64], ['query']),
     'receive_post' : IDL.Func([IDL.Vec(IDL.Text), IDL.Text], [IDL.Bool], []),
   });
 };

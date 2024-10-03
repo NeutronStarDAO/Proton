@@ -178,7 +178,7 @@ fn create_and_init_post_fetch_canister(pic: &PocketIc, root_feed_canister: Princ
     post_fetch_canister
 }
 
-fn deploy_proton(pic: &PocketIc) -> ProtonInfo {
+pub fn deploy_proton(pic: &PocketIc) -> ProtonInfo {
     let user_canister = create_and_init_user_canister(pic);
 
     let root_bucket_canister = create_and_init_root_bucket_canister(pic);
@@ -258,6 +258,24 @@ fn test_add_feed_to_black_list() {
     let user_a = Principal::from_text(USERA).unwrap();
     let user_b = Principal::from_text(USERB).unwrap();
 
+    let a_init_user_feed = pocket_ic::update_candid_as::<((), ), (Principal, )>(
+        &pic,
+        proton_info.root_feed_canister, 
+        user_a, 
+        "init_user_feed", 
+        ((), )
+    ).unwrap().0;
+    assert!(a_init_user_feed == proton_info.feed_canister);
+
+    let b_init_user_feed = pocket_ic::update_candid_as::<((), ), (Principal, )>(
+        &pic,
+        proton_info.root_feed_canister, 
+        user_b, 
+        "init_user_feed", 
+        ((), )
+    ).unwrap().0;
+    assert!(b_init_user_feed == proton_info.feed_canister);
+
     let follow_result = pocket_ic::update_candid_as::<(Principal, ), ((), )>(
         &pic, 
         proton_info.user_canister, 
@@ -274,18 +292,10 @@ fn test_add_feed_to_black_list() {
         ("user_a test create_post".to_string(), vec![], )
     ).unwrap().0;
 
-    // pic.advance_time(Duration::from_secs(60));
-    for i in 0..20 {
+    pic.advance_time(Duration::from_secs(60));
+    for _ in 0..100 {
         pic.tick();
     }
-
-    let feed_number = pocket_ic::query_candid::<(Principal, ), (u64, )>(
-        &pic, 
-        proton_info.feed_canister, 
-        "get_feed_number", 
-        (user_b, )
-    ).unwrap().0;
-    assert!(feed_number > 0);
 
     let get_home_feed_result = pocket_ic::query_candid::<(Principal, u64, ), (Vec<Post>, )>(
         &pic, 
@@ -295,7 +305,22 @@ fn test_add_feed_to_black_list() {
     ).unwrap().0;
     assert!(get_home_feed_result.len() == 1usize);
 
+    let add_blacklist_result = pocket_ic::update_candid_as::<(String, ), (bool, )>(
+        &pic, 
+        proton_info.feed_canister, 
+        user_b, 
+        "add_feed_to_black_list", 
+        (post_id, )
+    ).unwrap().0;
+    assert!(add_blacklist_result);
 
+    let get_home_feed_result = pocket_ic::query_candid::<(Principal, u64, ), (Vec<Post>, )>(
+        &pic, 
+        proton_info.feed_canister, 
+        "get_home_feed", 
+        (user_b, 10_u64, )
+    ).unwrap().0;
+    assert!(get_home_feed_result.len() == 0);
 }
 
 // pub async fn delete_post(

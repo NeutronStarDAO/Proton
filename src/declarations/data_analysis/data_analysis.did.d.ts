@@ -34,8 +34,10 @@ export interface Post {
 }
 export interface _SERVICE {
   'get_hot_topic' : ActorMethod<[bigint], Array<[string, bigint]>>,
+  'get_hot_topic_in_week' : ActorMethod<[], Array<[string, bigint]>>,
   'get_topic_number' : ActorMethod<[string], bigint>,
   'get_topic_post' : ActorMethod<[string, bigint, bigint], Array<Post>>,
+  'get_week_topic_number' : ActorMethod<[string], bigint>,
   'receive_post' : ActorMethod<[Array<string>, string], boolean>,
 }
 export declare const idlFactory: IDL.InterfaceFactory;

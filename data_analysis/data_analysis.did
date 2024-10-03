@@ -30,7 +30,9 @@ type Post = record {
 };
 service : (principal) -> {
   get_hot_topic : (nat64) -> (vec record { text; nat64 }) query;
+  get_hot_topic_in_week : () -> (vec record { text; nat64 }) query;
   get_topic_number : (text) -> (nat64) query;
   get_topic_post : (text, nat64, nat64) -> (vec Post) composite_query;
+  get_week_topic_number : (text) -> (nat64) query;
   receive_post : (vec text, text) -> (bool);
 }

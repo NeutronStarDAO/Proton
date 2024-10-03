@@ -6,6 +6,7 @@ mod photo_storage;
 mod user;
 mod root_fetch;
 mod bucket;
+mod data_analysis;
 
 pub const USERA: &str = "shanr-mcoy7-pfhc4-doc4p-hwy3f-owjuw-oljtt-2lsq2-zofik-6ouh4-iae";
 pub const USERB: &str = "xzlll-e32we-sdruc-iqlac-cgojl-sjtmg-3e5ij-kcgmo-xeb4u-l6gzp-6qe";
