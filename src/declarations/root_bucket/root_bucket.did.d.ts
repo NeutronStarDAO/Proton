@@ -77,6 +77,7 @@ export interface _SERVICE {
     Array<Post>
   >,
   'init' : ActorMethod<[], undefined>,
+  'search_post' : ActorMethod<[string], Array<Post>>,
   'status' : ActorMethod<[], CanisterStatusResponse>,
   'update_bucket_canister_controller' : ActorMethod<[Principal], boolean>,
   'update_bucket_wasm' : ActorMethod<[Uint8Array | number[], bigint], boolean>,

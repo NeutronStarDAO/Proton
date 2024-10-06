@@ -59,12 +59,12 @@ export const idlFactory = ({ IDL }) => {
     'reserved_cycles' : IDL.Nat,
   });
   return IDL.Service({
-    'complete_upgrade' : IDL.Func([], [IDL.Bool], []),
     'delete_feed' : IDL.Func([IDL.Text], [IDL.Bool], []),
     'get_latest_feed' : IDL.Func([IDL.Nat64], [IDL.Vec(Post)], ['query']),
     'get_post' : IDL.Func([IDL.Text], [IDL.Opt(Post)], ['query']),
     'get_post_number' : IDL.Func([], [IDL.Nat64], ['query']),
     'get_posts' : IDL.Func([IDL.Vec(IDL.Text)], [IDL.Vec(Post)], ['query']),
+    'search_post' : IDL.Func([IDL.Text], [IDL.Vec(Post)], ['query']),
     'status' : IDL.Func([], [CanisterStatusResponse], []),
     'store_feed' : IDL.Func([Post], [IDL.Bool], []),
   });

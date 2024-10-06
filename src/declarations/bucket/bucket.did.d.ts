@@ -60,12 +60,12 @@ export interface QueryStats {
   'request_payload_bytes_total' : bigint,
 }
 export interface _SERVICE {
-  'complete_upgrade' : ActorMethod<[], boolean>,
   'delete_feed' : ActorMethod<[string], boolean>,
   'get_latest_feed' : ActorMethod<[bigint], Array<Post>>,
   'get_post' : ActorMethod<[string], [] | [Post]>,
   'get_post_number' : ActorMethod<[], bigint>,
   'get_posts' : ActorMethod<[Array<string>], Array<Post>>,
+  'search_post' : ActorMethod<[string], Array<Post>>,
   'status' : ActorMethod<[], CanisterStatusResponse>,
   'store_feed' : ActorMethod<[Post], boolean>,
 }

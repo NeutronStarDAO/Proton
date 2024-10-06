@@ -329,6 +329,32 @@ async fn get_buckets_latest_feed_from_start(start:u64, length: u64) -> Vec<Post>
     sorted_posts
 }
 
+#[ic_cdk::query(composite = true)]
+async fn search_post(keyword: String) -> Vec<Post> {
+    let mut posts: Vec<Post> = Vec::new();
+
+    let buckets = BUCKET_MAP.with(|map| {
+        let mut buckets = Vec::new();
+        for (_, bucket) in map.borrow().iter() {
+            buckets.push(bucket);
+        }
+        buckets
+    });
+
+    for bucket in buckets {
+        let bucket_posts = ic_cdk::call::<(String, ), (Vec<Post>, )>(
+            bucket, 
+            "search_post", 
+            (keyword.clone(), )
+        ).await.unwrap().0;
+        if bucket_posts.len() > 0 {
+            posts.extend(bucket_posts);
+        }
+    }
+
+    posts
+} 
+
 async fn _create_bucket() -> Principal {
     let canister_record = create_canister(
         CreateCanisterArgument {

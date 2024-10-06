@@ -69,6 +69,7 @@ service : {
       vec Post,
     ) composite_query;
   init : () -> ();
+  search_post : (text) -> (vec Post) composite_query;
   status : () -> (CanisterStatusResponse);
   update_bucket_canister_controller : (principal) -> (bool);
   update_bucket_wasm : (blob, nat64) -> (bool);

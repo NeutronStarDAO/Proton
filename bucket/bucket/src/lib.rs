@@ -19,52 +19,6 @@ thread_local! {
 
 }
 
-#[ic_cdk::update]
-async fn complete_upgrade() -> bool {
-    if !is_controller(&ic_cdk::caller()).await {
-        return false;
-    }
-
-// FEED_MAP 
-    let feed_map_entries: Vec<(String, Post)> = FEED_MAP.with(|map| {
-        map.borrow().iter().collect()
-    });
-
-    for (k, v) in feed_map_entries {
-        let mut i = 0;
-        let mut new_comment: Vec<Comment> = Vec::new();
-        for comment in v.comment {
-            new_comment.push(Comment {
-                index: Some(i),
-                user: comment.user,
-                content: comment.content,
-                created_at: comment.created_at,
-                like: Some(Vec::new())
-            });
-            i += 1;
-        }
-        
-        FEED_MAP.with(|archieve_post_map| {
-            archieve_post_map.borrow_mut().insert(k, Post {
-                post_id: v.post_id,
-                feed_canister: v.feed_canister,
-                index: v.index,
-                user: v.user,
-                content: v.content,
-                photo_url: v.photo_url,
-                repost: v.repost,
-                like: v.like,
-                comment_index: Some(i),
-                comment: new_comment,
-                comment_to_comment: Some(Vec::new()),
-                created_at: v.created_at
-            })
-        });
-    }
-
-    true
-}
-
 async fn is_controller(user: &Principal) -> bool {
     let status = status().await;
     let controllers = status.settings.controllers;
@@ -157,6 +111,27 @@ fn get_latest_feed(n: u64) -> Vec<Post> {
         i += 1;
     }
     result  
+}
+
+#[ic_cdk::query]
+fn search_post(keyword: String) -> Vec<Post> {
+    let mut posts = Vec::new();
+    
+    let feed_vec = FEED_MAP.with(|map| {
+        let mut feed_vec = Vec::new();
+        for (_, feed) in map.borrow().iter() {
+            feed_vec.push(feed);
+        }
+        feed_vec
+    });
+    
+    for feed in feed_vec {
+        if feed.content.contains(&keyword) {
+            posts.push(feed);
+        }
+    }
+
+    posts
 }
 
 ic_cdk::export_candid!();

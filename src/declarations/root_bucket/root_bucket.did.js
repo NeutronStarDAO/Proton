@@ -91,6 +91,7 @@ export const idlFactory = ({ IDL }) => {
         ['composite_query'],
       ),
     'init' : IDL.Func([], [], []),
+    'search_post' : IDL.Func([IDL.Text], [IDL.Vec(Post)], ['composite_query']),
     'status' : IDL.Func([], [CanisterStatusResponse], []),
     'update_bucket_canister_controller' : IDL.Func(
         [IDL.Principal],

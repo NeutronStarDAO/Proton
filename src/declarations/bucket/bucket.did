@@ -54,12 +54,12 @@ type QueryStats = record {
   request_payload_bytes_total : nat;
 };
 service : {
-  complete_upgrade : () -> (bool);
   delete_feed : (text) -> (bool);
   get_latest_feed : (nat64) -> (vec Post) query;
   get_post : (text) -> (opt Post) query;
   get_post_number : () -> (nat64) query;
   get_posts : (vec text) -> (vec Post) query;
+  search_post : (text) -> (vec Post) query;
   status : () -> (CanisterStatusResponse);
   store_feed : (Post) -> (bool);
 }
