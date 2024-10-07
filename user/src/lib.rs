@@ -64,6 +64,40 @@ thread_local! {
 }
 
 #[ic_cdk::update]
+fn cancle_black_list(user: Principal) -> bool {
+    let caller = ic_cdk::caller();
+    assert!(caller != Principal::anonymous());
+
+    if _is_black_follow_list(caller, user) {
+        let mut new_black_list = Vec::new();
+        BLACK_FOLLOW_LIST.with(|black_list| {
+            for (from, to) in black_list.borrow().iter() {
+                if from == caller && to == user {
+                    continue;
+                }
+                new_black_list.push((from, to));
+            }
+        });
+
+        BLACK_FOLLOW_LIST.with(|black_list| {
+            while !black_list.borrow().is_empty() {
+                black_list.borrow_mut().pop();
+            };
+        });
+
+        BLACK_FOLLOW_LIST.with(|black_list| {
+            for value in new_black_list {
+                black_list.borrow_mut().push(&value).unwrap();
+            }
+        });
+
+        true
+    } else {
+        false
+    }
+}
+
+#[ic_cdk::update]
 fn add_black_list(user: Principal) -> bool {
     let caller = ic_cdk::caller();
     assert!(caller != Principal::anonymous());

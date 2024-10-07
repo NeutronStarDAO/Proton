@@ -44,6 +44,7 @@ export interface QueryStats {
 export interface _SERVICE {
   'add_black_list' : ActorMethod<[Principal], boolean>,
   'batch_get_profile' : ActorMethod<[Array<Principal>], Array<Profile>>,
+  'cancle_black_list' : ActorMethod<[Principal], boolean>,
   'cancle_follow' : ActorMethod<[Principal], undefined>,
   'create_profile' : ActorMethod<[Profile], boolean>,
   'follow' : ActorMethod<[Principal], undefined>,
