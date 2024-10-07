@@ -170,6 +170,19 @@ class User {
       }
     })
   }
+
+  cancle_black_list(who: Principal) {
+    return new Promise(async (resolve, reject) => {
+        const actor = await User.getActor()
+        try {
+            const res = await actor.cancle_black_list(who) as boolean
+            resolve(res)
+        } catch (e) {
+            console.log("cancle_black_list", e)
+            reject(e)
+        }
+    })
+  }
 }
 
 

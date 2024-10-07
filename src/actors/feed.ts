@@ -163,6 +163,18 @@ export default class Feed {
     }
   }
 
+  add_feed_to_black_list(postID: string) {
+    return new Promise(async (resolve, reject) => {
+      const actor = await this.getActor()
+      try {
+        const res = await actor.add_feed_to_black_list(postID) as boolean
+        resolve(res)
+      } catch (e) {
+        console.log("add_feed_to_black_list error", e)
+        reject(e)
+      }
+    })
+  }
 
 
 }

@@ -207,6 +207,24 @@ const UserPanel = ({profile}: { profile?: profile_type }) => {
     }
   }
 
+  const cancleBlock = async () => {
+    if (!id) return
+    try {
+      message.loading("pending...")
+      const res = await userApi.cancle_black_list(Principal.from(id))
+      console.log(res)
+      if (res) {
+        message.success("Unblocked successfully.")
+        setIsBlack(false)
+      } else {
+        message.error("Failed to unblock")
+      }
+    } catch (e: any) {
+      message.warning(e?.message)
+    }
+
+  }
+
   useEffect(() => {
     if (profile) {
       if (profile.avatar_url) setAvatar(profile.avatar_url)
@@ -249,7 +267,7 @@ const UserPanel = ({profile}: { profile?: profile_type }) => {
                 <Icon name={"block"}/> Block
               </div>
             </div>
-          </div> : <span className={"edit"}>
+          </div> : <span className={"edit"} onClick={cancleBlock}>
         Remove
       </span>}
 

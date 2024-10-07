@@ -136,6 +136,7 @@ export const Post = ({post, updateFunction, selectedID, profile, setShowLikeList
 }) => {
   const principal = post.user
   const navigate = useNavigate()
+  const location = useLocation()
   const {principal: user_id, isDark} = useAuth()
   const [hoverOne, setHoverOne] = useState(-1)
   const [replyContent, setReplyContent] = useState("")
@@ -149,7 +150,7 @@ export const Post = ({post, updateFunction, selectedID, profile, setShowLikeList
   const [avatar, setAvatar] = useState("")
   const [openGrant, setOpenGrant] = useState(false)
   const [showSending, setShowSending] = useState(false)
-  const [playOne,setPlayOne] = useState("")
+  const [playOne, setPlayOne] = useState("")
 
   const arg = useMemo(() => {
     const res = {
@@ -291,8 +292,20 @@ export const Post = ({post, updateFunction, selectedID, profile, setShowLikeList
       message.error('failed !')
     }
   }
-  const hide = async ()=>{
-
+  const hide = async () => {
+    const feedApi = new Feed(post.feed_canister)
+    try {
+      message.loading('Hiding...')
+      const res = await feedApi.add_feed_to_black_list(post.post_id)
+      if (res) {
+        message.success('Hidden successfully !')
+      } else {
+        message.warning('Hidden failed !')
+      }
+      updateFunction()
+    } catch (e) {
+      message.error('failed !')
+    }
   }
 
   const load = () => {
@@ -341,7 +354,8 @@ export const Post = ({post, updateFunction, selectedID, profile, setShowLikeList
             </div>
           </div>
         </div>
-        <div className={"dropdown_select_modal"} style={{position: "relative"}}>
+        <div className={"dropdown_select_modal"}
+             style={{position: "relative", display: location.pathname === "/explore" ? "none" : "block"}}>
           <div ref={moreButton} className={"more_wrap"} onClick={e => {
             e.stopPropagation()
             setShowMore(true)
@@ -351,7 +365,7 @@ export const Post = ({post, updateFunction, selectedID, profile, setShowLikeList
             </div>
           </div>
           <div className={"dropdown_wrap"} style={{display: showMore ? "flex" : "none", zIndex: '100'}}>
-            <div style={{display:isMy?"none":"flex"}} onClick={hide}>
+            <div style={{display: isMy ? "none" : "flex"}} onClick={hide}>
               <Icon name={"hide"}/> Hide
             </div>
             <div onClick={deletePost} style={{display: isMy ? "flex" : "none"}}>

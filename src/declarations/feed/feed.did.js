@@ -70,7 +70,13 @@ export const idlFactory = ({ IDL }) => {
     'reserved_cycles' : IDL.Nat,
   });
   return IDL.Service({
+    'add_feed_to_black_list' : IDL.Func([IDL.Text], [IDL.Bool], []),
     'batch_delete_feed' : IDL.Func([IDL.Principal, IDL.Vec(IDL.Text)], [], []),
+    'batch_get_post' : IDL.Func(
+      [IDL.Vec(IDL.Text)],
+      [IDL.Vec(Post)],
+      ['query'],
+    ),
     'batch_receive_feed' : IDL.Func([IDL.Principal, IDL.Vec(IDL.Text)], [], []),
     'check_available_bucket' : IDL.Func([], [IDL.Bool], []),
     'comment_comment' : IDL.Func(
@@ -78,7 +84,6 @@ export const idlFactory = ({ IDL }) => {
       [IDL.Bool],
       [],
     ),
-    'complete_upgrade' : IDL.Func([], [IDL.Bool], []),
     'create_comment' : IDL.Func([IDL.Text, IDL.Text], [IDL.Bool], []),
     'create_like' : IDL.Func([IDL.Text], [IDL.Bool], []),
     'create_post' : IDL.Func([IDL.Text, IDL.Vec(IDL.Text)], [IDL.Text], []),
@@ -119,6 +124,11 @@ export const idlFactory = ({ IDL }) => {
     'get_post_number' : IDL.Func([IDL.Principal], [IDL.Nat64], ['query']),
     'get_root_bucket' : IDL.Func([], [IDL.Principal], ['query']),
     'get_user_actor' : IDL.Func([], [IDL.Principal], ['query']),
+    'is_feed_in_user_blacklist' : IDL.Func(
+      [IDL.Text, IDL.Principal],
+      [IDL.Bool],
+      ['query'],
+    ),
     'like_comment' : IDL.Func([IDL.Text, IDL.Nat64], [IDL.Bool], []),
     'like_comment_comment' : IDL.Func([IDL.Text, IDL.Nat64], [IDL.Bool], []),
     'status' : IDL.Func([], [CanisterStatusResponse], []),

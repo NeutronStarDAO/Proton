@@ -47,6 +47,7 @@ export const idlFactory = ({ IDL }) => {
       [IDL.Vec(Profile)],
       ['query'],
     ),
+    'cancle_black_list' : IDL.Func([IDL.Principal], [IDL.Bool], []),
     'cancle_follow' : IDL.Func([IDL.Principal], [], []),
     'create_profile' : IDL.Func([Profile], [IDL.Bool], []),
     'follow' : IDL.Func([IDL.Principal], [], []),

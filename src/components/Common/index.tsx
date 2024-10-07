@@ -204,7 +204,8 @@ const YouTubeEmbed = ({videoId, postId, setPlayOne, playOne}: {
     };
   }, [videoId, isPlaying, playerIdRef]);
 
-  const handleThumbnailClick = () => {
+  const handleThumbnailClick = (e: any) => {
+    e.stopPropagation()
     setPlayOne?.(postId)
   };
   if (!isPlaying) {
@@ -215,18 +216,6 @@ const YouTubeEmbed = ({videoId, postId, setPlayOne, playOne}: {
           alt="YouTube video thumbnail"
           style={{width: '100%', height: 'auto'}}
         />
-        <div style={{
-          position: 'absolute',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          backgroundColor: 'rgba(0,0,0,0.7)',
-          color: 'white',
-          padding: '10px',
-          borderRadius: '5px'
-        }}>
-          play
-        </div>
       </div>
     );
   }
