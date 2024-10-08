@@ -33,3 +33,27 @@
   }
 
 }
+
+
+.user_info_author {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+
+   .avatar {
+    width: 5.3rem;
+    height: 5.3rem;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+
+   .post_dot {
+    width: 0.5rem;
+    min-width: 0.5rem;
+    height: 0.5rem;
+    background: rgb(132 137 168);
+    border-radius: 50%;
+  }
+}
+
+

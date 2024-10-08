@@ -49,26 +49,6 @@
         align-items: center;
         justify-content: space-between;
 
-        .info {
-          display: flex;
-
-          img {
-            width: 10.9rem;
-            height: 10.9rem;
-            margin-right: 1rem;
-            border-radius: 50%;
-            object-fit: cover;
-          }
-
-          .name {
-            font-size: 5rem;
-          }
-
-          .id {
-            font-size: 2.3rem;
-          }
-        }
-
         .edit {
           display: flex;
           align-items: center;

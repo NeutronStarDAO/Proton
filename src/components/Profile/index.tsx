@@ -21,6 +21,7 @@ import ScrollTrigger from 'gsap/ScrollTrigger';
 import {Loading} from "../Loading";
 import {Profile as ProfileType} from "../../declarations/user/user";
 import {LikeList} from "../LikeList";
+import {PostUserInfo} from "../Common";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -119,8 +120,6 @@ const UserPanel = ({profile}: { profile?: profile_type }) => {
   const tl = useRef<any>()
   const nav = useNavigate()
   const [showMore, setShowMore] = useState(false)
-  const [load, setLoad] = useState(false)
-  const [avatar, setAvatar] = useState<string>("")
   const [isBlack, setIsBlack] = useState(false)
   const isOwner = React.useMemo(() => {
     return id === principal?.toText()
@@ -225,33 +224,12 @@ const UserPanel = ({profile}: { profile?: profile_type }) => {
 
   }
 
-  useEffect(() => {
-    if (profile) {
-      if (profile.avatar_url) setAvatar(profile.avatar_url)
-      else setAvatar("/img_3.png")
-    }
-  }, [profile]);
-
   return <div className={"user_panel"}>
     <div className={"avatar_panel"}>
-      <div className={"info"}>
-        <div style={{position: "relative"}}>
-          <img src={avatar} alt="" onLoad={() => setLoad(true)}/>
-          <div className="skeleton skeleton-avatar"
-               style={{display: !load ? "block" : "none", width: "10.9rem", height: "10.9rem"}}/>
-        </div>
-        <div style={{display: "flex", alignItems: "start", flexDirection: "column", justifyContent: "center"}}>
-          {profile?.name ? <div className={"name"}>{profile?.name}</div> :
-            <div className="skeleton skeleton-title" style={{height: "3rem"}}/>}
-
-          {profile?.handle ? <div className={"id"}>{shortenString(profile ? profile.handle : "", 16)}</div> :
-            <div className="skeleton skeleton-text" style={{height: "2rem", marginTop: "2rem"}}/>}
-        </div>
-      </div>
+      <PostUserInfo profile={profile} imgStyle={{width: "10.9rem", height: "10.9rem"}} nameStyle={{fontSize: "5rem"}}
+                    handleStyle={{fontSize: "2.3rem"}}/>
       <ProfileModal setOpen={setOpen} open={open} canClose={true}/>
       <div style={{display: 'flex', alignItems: 'center'}}>
-
-
         {!isBlack ?
           <div className={"dropdown_select_modal"} style={{position: "relative", display: isOwner ? "none" : "flex"}}>
             <div className={"more_wrap"} onClick={e => {

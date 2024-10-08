@@ -14,7 +14,7 @@ import {shortenString} from "../Sider";
 import {CloseOutlined} from "@ant-design/icons";
 import {updateSelectPost, useSelectPostStore} from "../../redux/features/SelectPost";
 import {getTime, isIn} from "../../utils/util";
-import {CommentInput, ShowMoreTest} from "../Common";
+import {CommentInput, PostUserInfo, ShowMoreTest} from "../Common";
 import {Loading} from "../Loading";
 import {LikeList} from "../LikeList";
 import {Grant} from "../Modal/Grant";
@@ -146,8 +146,6 @@ export const Post = ({post, updateFunction, selectedID, profile, setShowLikeList
   const [showMore, setShowMore] = useState(false)
   const postRef = useRef(null)
   const [like, setLike] = useState(false)
-  const [isLoad, setIsLoad] = useState(false)
-  const [avatar, setAvatar] = useState("")
   const [openGrant, setOpenGrant] = useState(false)
   const [showSending, setShowSending] = useState(false)
   const [playOne, setPlayOne] = useState("")
@@ -276,13 +274,6 @@ export const Post = ({post, updateFunction, selectedID, profile, setShowLikeList
     }
   }, [selectPost]);
 
-  useEffect(() => {
-    if (profile) {
-      if (profile.avatar_url) setAvatar(profile.avatar_url)
-      else setAvatar("/img_3.png")
-    }
-  }, [profile])
-
   const deletePost = async () => {
     const feedApi = new Feed(post.feed_canister)
     try {
@@ -308,13 +299,8 @@ export const Post = ({post, updateFunction, selectedID, profile, setShowLikeList
     }
   }
 
-  const load = () => {
-    setIsLoad(true)
-  }
-
-
   return <>
-    <Grant open={openGrant} setOpen={setOpenGrant}/>
+    <Grant open={openGrant} setOpen={setOpenGrant} profile={profile}/>
     <div ref={postRef}
          className={`post_main ${isDark ? "dark_post_main" : ""} ${(selectedID === post.post_id) ? isDark ? "dark_selected_post" : "selected_post" : ""}`}
          onClick={(e) => {
@@ -325,35 +311,7 @@ export const Post = ({post, updateFunction, selectedID, profile, setShowLikeList
          }}
     >
       <div style={{display: "flex", justifyContent: "space-between", alignItems: "center"}}>
-        <div className={"author"}>
-          <div style={{position: "relative"}}>
-            <Tooltip title={profile?.name}>
-              <img className={"avatar"}
-                   onClick={(e) => {
-                     e.stopPropagation()
-                     window.open(`/profile/${principal.toString()}`)
-                   }}
-                   src={avatar} alt="" onLoad={load}/>
-            </Tooltip>
-            <div className="skeleton skeleton-avatar" style={{display: !isLoad ? "block" : "none"}}/>
-          </div>
-          <div style={{display: "flex", flexDirection: "column", alignItems: "start", justifyContent: "center"}}>
-            {profile ? <div
-                style={{fontSize: "2.1rem", fontWeight: "500", fontFamily: "Fredoka, sans-serif"}}>{profile.name}</div> :
-              <div className="skeleton skeleton-title"/>
-            }
-            <div style={{display: "flex", alignItems: "center", fontSize: "2rem", gap: "1rem"}}>
-              {profile ?
-                <div style={{color: "rgb(132 137 168)"}}>{profile ? shortenString(profile.handle, 25) : ""}</div> :
-                <div className="skeleton skeleton-text"/>
-              }
-              <span className="post_dot"/>
-              <div style={{color: "rgb(132 137 168)"}}>
-                {arg.time}
-              </div>
-            </div>
-          </div>
-        </div>
+        <PostUserInfo profile={profile} time={arg.time}/>
         <div className={"dropdown_select_modal"}
              style={{position: "relative", display: location.pathname === "/explore" ? "none" : "block"}}>
           <div ref={moreButton} className={"more_wrap"} onClick={e => {

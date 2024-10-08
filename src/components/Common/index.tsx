@@ -1,7 +1,10 @@
-import React, {MouseEventHandler, useEffect, useRef, useState} from "react";
+import React, {CSSProperties, MouseEventHandler, useEffect, useRef, useState} from "react";
 import autosize from "autosize";
 import "./index.scss"
 import ShowMoreText from "react-show-more-text";
+import {Tooltip} from "antd";
+import {shortenString} from "../Sider";
+import {Profile} from "../../declarations/user/user";
 
 type Props = {
   open: boolean,
@@ -225,5 +228,86 @@ const YouTubeEmbed = ({videoId, postId, setPlayOne, playOne}: {
   );
 };
 
+export const PostUserInfo = React.memo(({profile, time, imgStyle, nameStyle, handleStyle}: {
+  profile: Profile | undefined,
+  time?: string,
+  imgStyle?: CSSProperties, nameStyle?: CSSProperties, handleStyle?: CSSProperties
+}) => {
+  const [avatar, setAvatar] = useState("")
+  const [isLoad, setIsLoad] = useState(false)
+
+  useEffect(() => {
+    if (profile) {
+      if (profile.avatar_url) setAvatar(profile.avatar_url)
+      else setAvatar("/img_3.png")
+    }
+  }, [profile])
+
+  const load = () => {
+    setIsLoad(true)
+  }
+
+  return <div className={"user_info_author"}>
+    <div style={{position: "relative"}}>
+      <Tooltip title={profile?.name}>
+        <img style={{...imgStyle}} className={"avatar"}
+             onClick={(e) => {
+               e.stopPropagation()
+               window.open(`/profile/${profile?.id.toString()}`)
+             }}
+             src={avatar} alt="" onLoad={load}/>
+      </Tooltip>
+      <div className="skeleton skeleton-avatar" style={{display: !isLoad ? "block" : "none", ...imgStyle}}/>
+    </div>
+    <div style={{display: "flex", flexDirection: "column", alignItems: "start", justifyContent: "center"}}>
+      {profile ? <div
+          style={{
+            fontSize: "2.1rem",
+            fontWeight: "500",
+            fontFamily: "Fredoka, sans-serif", ...nameStyle
+          }}>{profile.name}</div> :
+        <div className="skeleton skeleton-title" style={{...nameStyle}}/>
+      }
+      <div style={{display: "flex", alignItems: "center", fontSize: "2rem", gap: "1rem", ...handleStyle}}>
+        {profile ?
+          <div style={{color: "rgb(132 137 168)"}}>{profile ? shortenString(profile.handle, 25) : ""}</div> :
+          <div className="skeleton skeleton-text" style={{...handleStyle}}/>
+        }
+        {time && <React.Fragment>
+          <span className="post_dot"/>
+          <div style={{color: "rgb(132 137 168)"}}>
+            {time}
+          </div>
+        </React.Fragment>}
+      </div>
+    </div>
+  </div>
+})
+
+
+export const NumberInput = React.memo(({setAmount, placeholder, value}: {
+  setAmount: Function,
+  value: number,
+  placeholder?: string
+}) => {
+
+  return <input value={value} className={"number_input"} type="number" min={0} placeholder={placeholder ?? "0.00"}
+                onChange={e => {
+                  let value = e.target.value;
+                  value = value.replace(/[^0-9.]/g, '');
+                  value = value.replace(/^0+(?!\.|$)/, '');
+                  if ((value.match(/\./g) || []).length > 1) {
+                    value = value.replace(/\.(?=.*\.)/, '');
+                  }
+                  if (value.startsWith('-')) {
+                    value = value.substring(1);
+                  }
+                  if (parseFloat(value) < 0) {
+                    value = '';
+                  }
+                  e.target.value = value;
+                  setAmount(+value)
+                }}/>
+})
 
 
