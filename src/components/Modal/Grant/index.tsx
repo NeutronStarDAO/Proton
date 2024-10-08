@@ -44,12 +44,9 @@ export const Grant = ({open, setOpen, profile}: {
   }
 
   const send = async () => {
-    console.log(amount,profile)
     if (!profile || amount <= 0) return
     let newAmount: bigint = parseUnits(amount + "", 8)
     const balance = Number(balances[1]) / 1e8
-    console.log(amount, balance)
-
     if (amount > balance) {
       message.warning("insufficient balance")
       return 0
@@ -62,17 +59,19 @@ export const Grant = ({open, setOpen, profile}: {
       message.error("invalid amount")
       return 0
     }
+    message.loading("transfering")
+    setTimeout(() => {
+      setOpen(false)
+    }, 1000)
     try {
       const ac = getToAccountIdentifier(profile.id)
-      const a = await ledgerApi.transferUseAccount(ac, newAmount)
+      await ledgerApi.transferUseAccount(ac, newAmount)
       getBalance()
+      message.success("transfer done")
     } catch (e) {
       message.error("transfer error")
       return 0
     }
-    setTimeout(() => {
-      setOpen(false)
-    }, 1000)
   }
 
   return <Modal setOpen={setOpen} open={open}>
