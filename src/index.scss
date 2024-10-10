@@ -59,22 +59,22 @@ pre {
   }
 }
 
-//::-webkit-scrollbar {
-//  width: 7px;
-//  height: 7px;
-//  display: none;
-//}
-//
-//::-webkit-scrollbar-track {
-//  border-radius: 3px;
-//  background: rgba(0, 0, 0, 0);
-//  height: 50%;
-//}
-//
-//::-webkit-scrollbar-thumb {
-//  border-radius: 3px;
-//  background: rgba(0, 0, 0, 0);
-//}
+::-webkit-scrollbar {
+ width: 7px;
+ height: 7px;
+ display: none;
+}
+
+::-webkit-scrollbar-track {
+ border-radius: 3px;
+ background: rgba(0, 0, 0, 0);
+ height: 50%;
+}
+
+::-webkit-scrollbar-thumb {
+ border-radius: 3px;
+ background: rgba(0, 0, 0, 0);
+}
 
 :hover::-webkit-scrollbar-thumb {
   border-radius: 3px;
