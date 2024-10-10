@@ -46,6 +46,15 @@
     span {
       font-size: 2.3rem;
     }
+
+    .trends_tag {
+      color: #0C6DFF;
+      cursor: pointer;
+
+      &:hover {
+        border-bottom: 1px solid #0C6DFF;
+      }
+    }
   }
 
   .popular {

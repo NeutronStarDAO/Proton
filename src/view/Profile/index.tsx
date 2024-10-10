@@ -2,10 +2,10 @@ import "./index.scss"
 
 import React, {useEffect, useRef, useState} from "react"
 import Icon from "../../Icons/Icon";
-import {ProfileModal} from "../Modal/Profile";
+import {ProfileModal} from "../../components/Modal/Profile";
 import {Profile as profile_type} from "../../declarations/user/user";
 import {userApi} from "../../actors/user";
-import {shortenString} from "../Sider";
+import {shortenString} from "../../components/Sider";
 import {useNavigate, useParams} from "react-router-dom";
 import {Principal} from "@dfinity/principal";
 import {Post as post_type} from "../../declarations/feed/feed";
@@ -18,10 +18,10 @@ import gsap from 'gsap';
 import {useSelectPostStore} from "../../redux/features/SelectPost";
 import {nanosecondsToDate} from "../../utils/util";
 import ScrollTrigger from 'gsap/ScrollTrigger';
-import {Loading} from "../Loading";
+import {Loading} from "../../components/Loading";
 import {Profile as ProfileType} from "../../declarations/user/user";
-import {LikeList} from "../LikeList";
-import {PostUserInfo} from "../Common";
+import {LikeList} from "../../components/LikeList";
+import {PostUserInfo} from "../../components/Common";
 
 gsap.registerPlugin(ScrollTrigger);
 

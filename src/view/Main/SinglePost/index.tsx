@@ -3,12 +3,12 @@ import {useParams} from "react-router-dom";
 import {Post as PostType} from "../../../declarations/feed/feed";
 import Feed from "../../../actors/feed";
 import {Principal} from "@dfinity/principal";
-import {LikeList} from "../../LikeList";
+import {LikeList} from "../../../components/LikeList";
 import {Profile} from "../../../declarations/user/user";
 import {useSelectPostStore} from "../../../redux/features/SelectPost";
 import {userApi} from "../../../actors/user";
 import {Post} from "../index";
-import {Loading} from "../../Loading";
+import {Loading} from "../../../components/Loading";
 import {Empty} from "antd";
 import Icon from "../../../Icons/Icon";
 

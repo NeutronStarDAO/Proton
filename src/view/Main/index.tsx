@@ -10,14 +10,14 @@ import Feed from "../../actors/feed";
 import {rootPostApi} from "../../actors/root_bucket";
 import {userApi} from "../../actors/user";
 import {Profile} from "../../declarations/user/user";
-import {shortenString} from "../Sider";
+import {shortenString} from "../../components/Sider";
 import {CloseOutlined} from "@ant-design/icons";
 import {updateSelectPost, useSelectPostStore} from "../../redux/features/SelectPost";
 import {getTime, isIn} from "../../utils/util";
-import {CommentInput, PostUserInfo, ShowMoreTest} from "../Common";
-import {Loading} from "../Loading";
-import {LikeList} from "../LikeList";
-import {Grant} from "../Modal/Grant";
+import {CommentInput, PostUserInfo, ShowMoreTest} from "../../components/Common";
+import {Loading} from "../../components/Loading";
+import {LikeList} from "../../components/LikeList";
+import {Grant} from "../../components/Modal/Grant";
 
 const pageCount = 30
 
@@ -63,7 +63,10 @@ export const Main = ({scrollContainerRef}: { scrollContainerRef: React.MutableRe
     if (!userFeedCai || !principal) return 0
     const feedApi = new Feed(userFeedCai)
     const res = await feedApi.getHomeFeedByLength(principal, page * pageCount, pageCount)
-    if (page === 0) return setHomeData(res);
+    if (page === 0) {
+      if (res.length < 30) setIsEnd(true)
+      return setHomeData(res);
+    }
     if (res.length < 30 || res.length === 0) setIsEnd(true)
     const newArr = [...(data ?? []), ...res]
     setHomeData(newArr);
@@ -71,7 +74,10 @@ export const Main = ({scrollContainerRef}: { scrollContainerRef: React.MutableRe
 
   const getExploreData = React.useCallback(async () => {
     const res = await rootPostApi.get_buckets_latest_feed_from_start(page * pageCount, pageCount)
-    if (page === 0) return setExploreData(res);
+    if (page === 0) {
+      if (res.length < 30) setIsEnd(true)
+      return setExploreData(res);
+    }
     if (res.length < 30 || res.length === 0) setIsEnd(true)
     const newArr = [...(data ?? []), ...res]
     setExploreData(newArr);
@@ -205,10 +211,6 @@ export const Post = ({post, updateFunction, selectedID, profile, setShowLikeList
       getLikeUsers()
       setShowLikeList(true)
       return
-    }
-    if (index === 4) {
-      const newStr = post.post_id.replace(/#/g, '_');
-      navigate("/post/" + newStr)
     }
     if (index === 5) {
       setOpenGrant(true)
@@ -399,8 +401,18 @@ const BottomButton = React.memo(({handleClick, hoverOne, setHoverOne, arg, post,
   like: boolean,
   showSending: boolean
 }) => {
-
   const {isAuth} = useAuth()
+  const [copyShareLink, setCopyShareLink] = useState(false)
+
+  const copy = async () => {
+    try {
+      const newStr = post.post_id.replace(/#/g, '_');
+      await navigator.clipboard.writeText(window.location.host + "/post/" + newStr);
+      setCopyShareLink(true)
+      setTimeout(() => setCopyShareLink(false), 1000)
+    } catch (e) {
+    }
+  }
 
   const handleHover = (index: number) => {
     if (isAuth)
@@ -475,19 +487,21 @@ const BottomButton = React.memo(({handleClick, hoverOne, setHoverOne, arg, post,
           onMouseLeave={e => setHoverOne(-1)}>
            <Icon name={"heartbeat"}/>
       </span>
-    <span onClick={(e) => {
-      e.stopPropagation()
-      handleClick(4)
-    }}
-          style={{
-            background: hoverOne === 4 ? "#F0F4FF" : "",
-            borderRadius: "50%",
-            padding: "0.5rem 0.7rem"
-          }}
-          onMouseEnter={() => handleHover(4)}
-          onMouseLeave={e => setHoverOne(-1)}>
+    <Tooltip title={copyShareLink ? "copied" : "copy share link"}>
+      <span onClick={(e) => {
+        e.stopPropagation()
+        copy()
+      }}
+            style={{
+              background: hoverOne === 4 ? "#F0F4FF" : "",
+              borderRadius: "50%",
+              padding: "0.5rem 0.7rem"
+            }}
+            onMouseEnter={() => handleHover(4)}
+            onMouseLeave={e => setHoverOne(-1)}>
            <Icon name={"share"}/>
       </span>
+    </Tooltip>
     <span onClick={(e) => {
       e.stopPropagation()
       handleClick(5)

@@ -2,7 +2,7 @@ import React, {CSSProperties} from "react";
 import "./index.scss"
 import Icon from "../../Icons/Icon";
 import {Profile} from "../../declarations/user/user";
-import {UserCard} from "../FollowList";
+import {UserCard} from "../../view/FollowList";
 import {Loading} from "../Loading";
 
 export const LikeList = React.memo(({users, backApi, style}: {

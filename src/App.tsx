@@ -1,10 +1,10 @@
 import React, {useEffect, useRef, useState} from 'react';
 import './App.css';
 import {Side} from "./components/Sider";
-import {Main} from "./components/Main";
-import {Settings} from "./components/Setting";
+import {Main} from "./view/Main";
+import {Settings} from "./view/Setting";
 import {Routes, Route, Navigate} from "react-router-dom";
-import {Profile} from "./components/Profile";
+import {Profile} from "./view/Profile";
 import {Comment} from "./components/Comment";
 import {useAuth} from "./utils/useAuth";
 import {userApi} from "./actors/user";
@@ -12,12 +12,13 @@ import {updateProfile, useProfileStore} from "./redux";
 import {Sidebar} from "./components/Sidebar";
 import {updateSelectPost, useSelectPostStore} from "./redux/features/SelectPost";
 import {ProfileModal} from "./components/Modal/Profile";
-import {FollowList} from "./components/FollowList";
-import {Wallet} from "./components/Wallet";
+import {FollowList} from "./view/FollowList";
+import {Wallet} from "./view/Wallet";
 import Feed from "./actors/feed";
 import {CommentTreeNode} from "./declarations/feed/feed";
 import {Principal} from "@dfinity/principal";
-import {SinglePost} from "./components/Main/SinglePost";
+import {SinglePost} from "./view/Main/SinglePost";
+import {TopicPost} from "./view/TopicPost";
 
 const userFeedCai = Principal.from("mai5z-6yaaa-aaaan-qmtmq-cai")
 
@@ -95,15 +96,16 @@ function App() {
       <Side scrollToTop={scrollToTop}/>
       <Routes>
         <Route path="/" element={<Navigate to={"home"}/>}/>
-        <Route path="home" element={<Main scrollContainerRef={scrollContainerRef}/>}/>
+        <Route path="/home" element={<Main scrollContainerRef={scrollContainerRef}/>}/>
         <Route path="/post/:postId" element={<SinglePost/>}/>
-        <Route path="explore" element={<Main scrollContainerRef={scrollContainerRef}/>}/>
-        <Route path="wallet" element={<Wallet/>}/>
-        <Route path="settings" element={<Settings/>}/>
-        <Route path="followers/:id" element={<FollowList/>}/>
-        <Route path="following/:id" element={<FollowList/>}/>
-        <Route path="profile/:id"
+        <Route path="/explore" element={<Main scrollContainerRef={scrollContainerRef}/>}/>
+        <Route path="/wallet" element={<Wallet/>}/>
+        <Route path="/settings" element={<Settings/>}/>
+        <Route path="/followers/:id" element={<FollowList/>}/>
+        <Route path="/following/:id" element={<FollowList/>}/>
+        <Route path="/profile/:id"
                element={<Profile scrollContainerRef={scrollContainerRef} scrollToTop={scrollToTop}/>}/>
+        <Route path="/tag" element={<TopicPost/>}/>
         <Route path="*" element={<Navigate to={"home"}/>}/>
       </Routes>
       {selectPost ? <Comment/> : <Sidebar/>}

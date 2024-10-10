@@ -5,11 +5,11 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import {fontResize} from "./utils/fontResize";
 import {BrowserRouter} from "react-router-dom";
-import {ProvideAuth} from "./utils/useAuth";
 import {Provider} from "react-redux";
 import store from "./redux/store";
 import gsap from 'gsap';
 import {useGSAP} from '@gsap/react';
+import {ProvideAuth} from "./utils/useAuth";
 
 gsap.registerPlugin(useGSAP);
 fontResize()
@@ -21,7 +21,7 @@ root.render(
     <BrowserRouter>
       <ProvideAuth>
         <Provider store={store}>
-          <App/>
+            <App/>
         </Provider>
       </ProvideAuth>
     </BrowserRouter>

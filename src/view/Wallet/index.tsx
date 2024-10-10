@@ -3,8 +3,8 @@ import "./index.scss"
 import React, {useEffect} from "react"
 import Icon from "../../Icons/Icon";
 import {useAuth} from "../../utils/useAuth";
-import {Receive} from "../Modal/Receive";
-import {Send} from "../Modal/Send";
+import {Receive} from "../../components/Modal/Receive";
+import {Send} from "../../components/Modal/Send";
 import {ledgerApi} from "../../actors/ledger";
 import {ckBTCApi} from "../../actors/ckbtc";
 
