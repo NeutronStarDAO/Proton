@@ -124,7 +124,7 @@ const getVideoId = (url: string) => {
 };
 
 const LinkifyTextWithPreview = ({text, setVideoId}: { text: string, setVideoId: Function }) => {
-  const parts = text.split(urlRegex);
+  const parts = text.split(/(https?:\/\/[^\s]+|#\w+)/g);
 
   useEffect(() => {
     parts && parts.map(v => {
@@ -143,6 +143,16 @@ const LinkifyTextWithPreview = ({text, setVideoId}: { text: string, setVideoId: 
           return (
             <div className="3" key={index}>
               <a style={{color: "#438EFF", wordWrap: "break-word"}} href={part} target="_blank"
+                 rel="noopener noreferrer">
+                {part}
+              </a>
+            </div>
+          );
+        } else if (part.startsWith('#')) {
+          return (
+            <div className="hashtag" key={index}>
+              <a style={{color: "#438EFF", wordWrap: "break-word"}}
+                 href={`${window.location.origin}/tag?t=${part.slice(1, part.length)}`}
                  rel="noopener noreferrer">
                 {part}
               </a>
