@@ -151,7 +151,7 @@ const LinkifyTextWithPreview = ({text, setVideoId}: { text: string, setVideoId: 
         } else if (part.startsWith('#')) {
           return (
             <div className="hashtag" key={index}>
-              <a style={{color: "#438EFF", wordWrap: "break-word"}}
+              <a style={{color: "#438EFF", wordWrap: "break-word", textDecoration: "none"}}
                  href={`${window.location.origin}/tag?t=${part.slice(1, part.length)}`}
                  rel="noopener noreferrer">
                 {part}

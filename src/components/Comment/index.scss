@@ -150,8 +150,12 @@
   }
 
   .dark_post_bottom {
-    span svg path {
-      fill: #b9c9de !important;
+    span {
+      color: #b9c9de !important;
+
+      svg path {
+        fill: #b9c9de !important;
+      }
     }
   }
 
