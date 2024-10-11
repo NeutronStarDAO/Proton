@@ -25,10 +25,14 @@
     padding-bottom: 2rem;
     padding-top: 3rem;
     padding-left: 2rem;
+    
     @include respond-to("phone") {
       border-right: 0;
     }
+  }
 
+  .dark_title svg path {
+    stroke: #b9c9de;
   }
 }
 

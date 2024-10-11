@@ -11,8 +11,10 @@ import {Post} from "../index";
 import {Loading} from "../../../components/Loading";
 import {Empty} from "antd";
 import Icon from "../../../Icons/Icon";
+import {useAuth} from "../../../utils/useAuth";
 
 export const SinglePost = React.memo(() => {
+  const {isDark} = useAuth()
   const {postId} = useParams()
   const [post, setPost] = useState<PostType>()
   const [showLikeList, setShowLikeList] = useState(false)
@@ -60,7 +62,7 @@ export const SinglePost = React.memo(() => {
               users={likeUsers}/>
     <div style={{display: showLikeList ? "none" : "flex"}} id={"content_main"}
          className={"main_wrap"}>
-      <div className={"title"}>
+      <div className={`title ${isDark ? "dark_title" : ""}`}>
           <span style={{cursor: "pointer", marginRight: "1rem"}} onClick={() => window.history.back()}>
           <Icon name={"back"}/>
       </span>
