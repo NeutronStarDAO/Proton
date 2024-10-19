@@ -1,5 +1,5 @@
 mod http;
-use candid::{CandidType, Decode, Deserialize, Encode, Principal};
+use candid::{CandidType, Decode, Deserialize, Encode, Principal, Nat};
 use std::borrow::Cow;
 use ic_stable_structures::storable::{Bound, Storable};
 pub use http::*;
@@ -83,4 +83,28 @@ pub struct FeedInitArg {
 pub struct FetchInitArg {
     pub user_actor: Principal,
     pub root_feed: Principal
+}
+
+pub type Subaccount = Vec<u8>;
+
+#[derive(CandidType, Deserialize, Clone)]
+pub struct Account { 
+    pub owner: candid::Principal, 
+    pub subaccount: Option<Subaccount> 
+}
+
+#[derive(CandidType, Deserialize, Clone)]
+pub struct TokenInitArgs {
+    pub decimals: u8,
+    pub fee: Nat,
+    pub mintint_account: Option<Account>,
+    pub name: String,
+    pub symbol: String,
+    pub init_balances: Vec<(Principal, Nat)>
+}
+
+#[derive(CandidType, Deserialize)]
+pub enum TokenError {
+    TokenNotExist,
+    Unauthorized
 }

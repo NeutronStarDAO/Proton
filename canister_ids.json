@@ -16,5 +16,14 @@
     },
     "photo_storage" : {
         "ic"  : "nwdfs-liaaa-aaaan-qmtjq-cai"
+    },
+    "data_analysis" : {
+        "ic" : "tgj3t-faaaa-aaaan-quqfa-cai"
+    },
+    "trade" : {
+        "ic" : "r4b4l-baaaa-aaaan-qzngq-cai"
+    },
+    "token" : {
+        "ic" : "rvcxx-xiaaa-aaaan-qznha-cai"
     }
 }
