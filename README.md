@@ -1,7 +1,9 @@
-# IceCube🧊 (Proton) - A Social DApp
+# [IceCube](https://github.com/NeutronStarDAO/icecube)🧊 (Proton) - A Social DApp
 
 <img src="https://github.com/user-attachments/assets/4245a30f-c93e-47f5-bf6c-9522bdac0c17" style="width: 25%;" />
 <br>
+
+## Now proton has switched to [IceCube](https://github.com/NeutronStarDAO/icecube) 🧊
 
 We gone and built a Social DApp, a DApp like X/Twitter but with modular data sovereignty based on the Actor model. She's got tutorials and everything to help get ya up to speed.
 
