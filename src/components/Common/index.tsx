@@ -111,11 +111,16 @@ const isYouTubeUrl = (url: string) => {
 
 const getVideoId = (url: string) => {
   let videoId = '';
-  if (url.includes('youtube.com')) {
-    videoId = url.split('v=')[1];
-  } else if (url.includes('youtu.be')) {
-    videoId = url.split('/').pop() || '';
+  if (url.includes("shorts")) {
+    videoId = url.split('shorts/')[1];
+  } else {
+    if (url.includes('youtube.com')) {
+      videoId = url.split('v=')[1];
+    } else if (url.includes('youtu.be')) {
+      videoId = url.split('/').pop() || '';
+    }
   }
+  if (!videoId) return ""
   const ampersandPosition = videoId.indexOf('&');
   if (ampersandPosition !== -1) {
     videoId = videoId.substring(0, ampersandPosition);
